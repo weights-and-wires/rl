@@ -1,0 +1,240 @@
+# Reinforcement learning
+
+A hands-on course that teaches reinforcement learning by having you build it.
+Fifty-two lessons run from a two-armed bandit to the methods that post-train
+language, image, speech, and robot models. Each one explains an idea in plain
+words, works a small example by hand, and then walks you through implementing
+it, in an editor beside the text, against checks that verify the mathematics
+rather than the shape of your code.
+
+The reading pane is on the left and the editor is on the right. **Run**
+executes your file and streams its output. **Check** runs the exercise's checks
+and reports them one at a time as they finish.
+
+## Who it is for
+
+You have taken a first machine learning course, such as the one at
+[ml.ifkash.dev](https://ml.ifkash.dev): you can fit a logistic regression,
+train a small network with gradient descent, and write numpy and a little
+PyTorch. You don't need any reinforcement learning background. The lessons
+define every term and symbol when it first appears, show each formula next to
+the code that computes it, and end with a step-by-step guide to the exercise
+and a list of the papers behind it.
+
+## What is in here
+
+The repository is laid out as follows:
+
+| Path | Contents |
+|---|---|
+| `content/lessons/` | Fifty-two lessons, in Markdown with YAML front matter. |
+| `content/exercises/` | One directory per exercise: a starter file, checks, and a worked solution. |
+| `backend/` | FastAPI: auth, content, progress, drafts, and the run stream. |
+| `backend/app/runner/` | The harness, the `rlcheck` assertion library the checks use, the `rlenvs` environments every exercise shares, and the execution backends. |
+| `frontend/` | React and Vite: the reader, the editor, and the check console. |
+| `frontend/src/book/` | The print layout for the PDF book, and `frontend/scripts/build-book.mjs`, which prints it. |
+| `docs/` | The content contract, the curriculum, and the research notes the lessons were written from. |
+| `scripts/` | Content validation, the book's content dump, and the deploy script. |
+
+## The curriculum
+
+**Part 1 — The reinforcement learning problem.** Agents, rewards, and returns,
+multi-armed bandits, gradient and contextual bandits, Markov decision
+processes, and dynamic programming.
+
+**Part 2 — Learning from experience.** Monte Carlo methods,
+temporal-difference learning, double learning, n-step returns and eligibility
+traces, and planning with Dyna and tree search.
+
+**Part 3 — Approximation and deep value methods.** Value-function
+approximation and the deadly triad, deep Q-networks, the improvements that
+became Rainbow, and distributional reinforcement learning.
+
+**Part 4 — Policy optimisation.** The policy gradient theorem, actor-critic,
+generalised advantage estimation, natural gradients and TRPO, PPO, and the
+theory of why policy optimisation works.
+
+**Part 5 — Continuous control and maximum entropy.** Deterministic policy
+gradients and TD3, maximum-entropy reinforcement learning, and soft
+actor-critic.
+
+**Part 6 — Models, exploration, and fixed data.** Model-based reinforcement
+learning, world models and MuZero, exploration, imitation learning, inverse
+reinforcement learning and GAIL, and offline reinforcement learning.
+
+**Part 7 — Rewards, evaluation, and many agents.** Reward design and shaping,
+evaluating agents honestly, and multi-agent learning and self-play.
+
+**Part 8 — Reinforcement learning for language models.** Language models as
+policies, reward models, RLHF with PPO, direct preference optimisation, GRPO
+and its successors, reasoning with verifiable rewards, process rewards and
+test-time search, AI feedback and self-improvement, multi-turn agents, and the
+infrastructure behind large-scale runs.
+
+**Part 9 — Beyond text.** Diffusion models as policies, preference tuning for
+diffusion, flow models with GRPO, vision-language models, speech and audio, and
+robotics.
+
+**Part 10 — Safety and the frontier.** Reward hacking and overoptimisation,
+safe and constrained reinforcement learning, scaling reinforcement learning,
+and the research frontier.
+
+[The full list, with what each exercise delivers](docs/CURRICULUM.md).
+
+## Run it locally
+
+You need Python 3.12 or later and Node 20 or later.
+
+1. Copy the environment file and set a session secret:
+
+   ```bash
+   cp .env.example .env
+   python3 -c "import secrets; print(secrets.token_urlsafe(48))"
+   ```
+
+   Put that value in `SESSION_SECRET`.
+
+2. Install and start the backend:
+
+   ```bash
+   python3 -m venv .venv
+   .venv/bin/pip install -r backend/requirements.txt pyyaml
+   .venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.9.1
+   .venv/bin/uvicorn backend.app.main:app --reload --port 8000
+   ```
+
+3. In another terminal, start the frontend:
+
+   ```bash
+   cd frontend && npm install && npm run dev
+   ```
+
+Open `http://localhost:5173`. The Vite dev server proxies `/api` to the backend
+on port 8000. To use a backend on another port, set `API_TARGET`, for example
+`API_TARGET=http://127.0.0.1:8011 npm run dev`.
+Sign in with one of the names in `APP_USERS` and the password in `APP_PASSWORD`.
+
+## Write a lesson
+
+`docs/CONTENT_CONTRACT.md` is the binding specification: the file layout, the
+front matter, the required sections, the prose style, and the `mlcheck` API the
+checks are written against.
+
+Validate what you write:
+
+```bash
+.venv/bin/python scripts/check_content.py 07-temporal-difference-learning
+```
+
+```bash
+node scripts/check_math.mjs content/lessons/07-temporal-difference-learning.md
+```
+
+That checks the front matter, the required sections, and the word count; runs
+every check against `solution.py`, which must pass all of them; and runs them
+against `starter.py`, which must fail at least one. Omit the slug to validate
+everything. The same script runs in CI on every push.
+
+`check_math.mjs` compiles every math segment with the frontend's own KaTeX, so
+math that fails only at render time fails here instead. Run `npm install` in
+`frontend/` first.
+
+## How a run works
+
+Pressing **Run** or **Check** posts your code to `/api/run`, which streams
+server-sent events back until the run finishes. The event types are `begin`,
+`status`, `plan`, `stdout`, `stderr`, `check`, `error`, and `done`.
+
+The submission executes in a subprocess in its own process group, started with
+`python -I`, under a CPU-time limit and a wall clock, with the container's
+`mem_limit` bounding memory. When the wall clock runs out the whole process
+group is killed. The harness wraps the reader's own prints as events, so a print
+that happens to look like JSON cannot be confused with a harness event.
+
+This is a resource boundary, not a security boundary. Anyone who can sign in can
+execute code in the container. The app is for two named people on a private
+host; do not open it wider without putting the runner in a sandbox that isolates
+the filesystem and the network.
+
+## Authentication
+
+Two people share one password, set in `APP_PASSWORD`, and sign in under one of
+the names in `APP_USERS`. The username is not a secret: it scopes progress,
+drafts, and run history so that two readers keep separate state. A signed,
+HTTP-only cookie carries the session. Set `COOKIE_SECURE=true` once the app is
+served over HTTPS.
+
+## The GPU backend
+
+Every exercise runs on the CPU, so no lesson sets `gpu: true`. The RunPod
+backend from the machine learning course is kept, so that a later lesson can
+ask for a GPU: `backend/app/runner/runpod.py` sends a submission to a RunPod
+serverless endpoint, and the worker in `gpu/` carries the same harness,
+`rlcheck`, and `rlenvs`. With `RUNPOD_ENDPOINT_ID` unset, which is how the
+deployment runs, every lesson uses the local runner.
+
+To turn it on, make the `rl-gpu-worker` package that the publish workflow
+pushes public, create the endpoint with `scripts/runpod_endpoint.py`, and put
+`RUNPOD_ENDPOINT_ID` in the deployed `.env`.
+
+## Deploy
+
+The VM holds the tree at `~/docs/rl` and runs it behind the shared Caddy on the
+external `edge` network. This bundle never publishes 80 or 443 itself.
+
+```bash
+./scripts/deploy.sh
+```
+
+The VM holds no GitHub credential. The script ships the committed tree with
+`git archive` over SSH, rebuilds, and waits until `/api/health` reports the
+commit it sent. `.env` on the VM is never touched, because it holds the session
+secret. `Caddyfile.example` holds the vhost
+block, including the buffering and timeout settings the run stream needs.
+
+The script also builds the PDF book on your workstation, because printing it
+needs Chrome and the VM has little memory or disk to spare. It copies the PDF to
+`~/docs/rl/book` on the VM, which the container mounts read-only. For more
+information, see [The PDF book](#the-pdf-book).
+
+To reach the app before its DNS record resolves, tunnel the container's
+localhost port:
+
+```bash
+ssh -L 8097:127.0.0.1:8097 ifkash@vm.ifkash.dev
+```
+
+## The PDF book
+
+The **PDF** button in the header downloads the whole course as one book: every
+lesson, every exercise with its starter file and hints, and the solutions in an
+appendix. The book has a contents page with page numbers, a bookmark for every
+lesson and section, and running heads. Like the lessons, the download needs a
+signed-in session.
+
+To build the book, run the following command:
+
+```bash
+node frontend/scripts/build-book.mjs
+```
+
+The build needs Google Chrome or Chromium, found through `CHROME_PATH` or in
+the usual install locations. It dumps the lessons with the backend's own loader
+(`scripts/dump_book.py`), renders the print layout in `frontend/src/book/` with
+the site's Markdown pipeline, and prints it with headless Chrome. It prints
+more than once, so that the contents carry real page numbers. The PDF and its
+`manifest.json` land in `book/`, which Git ignores.
+
+The build fails on any formula KaTeX can't render and on anything wider than
+the page, because Chrome shrinks every page to fit the widest element. It skips
+itself when no lesson or layout file has changed; to rebuild anyway, pass
+`--force`. CI builds the book on every push and keeps it as a workflow
+artifact for seven days.
+
+The lockfile must come from npm 10, because the image's `npm ci` rejects a
+lockfile that npm 11 writes. After you change a dependency, run
+`npx npm@10 install` in `frontend/`.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
