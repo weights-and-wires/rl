@@ -74,6 +74,16 @@ def test_answer_reward(sub):
         got = reward(text, target)
         if float(got) != want:
             fail(f"{label}: answer_reward({text!r}, {target}) returned {got}, expected {want}")
+    # The GPU run closes its reasoning with a plain-text tag instead.
+    tagged = [
+        (" 6 * 7 = 42 </reasoning> <answer>42</answer>", 1.0, "a correct answer after </reasoning>"),
+        (" 6 * 7 = 42 </think> <answer>42</answer>", 0.0, "</think> when the close tag is </reasoning>"),
+    ]
+    for text, want, label in tagged:
+        got = reward(text, 42, close_tag="</reasoning>")
+        if float(got) != want:
+            fail(f"{label}: answer_reward({text!r}, 42, close_tag='</reasoning>') "
+                 f"returned {got}, expected {want}")
 
 
 @check("grpo_advantages matches a hand-computed group, and a tied group gives zeros")

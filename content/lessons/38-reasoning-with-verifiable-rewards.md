@@ -285,9 +285,23 @@ The **Run** block trains Qwen3-0.6B-Base, a model with no instruction tuning,
 with your functions when a GPU is available. The questions have the form
 $a \times b + c$, with $a$ from 2 to 9 and $b$ and $c$ from 10 to 99. Each
 step samples 8 questions and 8 responses each, at temperature 1, stopping at
-`</answer>` or 128 tokens. The reward is your `answer_reward`. The step is
-your `grpo_advantages` and `pg_loss`, with AdamW at learning rate $10^{-6}$.
-R1-Zero also used a KL penalty. This run drops it, as DAPO and Dr. GRPO do.
+`</answer>` or 160 tokens. The reward is your `answer_reward`, called with
+`close_tag="</reasoning>"`. The step is your `grpo_advantages` and `pg_loss`,
+with AdamW at learning rate $10^{-6}$. R1-Zero also used a KL penalty. This run
+drops it, as DAPO and Dr. GRPO do.
+
+The run uses `<reasoning>` tags where R1-Zero used `<think>`, and the reason is
+a trap worth knowing. Qwen3's tokenizer maps `<think>` and `</think>` to two
+reserved tokens, each a single id. The chat models learned them in
+post-training, but the base model almost never saw them in pretraining, so it
+never writes `</think>`. On 128 samples at temperatures 0.7 and 1.0, and even
+with a worked example in the prompt, it closed the tag zero times. Every
+reward was 0, every group advantage was 0, and nothing trained. With
+`<reasoning>`, which is ordinary text, the same model closes the tag and
+answers in the right format about 60% of the time, and it is right about
+12% of the time at temperature 1. RLVR needs that starting point. When a
+verifiable reward is 0 on every sample, check first that the model can
+produce the format at all.
 
 Every 10 steps it draws 16 samples for each of 16 held-out questions. It
 counts the correct ones and prints pass@1, pass@4, and pass@16 from your
@@ -295,7 +309,7 @@ counts the correct ones and prints pass@1, pass@4, and pass@16 from your
 run. Watch whether pass@16 moves as much as pass@1.
 
 > [!RECAP]
-> - `answer_reward` pays 1 only for `</think>`, then a closed `<answer>`
+> - `answer_reward` pays 1 only for the close tag, `</think>` by default, then a closed `<answer>`
 >   block holding exactly the right integer.
 > - pass@$k$ is $1 - \binom{n-c}{k}/\binom{n}{k}$, computed as
 >   $1 - \prod_{j=n-c+1}^{n}(1 - k/j)$, and 1 when $n - c < k$.

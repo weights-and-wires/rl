@@ -102,13 +102,12 @@ def pass_at_k(n, c, k):
     return float(out) if out.ndim == 0 else out
 
 
-ANSWER = re.compile(r"</think>\s*<answer>(.*?)</answer>", re.DOTALL)
 INTEGER = re.compile(r"-?\d+")
 
 
-def answer_reward(text, target):
+def answer_reward(text, target, close_tag="</think>"):
     """1.0 when the response closes its thinking and answers target, else 0.0."""
-    found = ANSWER.search(text)
+    found = re.search(re.escape(close_tag) + r"\s*<answer>(.*?)</answer>", text, re.DOTALL)
     if found is None:
         return 0.0
     content = found.group(1).strip()
@@ -191,13 +190,18 @@ def train_rlvr_toy(steps=200, group_size=8, lr=1.0, optimizer="sgd", seed=0, ks=
 
 # The real run on a GPU. ---------------------------------------------------
 
+# R1-Zero's template, with <reasoning> in place of <think>. Qwen3's tokenizer
+# turns "<think>" and "</think>" into two reserved tokens that the base model
+# almost never saw in pretraining, so it never writes "</think>" and every
+# reward is zero. Plain-text tags are ordinary tokens it can write.
+OPEN_TAG, CLOSE_TAG = "<reasoning>", "</reasoning>"
 TEMPLATE = (
     "A conversation between User and Assistant. The User asks a question, and the "
     "Assistant solves it. The Assistant first thinks about the reasoning process in "
     "the mind and then provides the User with the answer. The reasoning process is "
-    "enclosed within <think> </think> and answer is enclosed within <answer> </answer> "
-    "tags, respectively, i.e., <think> reasoning process here </think> "
-    "<answer> answer here </answer>. User: {question} Assistant: <think>"
+    f"enclosed within {OPEN_TAG} {CLOSE_TAG} and answer is enclosed within <answer> "
+    f"</answer> tags, respectively, i.e., {OPEN_TAG} reasoning process here {CLOSE_TAG} "
+    "<answer> answer here </answer>. User: {question} Assistant: " + OPEN_TAG
 )
 
 
@@ -220,7 +224,7 @@ def _response_mask(gen_ids, eos_ids, pad_id):
 
 
 def real_run(model_id="Qwen/Qwen3-0.6B-Base", device="cuda", steps=40, prompts_per_step=8,
-             group_size=8, micro_batch=8, max_new_tokens=128, lr=1e-6, eval_every=10,
+             group_size=8, micro_batch=8, max_new_tokens=160, lr=1e-6, eval_every=10,
              eval_questions=16, eval_samples=16, seed=0, time_limit=480.0):
     """R1-Zero-style RLVR: a base model, the R1-Zero template, and a rule-based reward."""
     from contextlib import nullcontext
@@ -273,7 +277,7 @@ def real_run(model_id="Qwen/Qwen3-0.6B-Base", device="cuda", steps=40, prompts_p
             _, _, _, _, decoded = generate(eval_texts[lo : lo + 4], eval_samples)
             for q in range(len(decoded) // eval_samples):
                 block = decoded[q * eval_samples : (q + 1) * eval_samples]
-                correct.append(sum(answer_reward(t, eval_targets[lo + q]) for t in block))
+                correct.append(sum(answer_reward(t, eval_targets[lo + q], CLOSE_TAG) for t in block))
         c = np.array(correct)
         return [float(np.mean(pass_at_k(eval_samples, c, k))) for k in ks]
 
@@ -290,7 +294,7 @@ def real_run(model_id="Qwen/Qwen3-0.6B-Base", device="cuda", steps=40, prompts_p
         texts, targets = _questions(prompts_per_step, gen)
         out, attn, n_prompt, mask, decoded = generate(texts, group_size)
         targets = [t for t in targets for _ in range(group_size)]
-        rewards = torch.tensor([answer_reward(t, v) for t, v in zip(decoded, targets)])
+        rewards = torch.tensor([answer_reward(t, v, CLOSE_TAG) for t, v in zip(decoded, targets)])
         adv = grpo_advantages(rewards, group_size).to(device)
         full_attn = torch.cat([attn, mask.to(attn.dtype)], dim=1)
 
