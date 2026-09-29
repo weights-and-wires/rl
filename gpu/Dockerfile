@@ -15,12 +15,16 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     HF_HOME=/models \
     TOKENIZERS_PARALLELISM=false \
-    ML_REPO=/repo
+    ML_REPO=/repo \
+    HF_HUB_DISABLE_TELEMETRY=1
 
+# `transformers` is for the lessons whose Run block post-trains a real small
+# language model. Their checks never need it.
 RUN pip install --no-cache-dir \
         numpy==2.3.3 \
         scipy==1.16.2 \
-        runpod==1.7.7
+        runpod==1.7.7 \
+        transformers==5.17.0
 
 WORKDIR /repo
 

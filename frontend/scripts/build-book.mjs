@@ -33,7 +33,7 @@ import puppeteer from "puppeteer-core";
 
 const FRONTEND = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = path.resolve(FRONTEND, "..");
-const FILE = "machine-learning.pdf";
+const FILE = "reinforcement-learning.pdf";
 // The text block in src/book/book.css: 138 mm at 96 px to the inch.
 const TEXT_WIDTH_PX = Math.floor((138 / 25.4) * 96);
 

@@ -380,18 +380,47 @@ def uniform_policy(mdp: TabularMDP) -> np.ndarray:
 def policy_evaluation(mdp: TabularMDP, pi: np.ndarray) -> np.ndarray:
     """The exact value of policy `pi`, by solving the Bellman equation as a linear system.
 
-    Solves `(I - gamma P_pi) v = r_pi` with terminal rows set to `v = 0`. With
-    `gamma = 1` the system is solvable only when `pi` reaches a terminal state
-    with probability one from every state.
+    Solves `(I - gamma P_pi) v = r_pi` with terminal states fixed at `v = 0`.
+
+    With `gamma < 1` every state has a finite value. With `gamma = 1` a state
+    has one only if, from it, `pi` reaches a terminal state with probability
+    one. States where it does not, such as a state whose greedy action walks
+    into a wall forever, get `nan` rather than making the whole solve fail, so
+    a policy that is fine from the start state can still be evaluated there.
     """
     pi = np.asarray(pi, dtype=float)
+    S = mdp.n_states
     P_pi = np.einsum("sa,sat->st", pi, mdp.P)
     r_pi = (pi * mdp.R).sum(axis=1)
     live = ~mdp.terminal
     P_pi = P_pi * live[:, None]
     r_pi = r_pi * live
-    M = np.eye(mdp.n_states) - mdp.gamma * P_pi
-    return np.linalg.solve(M, r_pi)
+    if mdp.gamma < 1.0:
+        return np.linalg.solve(np.eye(S) - mdp.gamma * P_pi, r_pi)
+
+    # With no discount, keep the states that cannot reach a closed loop of
+    # live states: those reach a terminal state with probability one, and the
+    # system restricted to them is nonsingular.
+    edges = P_pi > 0
+    can_end = mdp.terminal.copy()
+    while True:
+        grown = can_end | (edges & can_end[None, :]).any(axis=1)
+        if (grown == can_end).all():
+            break
+        can_end = grown
+    doomed = ~can_end
+    reaches_doom = doomed.copy()
+    while True:
+        grown = reaches_doom | (edges & reaches_doom[None, :]).any(axis=1)
+        if (grown == reaches_doom).all():
+            break
+        reaches_doom = grown
+    proper = ~reaches_doom
+    v = np.full(S, np.nan)
+    idx = np.flatnonzero(proper)
+    M = np.eye(len(idx)) - P_pi[np.ix_(idx, idx)]
+    v[idx] = np.linalg.solve(M, r_pi[idx])
+    return v
 
 
 def q_from_v(mdp: TabularMDP, v: np.ndarray) -> np.ndarray:

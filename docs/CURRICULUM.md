@@ -1,8 +1,10 @@
 # Curriculum
 
 Fifty-two lessons, in ten parts. Each row is one Markdown file under
-`content/lessons/` and one directory under `content/exercises/`. Every exercise
-runs on the CPU in the app container.
+`content/lessons/` and one directory under `content/exercises/`. Every check
+runs on the CPU in the app container. Three lessons, marked **GPU** in the
+following tables, also post-train a real small language model in their **Run**
+block, on a RunPod GPU.
 
 The course starts at a single decision under uncertainty and ends at the
 methods that post-train language, image, speech, and robot models. Parts 1 to 7
@@ -82,10 +84,10 @@ large pretrained models turned into policies.
 |---|---|---|
 | `33-language-models-as-policies` | Language models as policies | Sequence log-probabilities, the KL-regularised optimum in closed form, and best-of-n's KL |
 | `34-reward-models` | Reward models | Bradley-Terry training, reward ensembles, and outcome against process rewards |
-| `35-rlhf-with-ppo` | RLHF with PPO | Per-token KL rewards, the k1, k2, and k3 estimators, and PPO on a toy language model |
+| `35-rlhf-with-ppo` | RLHF with PPO | Per-token KL rewards, the k1, k2, and k3 estimators, and PPO on a toy language model — **GPU**: PPO with a KL penalty on Qwen3-0.6B against a rule-based reward |
 | `36-direct-preference-optimization` | Direct preference optimisation | DPO derived and implemented, IPO, KTO, and SimPO, and the likelihood displacement they share |
-| `37-group-relative-policy-optimization` | Group-relative policy optimisation | RLOO, GRPO, Dr. GRPO's bias fix, DAPO's clip-higher, and GSPO's sequence ratio |
-| `38-reasoning-with-verifiable-rewards` | Reasoning with verifiable rewards | The unbiased pass@k estimator, entropy collapse, and RLVR on a toy arithmetic task |
+| `37-group-relative-policy-optimization` | Group-relative policy optimisation | RLOO, GRPO, Dr. GRPO's bias fix, DAPO's clip-higher, and GSPO's sequence ratio — **GPU**: GRPO on Qwen3-0.6B, with and without the Dr. GRPO fixes |
+| `38-reasoning-with-verifiable-rewards` | Reasoning with verifiable rewards | The unbiased pass@k estimator, entropy collapse, and RLVR on a toy arithmetic task — **GPU**: R1-Zero-style RLVR on Qwen3-0.6B-Base for arithmetic, with pass@k tracked |
 | `39-process-rewards-and-search` | Process rewards and test-time search | Best-of-n, weighted majority voting, and PRM-guided beam search |
 | `40-ai-feedback-and-self-improvement` | AI feedback and self-improvement | Expert iteration as reward-weighted regression, STaR, and a SPIN-style self-play loss |
 | `41-agents-and-multi-turn-rl` | Agents and multi-turn reinforcement learning | Loss masks over tool output, turn-level credit assignment, and a toy tool-using agent |

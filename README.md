@@ -166,16 +166,45 @@ served over HTTPS.
 
 ## The GPU backend
 
-Every exercise runs on the CPU, so no lesson sets `gpu: true`. The RunPod
-backend from the machine learning course is kept, so that a later lesson can
-ask for a GPU: `backend/app/runner/runpod.py` sends a submission to a RunPod
-serverless endpoint, and the worker in `gpu/` carries the same harness,
-`rlcheck`, and `rlenvs`. With `RUNPOD_ENDPOINT_ID` unset, which is how the
-deployment runs, every lesson uses the local runner.
+Three lessons—`35-rlhf-with-ppo`, `37-group-relative-policy-optimization`,
+and `38-reasoning-with-verifiable-rewards`—are marked `gpu: true`. Their checks
+run on toy policies like every other exercise, and the GPU is there for the
+**Run** block, which post-trains `Qwen/Qwen3-0.6B` with the reader's own loss
+functions.
 
-To turn it on, make the `rl-gpu-worker` package that the publish workflow
-pushes public, create the endpoint with `scripts/runpod_endpoint.py`, and put
-`RUNPOD_ENDPOINT_ID` in the deployed `.env`.
+`backend/app/runner/runpod.py` sends a submission to a RunPod serverless
+endpoint and streams the worker's events back. The worker in `gpu/` carries the
+same harness, `rlcheck`, `rlenvs`, and exercise directories, plus
+`transformers`, so a lesson behaves identically on either backend. With
+`RUNPOD_ENDPOINT_ID` unset, the GPU lessons fall back to the local CPU runner,
+and their **Run** block falls back to the toy policy.
+
+To set up the endpoint, complete the following steps:
+
+1. The publish workflow builds and pushes the worker on every push that
+   touches `gpu/`, `content/exercises/`, or the harness, and tags
+   `ghcr.io/weights-and-wires/rl-gpu-worker:latest`.
+
+2. **Give RunPod read access to that image.** A package published from Actions
+   starts private, and RunPod pulls anonymously. Make the package public under
+   the organisation's **Packages** settings, the same way `ml-gpu-worker` is
+   public.
+
+3. Create the endpoint and read back its ID:
+
+   ```bash
+   RUNPOD_API_KEY=... python3 scripts/runpod_endpoint.py
+   ```
+
+4. Put `RUNPOD_API_KEY` and `RUNPOD_ENDPOINT_ID` in the deployed `.env` and
+   restart:
+
+   ```bash
+   ssh ifkash@vm.ifkash.dev "cd ~/docs/rl && docker compose up -d"
+   ```
+
+`/api/compute` reports what the endpoint has: whether it is reachable, how many
+workers are warm, and how many jobs are queued.
 
 ## Deploy
 
@@ -189,7 +218,7 @@ external `edge` network. This bundle never publishes 80 or 443 itself.
 The VM holds no GitHub credential. The script ships the committed tree with
 `git archive` over SSH, rebuilds, and waits until `/api/health` reports the
 commit it sent. `.env` on the VM is never touched, because it holds the session
-secret. `Caddyfile.example` holds the vhost
+secret and the RunPod key. `Caddyfile.example` holds the vhost
 block, including the buffering and timeout settings the run stream needs.
 
 The script also builds the PDF book on your workstation, because printing it

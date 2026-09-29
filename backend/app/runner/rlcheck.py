@@ -104,7 +104,9 @@ def almost(got: Any, want: Any, tol: float, label: str | None = None) -> None:
     """Fail unless two scalars agree within `tol`."""
     got_f = float(got)
     want_f = float(want)
-    if abs(got_f - want_f) > tol:
+    # Written as `not <=` so that a NaN, which compares false with everything,
+    # fails the check rather than slipping past it.
+    if not abs(got_f - want_f) <= tol:
         fail(
             f"{_label(label)}got {got_f:.6g}, expected {want_f:.6g} within {tol:g}"
         )

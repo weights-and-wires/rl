@@ -99,7 +99,7 @@ the item as a mapping rather than a string. A mapping that reaches the client
 renders as nothing at all, so `scripts/check_content.py` rejects one.
 
 Every field is required except `prereqs`, which can be omitted. `gpu` is `true`
-only when the exercise genuinely needs a GPU. `minutes` is an honest reading and
+only for the three lessons in [Lessons with a GPU run](#lessons-with-a-gpu-run). `minutes` is an honest reading and
 working estimate.
 
 The body is Markdown with these conventions:
@@ -159,7 +159,7 @@ Every lesson body includes, in this order:
 8. `## The exercise` — one or two paragraphs that say what the reader builds
    and what the checks verify. Name the functions by their exact identifiers.
 
-Aim for 1400 to 2600 words of body, plus math. Short sentences and short
+Aim for 2000 to 3500 words of body, plus math. Short sentences and short
 paragraphs matter more than the word count.
 
 ## Exercise directory
@@ -243,7 +243,9 @@ def test_q_learning_cliff(sub):
     Q = q_learning(mdp, episodes=500, alpha=0.5, epsilon=0.1, seed=0)
     v = rlenvs.policy_evaluation(mdp, rlenvs.greedy(Q))
     start = mdp.names["start"]
-    if abs(v[start] - (-13.0)) > 1e-9:
+    # policy_evaluation returns nan for states that never terminate, so test
+    # with isclose: a comparison with nan is always false.
+    if not np.isclose(v[start], -13.0, atol=1e-9):
         fail(f"the greedy policy's value at the start should be -13, got {v[start]:.3f}")
 ```
 
@@ -287,6 +289,33 @@ Rules for checks:
 - Failure messages must say what was expected and what arrived. The reader cannot
   see your code.
 
+### Lessons with a GPU run
+
+Three lessons set `gpu: true` in their front matter and `"needs_gpu": true` in
+`meta.json`: `35-rlhf-with-ppo`, `37-group-relative-policy-optimization`, and
+`38-reasoning-with-verifiable-rewards`. The flag sends both **Run** and
+**Check** to a RunPod worker with a CUDA GPU, when one is configured, and to the
+local CPU runner otherwise. So in these lessons:
+
+- `tests.py` is exactly like every other lesson's: CPU only, toy-sized, under
+  20 seconds, and never imports `transformers`.
+- The `__main__` block in `starter.py` and `solution.py` runs the reader's
+  functions on a real model: `Qwen/Qwen3-0.6B` or `Qwen/Qwen3-0.6B-Base` from
+  Hugging Face, loaded with `transformers` on `cuda`. Keep the trained
+  policy's weights in float32 and run it under bfloat16 autocast, because
+  bfloat16 weights round away updates at learning rates near 1e-6. A frozen
+  reference model can be loaded in bfloat16. It must
+  finish in under ten minutes on a 24 GB GPU, and print a short table of
+  progress, such as mean reward and KL every few steps.
+- The block must check `torch.cuda.is_available()` first. Without a GPU, or
+  without `transformers` installed, it prints one line saying the real run
+  needs the GPU worker, then runs the same functions on the toy policy from the
+  checks, so **Run** still works on the CPU.
+- Set `"timeout": 900` in `meta.json`. The local runner caps it at
+  `LOCAL_TIMEOUT_CEILING`, 180 seconds, when no GPU is configured.
+- The functions the checks test must work on plain tensors of log-probabilities,
+  rewards, and masks, so that the same code serves the toy and the real model.
+
 ### The shared environments: `rlenvs`
 
 `backend/app/runner/rlenvs.py` sits next to `rlcheck` on the import path, so a
@@ -301,7 +330,7 @@ worlds again and again. Read its docstrings for the full contract. It provides:
 | `random_mdp(n_states, n_actions, gamma, seed, branching)` | A random MDP for exact checks. |
 | `gridworld(layout, ...)` | A grid world from rows of characters: `.` open, `#` wall, `S` start, `G` goal, `H` hole, `C` cliff. Actions are `0` up, `1` right, `2` down, `3` left. |
 | `cliff_walking()`, `frozen_lake()`, `river_swim()` | Three classic worlds. The optimal cliff walk from the start is worth exactly `-13`. |
-| `policy_evaluation(mdp, pi)`, `q_from_v(mdp, v)`, `value_iteration(mdp)`, `greedy(q)`, `uniform_policy(mdp)`, `state_distribution(mdp, pi)` | Exact answers, for checks to compare against. |
+| `policy_evaluation(mdp, pi)`, `q_from_v(mdp, v)`, `value_iteration(mdp)`, `greedy(q)`, `uniform_policy(mdp)`, `state_distribution(mdp, pi)` | Exact answers, for checks to compare against. With `gamma = 1`, `policy_evaluation` returns `nan` for states from which the policy never terminates, so compare with `np.isclose`, never with `abs(...) > tol`. |
 | `CartPole(max_steps, seed)`, `Pendulum(max_steps, seed)` | The Gym physics in numpy. `CartPole.dynamics` also steps a batch of states at once. |
 
 A policy for a tabular MDP is always an array of shape `(S, A)` whose rows sum
