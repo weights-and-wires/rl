@@ -3,7 +3,7 @@
   "title": "The policy gradient theorem, exactly and by REINFORCE",
   "brief": "Compute the exact gradient of a softmax policy's return on a small MDP, confirm it with finite differences, then show that REINFORCE estimates the same vector without bias.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "The score of a softmax is one-hot minus probabilities: row s of grad log pi(a | s) is e_a - pi[s], and every other row is zero.",

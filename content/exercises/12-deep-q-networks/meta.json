@@ -3,7 +3,7 @@
   "title": "A replay buffer, a target network, the Huber loss, and DQN on CartPole",
   "brief": "Build the parts of a deep Q-network one at a time, check each exactly, then wire them into a training loop that balances CartPole.",
   "needs_gpu": false,
-  "timeout": 30,
+  "timeout": 130,
   "packages": ["numpy", "torch"],
   "hints": [
     "A ring buffer keeps a write index i. Each add writes slot i, then sets i = (i + 1) % capacity, and the size grows until it reaches capacity. Sample indices with rng.integers(0, size, batch_size).",

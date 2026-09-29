@@ -3,7 +3,7 @@
   "title": "IoU rewards, mDPO, and GRPO for visual grounding",
   "brief": "Build the IoU verifier, the RLHF-V and mDPO preference terms that make a model look at the image, and the length penalty that stops box spam, then train a toy grounding policy with GRPO.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 30,
   "packages": ["numpy", "torch"],
   "hints": [
     "In iou, clip every width and height at zero before you multiply. A box whose x2 is below its x1 has zero area, not a negative one. When the union is zero, return 0 rather than dividing.",

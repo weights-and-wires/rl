@@ -3,7 +3,7 @@
   "title": "Sigmoid compute curves, plasticity loss, and ReDo resets",
   "brief": "Fit ScaleRL's sigmoidal compute-performance curve and see when its asymptote can't be trusted, then watch a small network lose its ability to fit new targets and get it back with resets.",
   "needs_gpu": false,
-  "timeout": 30,
+  "timeout": 90,
   "packages": ["numpy", "torch"],
   "hints": [
     "Rearrange the sigmoid for a fixed A: (A - R0) / (R - R0) - 1 = (C_mid / C)^B, so its log is B log C_mid - B log C, a straight line in log C.",

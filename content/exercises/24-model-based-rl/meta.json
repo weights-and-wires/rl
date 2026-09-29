@@ -3,7 +3,7 @@
   "title": "A learned model, its compounding error, and CEM model-predictive control",
   "brief": "Fit a linear dynamics model to CartPole, measure how its error grows over an open-loop rollout, then plan through it with the cross-entropy method and balance the pole.",
   "needs_gpu": false,
-  "timeout": 15,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "Each row of X is [state, action, 1], so W = solve(X.T @ X + ridge * I, X.T @ next_states). The bias is the last row of W.",

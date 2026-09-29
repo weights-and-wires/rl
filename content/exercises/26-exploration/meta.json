@@ -3,7 +3,7 @@
   "title": "Count bonuses, posterior sampling, and RND on RiverSwim",
   "brief": "Run three model-based agents on RiverSwim that differ only in how they explore, watch epsilon-greedy miss the far reward that optimism and posterior sampling find, then build a random network distillation bonus.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 40,
   "packages": ["numpy", "torch"],
   "hints": [
     "empirical_model divides counts by N = counts.sum(axis=2) only where N > 0. For each unvisited (s, a), set P[s, a, s] = 1 so the row is still a probability vector.",

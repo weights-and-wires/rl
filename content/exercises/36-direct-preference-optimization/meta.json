@@ -3,7 +3,7 @@
   "title": "DPO derived, its relatives, and likelihood displacement",
   "brief": "Build the DPO loss and gradient, IPO, KTO, and SimPO as their papers write them, recover a hidden reward exactly with DPO, and watch DPO lower both the chosen and the rejected response.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "Every pairwise loss starts from the log-ratio margin h = (policy_chosen - ref_chosen) - (policy_rejected - ref_rejected). log_sigmoid is given, so -log sigmoid(beta * h) never overflows.",

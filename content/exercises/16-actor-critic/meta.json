@@ -3,7 +3,7 @@
   "title": "Baselines, the optimal baseline, and a one-step actor-critic",
   "brief": "Measure exactly how much variance a baseline removes, find the constant baseline that removes the most, then swap the return for a critic's TD error and train an actor-critic.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "For a softmax over arms, grad log pi(a) = e_a - pi. np.eye(k) - pi holds all k score vectors as rows.",

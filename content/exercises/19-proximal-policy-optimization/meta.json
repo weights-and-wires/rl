@@ -3,7 +3,7 @@
   "title": "PPO's clipped objective, and a PPO agent on CartPole",
   "brief": "Build PPO's clipped surrogate, clipped value loss, entropy bonus, and KL diagnostics, check each against hand-computed values, then train an agent that balances CartPole.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 40,
   "packages": ["numpy", "torch"],
   "hints": [
     "torch.min(ratio * adv, torch.clamp(ratio, 1 - eps, 1 + eps) * adv) is the whole clipped surrogate. Don't average it inside clipped_surrogate.",

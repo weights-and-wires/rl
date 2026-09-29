@@ -3,7 +3,7 @@
   "title": "Behaviour cloning, its compounding error, and DAgger",
   "brief": "Clone an expert on a grid-world ledge, measure exactly how a learner's small mistakes compound into lost value, and close the gap with DAgger.",
   "needs_gpu": false,
-  "timeout": 15,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "fit_bc counts labels with np.add.at(counts, (states, actions), 1), divides each row by its total, and uses 1 / A for rows with no labels.",

@@ -3,7 +3,7 @@
   "title": "The performance difference lemma, softmax PG rates, and NPG",
   "brief": "Verify the identity behind every policy improvement result, measure the surrogate's second-order error, watch softmax policy gradient crawl at 1/t, and show that the natural gradient is a multiplicative-weights step.",
   "needs_gpu": false,
-  "timeout": 40,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "advantage is q_from_v(mdp, v) - v[:, None], with v from rlenvs.policy_evaluation(mdp, pi).",

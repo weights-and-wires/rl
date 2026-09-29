@@ -3,7 +3,7 @@
   "title": "Dyna-Q, prioritized sweeping, and UCT on Nim",
   "brief": "Plan with a learned model to find the Dyna maze's goal with far less real experience, order the updates with a priority queue, and search Nim with UCT until it finds the winning move.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "In plan, make pairs = list(model) once, then pick pairs[int(rng.integers(len(pairs)))] for each update.",

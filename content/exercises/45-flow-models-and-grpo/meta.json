@@ -3,7 +3,7 @@
   "title": "The marginal-preserving SDE and Flow-GRPO",
   "brief": "Convert a flow model's ODE into an SDE with the same marginals, check it on an exact Gaussian flow across four noise levels, then train a two-dimensional flow toward prompted targets with Flow-GRPO.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 50,
   "packages": ["torch"],
   "hints": [
     "From x_t = (1 - t) x_0 + t eps you get E[eps | x_t] = x_t + (1 - t) v, and the score is -E[eps | x_t] / t.",

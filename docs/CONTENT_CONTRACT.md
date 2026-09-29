@@ -185,9 +185,11 @@ field. It holds exactly four files.
 ```
 
 `packages` is documentation only; the runtime image already carries `numpy`,
-`scipy`, and `torch` on the CPU. `timeout` is in seconds and must leave headroom:
-set it to about four times the reference solution's runtime, and never above 120
-for a CPU exercise.
+`scipy`, and `torch` on the CPU. `timeout` is in seconds and must leave headroom. The
+deployed container is four to ten times slower than a laptop, so set it from a
+measurement there: about three times the slower of the reference solution's
+**Check** and **Run** inside the container, at least 30, and never above 150 for
+a CPU exercise.
 
 ### `starter.py`
 

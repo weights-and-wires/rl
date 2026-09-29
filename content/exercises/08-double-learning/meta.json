@@ -3,7 +3,7 @@
   "title": "Maximisation bias, double Q-learning, and Expected SARSA",
   "brief": "Measure the upward bias of a max over noisy estimates, remove it with the double estimator and double Q-learning, and run Expected SARSA at a step size of one on the cliff.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "double_estimate is np.take_along_axis(means_b, np.argmax(means_a, axis=-1)[..., None], axis=-1)[..., 0].",

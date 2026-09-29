@@ -3,7 +3,7 @@
   "title": "Tile coding, the TD fixed point, LSTD, and Baird's counterexample",
   "brief": "Build tile-coding features and the linear semi-gradient TD update, solve for the point TD converges to, estimate it from data with LSTD, then watch Baird's counterexample diverge.",
   "needs_gpu": false,
-  "timeout": 15,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "In tiling k the tile index is floor((x - low) / width + k / n_tilings), and tiling k's entries start at k * (n_tiles + 1). Clip x to [low, high] before anything else.",

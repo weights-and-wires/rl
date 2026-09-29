@@ -3,7 +3,7 @@
   "title": "TD(0), SARSA, and Q-learning on the cliff",
   "brief": "Estimate values from single steps, show that batch TD finds the maximum-likelihood model's values, then learn to control the cliff walk two ways and see them choose different paths.",
   "needs_gpu": false,
-  "timeout": 15,
+  "timeout": 50,
   "packages": ["numpy"],
   "hints": [
     "The TD error is r + gamma * V[s2] * (not terminated) - V[s]. Forgetting the terminal mask bootstraps from a state that has no future.",

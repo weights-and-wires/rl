@@ -3,7 +3,7 @@
   "title": "Monte Carlo prediction, control, and importance sampling",
   "brief": "Average returns to estimate the random walk's values, learn an epsilon-greedy policy on a small grid, and compare ordinary and weighted importance sampling.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "Returns come from one backward loop: running = rewards[t] + gamma * running, then G[t] = running.",

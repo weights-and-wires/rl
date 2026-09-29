@@ -3,7 +3,7 @@
   "title": "MWER as REINFORCE, and preference tuning for TTS",
   "brief": "Implement word error rate and the N-best MWER loss, prove its gradient is REINFORCE with a baseline, then watch a WER-only TTS reward make speech slow and fix it with a naturalness term and DPO.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 30,
   "packages": ["numpy", "torch"],
   "hints": [
     "edit_distance is a dynamic programme over a (len(ref) + 1) by (len(hyp) + 1) table. Row 0 is 0, 1, 2, ..., column 0 is 0, 1, 2, ..., and each cell is the minimum of the diagonal plus a mismatch cost, the cell above plus 1, and the cell to the left plus 1.",

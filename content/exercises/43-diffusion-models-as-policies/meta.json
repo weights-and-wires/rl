@@ -3,7 +3,7 @@
   "title": "The denoising MDP, DDPO, and reward backpropagation",
   "brief": "Treat each step of a tiny diffusion sampler as a Gaussian action, train it toward a reward with DDPO's clipped surrogate, and check that its gradient matches backpropagating the reward through the chain.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 30,
   "packages": ["torch"],
   "hints": [
     "A trajectory has T + 1 rows: xs[0] is x_T and xs[T] is x_0. Row k of a per-step tensor belongs to diffusion step t = T - k, so index the schedule with t - 1.",

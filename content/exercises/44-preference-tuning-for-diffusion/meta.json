@@ -3,7 +3,7 @@
   "title": "Path KL, Diffusion-DPO, and reward hacking",
   "brief": "Compute the KL between sampling paths as a sum of step KLs and see how far it exceeds the final-sample KL, train a toy diffusion model from preference pairs with Diffusion-DPO, and watch a proxy reward get hacked until a path-KL penalty stops it.",
   "needs_gpu": false,
-  "timeout": 20,
+  "timeout": 40,
   "packages": ["torch"],
   "hints": [
     "In chain_path_kl, add each step's term with the moments of x before that step, then update m <- a m + b and v <- a^2 v + s^2. The first step sees m = 0 and v = 1.",

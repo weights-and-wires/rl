@@ -3,7 +3,7 @@
   "title": "Soft value iteration and the Boltzmann optimal policy",
   "brief": "Replace the hard max with a soft one, find the soft-optimal Q on a random MDP and the frozen lake, check its Boltzmann policy against the soft Bellman equation, and watch it become ordinary value iteration as the temperature falls.",
   "needs_gpu": false,
-  "timeout": 40,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "soft_value is m + alpha * log(sum(exp((q - m) / alpha))) with m the row maximum. Without the shift, Q = 1000 and alpha = 0.01 overflow.",

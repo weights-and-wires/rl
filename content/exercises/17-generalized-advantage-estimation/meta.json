@@ -3,7 +3,7 @@
   "title": "GAE, its lambda limits, and truncation done right",
   "brief": "Compute generalised advantage estimates by backward recursion, recover the TD error and the Monte Carlo advantage as its two limits, and bootstrap correctly when a time limit cuts an episode off.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "Only terminated removes the bootstrap from delta. A truncated step still adds gamma * next_values[t].",

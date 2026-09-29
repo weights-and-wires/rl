@@ -3,7 +3,7 @@
   "title": "n-step returns, lambda-returns, and TD(lambda)",
   "brief": "Build n-step and lambda-returns, check the gamma-to-the-n error bound, show that offline TD(lambda) with traces equals the lambda-return update exactly, and find the middle n and lambda that learn fastest.",
   "needs_gpu": false,
-  "timeout": 10,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "In n_step_return, sum rewards[k] * gamma ** (k - t) for k in range(t, min(t + n, T)), and add gamma ** n * values[t + n] only when t + n < T.",

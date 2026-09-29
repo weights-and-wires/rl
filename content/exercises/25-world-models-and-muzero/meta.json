@@ -3,7 +3,7 @@
   "title": "Lambda-returns in imagination, value equivalence, and pUCT search",
   "brief": "Compute Dreamer's lambda-returns over an imagined rollout, test when a wrong model still plans correctly, and write MuZero's tree search over a model learned from random transitions.",
   "needs_gpu": false,
-  "timeout": 15,
+  "timeout": 30,
   "packages": ["numpy"],
   "hints": [
     "lambda_returns runs backward: start with following = values[H], then at each t set following = rewards[t] + gamma * continues[t] * ((1 - lam) * values[t + 1] + lam * following).",
