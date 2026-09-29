@@ -1,0 +1,15 @@
+{
+  "id": "05-dynamic-programming",
+  "title": "Policy evaluation, policy iteration, and value iteration",
+  "brief": "Compute values by repeated Bellman sweeps, find optimal policies two ways, and watch the error shrink by a factor of gamma every sweep.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "A synchronous sweep computes the whole new vector from the old one: new = r_pi + gamma * P_pi @ v. Don't overwrite v entry by entry during a sweep.",
+    "greedy_policy: q = rlenvs.q_from_v(mdp, v), then put a 1 at q.argmax(axis=1) in each row. np.argmax already picks the lowest index among ties.",
+    "value_iteration's history starts with V_0 and gains one row per sweep, including the last one, so np.array(history) has shape (sweeps + 1, S).",
+    "sweeps_needed solves gamma^k * initial_error <= eps for k: math.ceil(math.log(eps / initial_error) / math.log(gamma)). Return 0 when the initial error is already small enough.",
+    "In policy_iteration, compare whole policies with np.array_equal(new_pi, pi) to decide when to stop."
+  ]
+}

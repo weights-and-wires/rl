@@ -1,0 +1,15 @@
+{
+  "id": "01-the-rl-problem",
+  "title": "The agent-environment loop and Monte Carlo values",
+  "brief": "Run episodes in a small grid room, turn their rewards into discounted returns, and estimate a policy's value by averaging, checked against the exact answer.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "Loop over the rewards backward: running = rewards[t] + gamma * running, then store running at index t. One pass, no nested sum.",
+    "Record the state before you call mdp.step, not after. states[t], actions[t], and rewards[t] all belong to the same step.",
+    "rng.choice(mdp.n_actions, p=pi[s]) draws one action with the policy's probabilities.",
+    "Stop the loop when terminated or truncated is True. Return terminated itself, so a time-limit stop reports False.",
+    "The standard error is np.std(returns, ddof=1) / np.sqrt(n_episodes). With ddof=0 it is slightly too small."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "13-dqn-improvements",
+  "title": "Double DQN, dueling heads, prioritised replay, and n-step targets",
+  "brief": "Build four upgrades to DQN and verify each exactly: the Double DQN target, the dueling combination, a sum tree with prioritised sampling and importance weights, and n-step targets.",
+  "needs_gpu": false,
+  "timeout": 15,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "Double DQN: best = next_q_online.argmax(dim=1, keepdim=True), then next_q_target.gather(1, best).squeeze(1). Selection and evaluation use different networks.",
+    "dueling_combine reshapes value to (B, 1) and returns value + advantages - advantages.mean(dim=1, keepdim=True).",
+    "In a SumTree stored as an array of length 2 * capacity, leaf j is node capacity + j and node i's parent is i // 2. After setting a leaf, walk up and set each parent to the sum of its two children.",
+    "SumTree.find starts at node 1. While the node is not a leaf, compare mass with the left child's sum: go left if smaller, otherwise subtract it and go right.",
+    "The largest importance weight belongs to the item with the smallest probability, so normalise by (N * P_min) ** -beta over every stored item, not only the batch.",
+    "n_step_targets: for each t, add discounted rewards one at a time. Stop without bootstrapping when a step terminates. Otherwise, after n rewards or at the end of the array, add gamma ** m * bootstrap[t + m - 1]."
+  ]
+}

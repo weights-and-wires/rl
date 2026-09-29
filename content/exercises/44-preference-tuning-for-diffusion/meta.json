@@ -1,0 +1,15 @@
+{
+  "id": "44-preference-tuning-for-diffusion",
+  "title": "Path KL, Diffusion-DPO, and reward hacking",
+  "brief": "Compute the KL between sampling paths as a sum of step KLs and see how far it exceeds the final-sample KL, train a toy diffusion model from preference pairs with Diffusion-DPO, and watch a proxy reward get hacked until a path-KL penalty stops it.",
+  "needs_gpu": false,
+  "timeout": 20,
+  "packages": ["torch"],
+  "hints": [
+    "In chain_path_kl, add each step's term with the moments of x before that step, then update m <- a m + b and v <- a^2 v + s^2. The first step sees m = 0 and v = 1.",
+    "E[(da x + db)^2] for x ~ N(m, v) is da^2 (v + m^2) + 2 da db m + db^2. Divide it by 2 s^2 for that step's KL.",
+    "In chain_path_kl_mc, draw x' once from the fine-tuned step and score it under both steps. The per-step log-ratio is ((x' - mu_ref)^2 - (x' - mu_theta)^2) / (2 s^2).",
+    "denoising_errors noises x0 once, x_t = sqrt(ALPHA_BARS[t-1]) x0 + sqrt(1 - ALPHA_BARS[t-1]) eps, and evaluates both networks on that same x_t.",
+    "diffusion_dpo_loss is -F.logsigmoid(-beta * ((err_w - err_w_ref) - (err_l - err_l_ref))).mean(). At the reference both brackets are zero and the loss is log 2."
+  ]
+}

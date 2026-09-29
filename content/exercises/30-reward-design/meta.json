@@ -1,0 +1,16 @@
+{
+  "id": "30-reward-design",
+  "title": "Potential-based shaping, and a bonus that breaks the task",
+  "brief": "Shape rewards with a potential and confirm the optimal policy never moves, break the guarantee two ways, and watch a good potential speed up Q-learning.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "In shaped_mdp, F = gamma * phi[None, None, :] - phi[:, None, None] has shape (S, A, S). Add it to full_rewards(mdp) and pass the sum to with_rewards.",
+    "The gamma belongs on phi[s2], the next state. Without it, F is not potential-based when gamma < 1, and the random-MDP check fails.",
+    "bonus_mdp copies full_rewards(mdp) and adds the bonus to the slice [:, :, state]: every (s, a) that lands in state.",
+    "optimal_actions is q >= q.max(axis=1, keepdims=True) - tol.",
+    "In q_learning_updates, shape the reward before building the target, and skip the bootstrap term when done is 1. Copy Q0 with np.array(Q0, dtype=float).",
+    "In run_q_learning, break greedy ties with rng.choice(np.flatnonzero(Q[s] == Q[s].max())). Always taking the first maximiser makes the unshaped learner walk into walls for a long time."
+  ]
+}

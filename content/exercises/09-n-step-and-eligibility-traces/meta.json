@@ -1,0 +1,15 @@
+{
+  "id": "09-n-step-and-eligibility-traces",
+  "title": "n-step returns, lambda-returns, and TD(lambda)",
+  "brief": "Build n-step and lambda-returns, check the gamma-to-the-n error bound, show that offline TD(lambda) with traces equals the lambda-return update exactly, and find the middle n and lambda that learn fastest.",
+  "needs_gpu": false,
+  "timeout": 10,
+  "packages": ["numpy"],
+  "hints": [
+    "In n_step_return, sum rewards[k] * gamma ** (k - t) for k in range(t, min(t + n, T)), and add gamma ** n * values[t + n] only when t + n < T.",
+    "The lambda-return recursion is G[t] = r[t] + gamma * ((1 - lam) * V_next + lam * G_next), with V_next and G_next both 0 after the last step.",
+    "Each step of a trace is: z *= gamma * lam, then z[s] += 1, then use z. Adding before decaying gives the current state gamma * lam instead of 1.",
+    "td_lambda_offline must not change V. Add alpha * delta * z into a separate total and return that.",
+    "Reset the trace to zeros at the start of every episode in td_lambda."
+  ]
+}

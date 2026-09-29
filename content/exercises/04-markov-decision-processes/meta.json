@@ -1,0 +1,15 @@
+{
+  "id": "04-markov-decision-processes",
+  "title": "Bellman equations as linear algebra",
+  "brief": "Turn a policy into a Markov chain, solve for its values exactly, derive action values, and compute the discounted state-visitation distribution.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "np.einsum('sa,sat->st', pi, mdp.P) averages the transition rows over the policy's actions. The expected reward is (pi * mdp.R).sum(axis=1).",
+    "Zero the terminal rows with a mask: live = ~mdp.terminal, then P_pi * live[:, None] and r_pi * live.",
+    "Solve, don't invert: np.linalg.solve(np.eye(S) - mdp.gamma * P_pi, r_pi).",
+    "mdp.P @ v has shape (S, A): entry [s, a] is the expected next-state value. Add mdp.R and scale by gamma for Q.",
+    "The visitation distribution is a row vector on the left, so solve the transposed system: np.linalg.solve((I - gamma P_pi).T, mu0)."
+  ]
+}

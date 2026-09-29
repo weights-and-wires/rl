@@ -1,0 +1,15 @@
+{
+  "id": "35-rlhf-with-ppo",
+  "title": "KL-shaped rewards, KL estimators, and PPO for language models",
+  "brief": "Spread a KL penalty over tokens, compare the k1, k2, and k3 KL estimators as values and as losses, compute GAE over response tokens, and assemble a PPO update that closes most of the gap to the exact KL-regularised optimum on a toy policy. On the GPU worker, the same functions train Qwen3-0.6B with a value head.",
+  "needs_gpu": true,
+  "timeout": 900,
+  "packages": ["torch", "transformers"],
+  "hints": [
+    "In kl_shaped_rewards, the last response token of row b is at index mask[b].sum() - 1. Add seq_rewards there, after multiplying the KL term by the mask.",
+    "kl_estimators works with log_r = ref_logp - logp. k3 is torch.expm1(log_r) - log_r, which is accurate when the ratio is near 1.",
+    "In gae, the value after position t counts only if position t + 1 is still in the response: multiply values[:, t + 1] by mask[:, t + 1], and use 0 past the last column. The same factor stops the running sum.",
+    "ppo_policy_loss is minus a masked mean: (surrogate * mask).sum() / mask.sum(). Clamp the ratio with torch.clamp, and take torch.minimum of the clipped and unclipped products.",
+    "In ppo_update, collect the parameters with [p for g in optimizer.param_groups for p in g['params']] for clip_grad_norm_. Call optimizer.zero_grad() before each backward pass, and shuffle with torch.randperm(rows, generator=generator) once per epoch."
+  ]
+}

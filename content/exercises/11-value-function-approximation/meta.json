@@ -1,0 +1,15 @@
+{
+  "id": "11-value-function-approximation",
+  "title": "Tile coding, the TD fixed point, LSTD, and Baird's counterexample",
+  "brief": "Build tile-coding features and the linear semi-gradient TD update, solve for the point TD converges to, estimate it from data with LSTD, then watch Baird's counterexample diverge.",
+  "needs_gpu": false,
+  "timeout": 15,
+  "packages": ["numpy"],
+  "hints": [
+    "In tiling k the tile index is floor((x - low) / width + k / n_tilings), and tiling k's entries start at k * (n_tiles + 1). Clip x to [low, high] before anything else.",
+    "The semi-gradient update is w + alpha * delta * x, where delta = r + gamma * (w @ x2) - w @ x and the bootstrap term is dropped when terminated is true. The target is a constant: it gets no gradient.",
+    "td_fixed_point solves A w = b with A = Phi.T @ D @ (I - gamma * P_pi) @ Phi and b = Phi.T @ D @ r_pi, where D = np.diag(d).",
+    "lstd builds the same A and b from samples: A = X.T @ (X - gamma * live[:, None] * X2) and b = X.T @ rewards, where live = 1 - terminated. Add reg * I to A before solving.",
+    "In Baird's counterexample every state's expected target is gamma * v[6], because the solid action always lands in state 6 with reward 0. The update is w + alpha * Phi.T @ (weights * (gamma * v[6] - v))."
+  ]
+}

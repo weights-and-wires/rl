@@ -1,0 +1,15 @@
+{
+  "id": "47-speech-and-audio",
+  "title": "MWER as REINFORCE, and preference tuning for TTS",
+  "brief": "Implement word error rate and the N-best MWER loss, prove its gradient is REINFORCE with a baseline, then watch a WER-only TTS reward make speech slow and fix it with a naturalness term and DPO.",
+  "needs_gpu": false,
+  "timeout": 20,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "edit_distance is a dynamic programme over a (len(ref) + 1) by (len(hyp) + 1) table. Row 0 is 0, 1, 2, ..., column 0 is 0, 1, 2, ..., and each cell is the minimum of the diagonal plus a mismatch cost, the cell above plus 1, and the cell to the left plus 1.",
+    "Softmax the log-scores after subtracting their maximum. In mwer_loss, W_bar is errors.mean(), a plain number that does not depend on the log-scores.",
+    "The gradient of sum_i P_hat_i W_i with respect to logscore j is P_hat_j * (W_j - sum_i P_hat_i W_i). The constant W_bar drops out.",
+    "The gradient of log P_hat[k] with respect to the log-scores is onehot(k) - P_hat. np.eye(N)[k] builds all the one-hot rows at once.",
+    "In dpo_population_loss, build the (K, K) matrix of margins with u[:, None] - u[None, :], zero the diagonal of the pair weights, and use torch.nn.functional.logsigmoid for a stable log sigmoid."
+  ]
+}

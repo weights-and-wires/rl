@@ -1,0 +1,16 @@
+{
+  "id": "14-distributional-rl",
+  "title": "The C51 projection and the quantile Huber loss",
+  "brief": "Project shifted return distributions onto a fixed support, check that the projection keeps mass and mean, evaluate a policy's return distributions, and fit quantiles with QR-DQN's loss.",
+  "needs_gpu": false,
+  "timeout": 15,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "In c51_project, compute tz = clip(r + gamma * (1 - term) * z, v_min, v_max) and b = (tz - v_min) / dz for all atoms at once, with shape (B, N). Then l = floor(b) and u = ceil(b).",
+    "When b is an integer, l == u and both shares p * (u - b) and p * (b - l) are zero. Either nudge l down or u up by one in that case, or add p * (l == u) to atom l.",
+    "np.add.at(m, (rows, l), p * (u - b)) accumulates into repeated indices correctly. Plain m[rows, l] += ... drops repeats.",
+    "c51_loss is -(m * torch.log_softmax(logits, dim=1)).sum(dim=1).mean(). Its gradient with respect to the logits is (softmax - m) / B.",
+    "Projection is linear in the probabilities, so in categorical_evaluation you can project every next state's distribution with the same reward in one call, then mix the rows with P[s, a] @ projected.",
+    "In quantile_huber_loss build u = target[:, None, :] - pred[:, :, None], shape (B, N, M), so the prediction index i sits on axis 1 and pairs with taus[i]."
+  ]
+}

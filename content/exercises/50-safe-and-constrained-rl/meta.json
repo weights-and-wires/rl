@@ -1,0 +1,16 @@
+{
+  "id": "50-safe-and-constrained-rl",
+  "title": "Constrained MDPs, the Lagrangian, and a Safe RLHF cost model",
+  "brief": "Write a constrained MDP as a linear program over occupancy measures, confirm that its optimum is stochastic and that the dual touches it, run the Lagrangian primal-dual method, and build the Safe RLHF cost-model loss.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy", "scipy"],
+  "hints": [
+    "The state part of the occupancy solves (I - gamma P_pi^T) d = mu0, where P_pi[s, s2] = sum_a pi[s, a] P[s, a, s2]. Then rho = d[:, None] * pi.",
+    "In cmdp_lp, column s * A + a of A_eq gets +1 in row s and -gamma * P[s, a, :] down the whole column. The right-hand side is mu0.",
+    "dual_function is value iteration on an MDP whose reward is R - lam * cost, read at mu0, plus lam * budget. rlenvs.value_iteration does the work.",
+    "For a tabular softmax the policy gradient is rho[s, a] * advantage[s, a], with the advantage computed under the reward R - lam * cost.",
+    "Average occupancy measures, not logits or policies. The mixture of policies whose occupancies you average has exactly the averaged occupancy.",
+    "log sigmoid(z) = -np.logaddexp(0, -z) never overflows, and d/dz of -log sigmoid(z) is -sigmoid(-z)."
+  ]
+}

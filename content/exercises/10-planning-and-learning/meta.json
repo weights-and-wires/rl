@@ -1,0 +1,15 @@
+{
+  "id": "10-planning-and-learning",
+  "title": "Dyna-Q, prioritized sweeping, and UCT on Nim",
+  "brief": "Plan with a learned model to find the Dyna maze's goal with far less real experience, order the updates with a priority queue, and search Nim with UCT until it finds the winning move.",
+  "needs_gpu": false,
+  "timeout": 10,
+  "packages": ["numpy"],
+  "hints": [
+    "In plan, make pairs = list(model) once, then pick pairs[int(rng.integers(len(pairs)))] for each update.",
+    "Dyna-Q's order after each real step is: Q-learning update, model[(s, a)] = (r, s2, done), then plan for n_planning steps.",
+    "heapq is a min-heap, so push (-priority, s, a). Keep a dict of each queued pair's current priority and skip popped entries that no longer match it.",
+    "Build predecessors once: for each (s, a) with model outcome s2, add (s, a) to predecessors[s2].",
+    "In the MCTS backup, negate the value before adding it at each step up the path. The parent's player is the opponent."
+  ]
+}

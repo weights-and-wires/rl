@@ -1,0 +1,15 @@
+{
+  "id": "43-diffusion-models-as-policies",
+  "title": "The denoising MDP, DDPO, and reward backpropagation",
+  "brief": "Treat each step of a tiny diffusion sampler as a Gaussian action, train it toward a reward with DDPO's clipped surrogate, and check that its gradient matches backpropagating the reward through the chain.",
+  "needs_gpu": false,
+  "timeout": 20,
+  "packages": ["torch"],
+  "hints": [
+    "A trajectory has T + 1 rows: xs[0] is x_T and xs[T] is x_0. Row k of a per-step tensor belongs to diffusion step t = T - k, so index the schedule with t - 1.",
+    "ddpm_mean is (x_t - BETAS[t-1] / sqrt(1 - ALPHA_BARS[t-1]) * eps) / sqrt(ALPHAS[t-1]). ALPHAS and ALPHA_BARS are different arrays; mixing them up is the usual bug.",
+    "For grad_steps = K, run the first T - K steps inside torch.no_grad(), then detach the state before the graded steps. Detaching alone still leaves graphs on the early steps' parameters.",
+    "trajectory_logprob must recompute each step's mean from model.eps on the detached states. The ratio in ddpo_loss is exp(logp - logp_old), and the advantages broadcast as advantages[None, :].",
+    "In ddpo_train, compute logp_old once per round, under torch.no_grad(), before the epoch loop. Recomputing it inside the loop pins every ratio at 1."
+  ]
+}

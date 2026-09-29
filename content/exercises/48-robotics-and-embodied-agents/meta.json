@@ -1,0 +1,15 @@
+{
+  "id": "48-robotics-and-embodied-agents",
+  "title": "Residual RL, domain randomisation, and VLM rewards",
+  "brief": "Learn a bounded residual on top of a fixed PD controller for a pendulum with a miscalibrated motor, measure what domain randomisation buys and costs, and build the goal-baseline CLIP reward that stops a texture hack.",
+  "needs_gpu": false,
+  "timeout": 20,
+  "packages": ["numpy"],
+  "hints": [
+    "pendulum_step is rlenvs.Pendulum.step without the loop: clip the torque to [-2, 2], compute the cost from the current state and the clipped torque, update theta_dot, clip it to [-8, 8], then update theta with the new theta_dot.",
+    "In rollout, the motor adds the offset after the residual: pendulum_step(theta, theta_dot, residual_action(base, raw, bound) + offsets).",
+    "Reward-to-go is np.cumsum(rewards[:, ::-1], axis=1)[:, ::-1]. The leave-one-out baseline for episode i is (sum over all episodes - episode i) / (n - 1), computed for every time step at once.",
+    "For a Gaussian pre-squash action raw = w @ phi + sigma * eps, the gradient of log pi with respect to w is eps / sigma * phi. The tanh squash comes after sampling, so it does not enter the score.",
+    "clip_reward: normalise all three embeddings, let d be the unit vector along g - b, project s onto the line through b and g as b + ((s - b) @ d) d, mix alpha * projection + (1 - alpha) * s, and return 1 - 0.5 * |mix - g|^2."
+  ]
+}
