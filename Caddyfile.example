@@ -11,10 +11,15 @@
 rl.ifkash.dev {
 	encode zstd gzip
 
-	# A run is a server-sent event stream that stays open for as long as the
-	# exercise takes, so response buffering must be off and the timeouts must
-	# outlast the longest GPU lesson.
+	# Authelia is authoritative for every request to this private course.
+	forward_auth authelia:9091 {
+		uri /api/authz/forward-auth
+		copy_headers Remote-User
+	}
+
+	# The app accepts Remote-User only when Caddy supplies the shared secret.
 	reverse_proxy rl:8000 {
+		header_up X-SSO-Proxy {$RL_SSO_PROXY_SECRET}
 		flush_interval -1
 		transport http {
 			response_header_timeout 30m

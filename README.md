@@ -85,14 +85,13 @@ and the research frontier.
 
 You need Python 3.12 or later and Node 20 or later.
 
-1. Copy the environment file and set a session secret:
+1. Copy the environment file. Local development can use the default empty SSO
+   secret only for public endpoints; protected APIs require the trusted Caddy
+   proxy, so use the deployed portal to exercise authenticated pages.
 
    ```bash
    cp .env.example .env
-   python3 -c "import secrets; print(secrets.token_urlsafe(48))"
    ```
-
-   Put that value in `SESSION_SECRET`.
 
 2. Install and start the backend:
 
@@ -111,8 +110,8 @@ You need Python 3.12 or later and Node 20 or later.
 
 Open `http://localhost:5173`. The Vite dev server proxies `/api` to the backend
 on port 8000. To use a backend on another port, set `API_TARGET`, for example
-`API_TARGET=http://127.0.0.1:8011 npm run dev`.
-Sign in with one of the names in `APP_USERS` and the password in `APP_PASSWORD`.
+`API_TARGET=http://127.0.0.1:8011 npm run dev`. Protected pages redirect to the
+central sign-in portal, which returns to the exact page you opened.
 
 ## Write a lesson
 
@@ -158,11 +157,15 @@ the filesystem and the network.
 
 ## Authentication
 
-Two people share one password, set in `APP_PASSWORD`, and sign in under one of
-the names in `APP_USERS`. The username is not a secret: it scopes progress,
-drafts, and run history so that two readers keep separate state. A signed,
-HTTP-only cookie carries the session. Set `COOKIE_SECURE=true` once the app is
-served over HTTPS.
+Authelia at `https://auth.ifkash.dev` protects the site through Caddy
+`forward_auth`. The frontend sends unauthenticated visitors to the portal with
+the exact current URL encoded as its `rd` return destination. Caddy copies
+Authelia's `Remote-User` header and injects `X-SSO-Proxy`; the backend trusts
+the identity only when that header matches `SSO_PROXY_SECRET`. The backend
+rejects protected API and book requests without this vetted identity. Map
+portal names to existing progress identities with `SSO_USERS`, for example
+`ifkash:enderboi,ananya:michu`; unmapped usernames use their portal name.
+Sign out using the shared Authelia portal.
 
 ## The GPU backend
 
@@ -217,9 +220,10 @@ external `edge` network. This bundle never publishes 80 or 443 itself.
 
 The VM holds no GitHub credential. The script ships the committed tree with
 `git archive` over SSH, rebuilds, and waits until `/api/health` reports the
-commit it sent. `.env` on the VM is never touched, because it holds the session
-secret and the RunPod key. `Caddyfile.example` holds the vhost
-block, including the buffering and timeout settings the run stream needs.
+commit it sent. `.env` on the VM is never touched: it must contain the
+`SSO_PROXY_SECRET` matching `RL_SSO_PROXY_SECRET` in Caddy and any RunPod key.
+`Caddyfile.example` documents the vhost's Authelia forward-auth, trusted
+identity header, and run-stream buffering and timeout settings.
 
 The script also builds the PDF book on your workstation, because printing it
 needs Chrome and the VM has little memory or disk to spare. It copies the PDF to
