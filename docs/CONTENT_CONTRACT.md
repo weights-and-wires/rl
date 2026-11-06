@@ -1,8 +1,8 @@
 # Content contract
 
-Every lesson in this course is two things on disk: one Markdown file that the
-reader reads, and one exercise directory that the reader's code is checked
-against. This document is the exact contract both must satisfy. The loader in
+Every chapter in this course is two things on disk: one Markdown file that the
+reader reads (the code and the app call it a lesson), and one exercise
+directory that the reader's code is checked against. This document is the exact contract both must satisfy. The loader in
 `backend/app/curriculum.py` and the harness in `backend/app/runner/harness.py`
 depend on it.
 
@@ -12,24 +12,58 @@ Readers are undergraduates who have finished a first machine learning course,
 such as the Weights and Wires ML course at ml.ifkash.dev. They can fit a
 logistic regression, train a small network with gradient descent, and write
 numpy and a little PyTorch. They are new to reinforcement learning, and dense
-notation stops them cold. They read a lesson to understand an idea well enough
-to build it, and they learn by building. Write for them:
+notation stops them cold. They read a chapter to understand an idea well enough
+to build it, and they learn by building.
 
-- Start with the intuition in plain words. Before any formula, say what the
-  method does, in one or two sentences a first-year student could repeat to a
-  friend. Use an everyday analogy when one fits.
-- Make every formula earn its place. Include a formula only when the exercise
-  implements it or the reader needs it to follow the next step. Everything else
-  is stated in words.
+Students said an earlier version of this course was "easy to read but not easy
+to understand", and that it threw things at them instead of building intuition.
+Short sentences were not the problem. The problem was facts in a row with no
+reason connecting them. Every rule below serves one goal: the reader should be
+able to say *why* each step happens before they see *how* to compute it.
+
+## Build intuition first
+
+- One chapter, one idea. A chapter teaches a single idea well enough that the
+  reader could explain it to a friend without notes. When a draft needs a
+  second big idea, that idea is the next chapter.
+- Start from a question the reader already cares about, with a concrete
+  situation: a three-armed slot machine, a robot in a hallway, a chatbot
+  choosing a reply.
+  Say what goes wrong without the idea before you introduce it.
+- Climb the ladder in order: picture, then words, then a tiny example with real
+  numbers, then the formula, then code. The formula comes last, as a compact
+  summary of something the reader already believes.
+- Try the obvious approach first and show where it fails. "Why not just…?" is
+  the question the reader is asking. Answer it before they have to.
+- Explain the reason, not only the step. Connect sentences with "because",
+  "so", and "which means". A paragraph is a short argument, not a list of
+  facts. Prefer three connected sentences to five disconnected ones.
+- Use one running example through the chapter, and reuse it across chapters
+  of the same part where it fits, such as the cliff walk or a three-arm bandit,
+  so the reader is not decoding a new world every page.
 - Read each formula aloud. After every display equation, say in plain English
-  what each piece is and what the whole thing computes. Then show the same
-  formula as one or two lines of numpy or PyTorch.
+  what each piece is and what the whole thing computes, then show it as one or
+  two lines of numpy.
 - Work one small example by hand. Use tiny numbers, a two-state MDP, three
-  arms, or a four-token sequence, and show every intermediate value, so the
-  reader can check their code against it.
+  arms, or a four-token sequence, and show every intermediate value, so the reader can
+  check their code against it.
 - Define every symbol and every term the first time it appears, including ones
-  that feel basic, such as "policy", "return", "on-policy", or "advantage".
-  Prefer an ordinary word to jargon when both mean the same thing.
+  that feel basic, such as "policy", "return", "on-policy", or "advantage". Prefer an ordinary
+  word to jargon when both mean the same thing.
+- Avoid heavy notation. No measure-theoretic language and no full proofs. A
+  proof idea in three or four plain sentences is welcome when it explains why
+  something works. Use the course notation below and nothing else.
+- Keep the conditions honest. When a result needs an assumption, such as a
+  policy that visits every state or a step size that shrinks, say so in plain
+  words and say what goes wrong without it.
+- Close the loop. End the substance with a short "what you now know" paragraph
+  in a `[!KEY]` callout that ties the idea back to the opening question.
+
+Every result on the page must still be correct. Simpler wording must never
+change what a result says.
+
+## Notation and sources
+
 - Keep one notation across the whole course: states $s$, actions $a$, rewards
   $r$, discount $\gamma$, policy $\pi(a \mid s)$, state value $V^\pi(s)$,
   action value $Q^\pi(s, a)$, advantage $A^\pi(s, a)$, return $G_t$, time step
@@ -37,29 +71,70 @@ to build it, and they learn by building. Write for them:
   model. The reward for taking $a_t$ in $s_t$ is $r_t$ (not $r_{t+1}$). For
   language models, a prompt is $x$, a response is $y$, and the reference policy
   is $\pi_{\text{ref}}$.
-- Avoid heavy notation. No measure-theoretic language and no full proofs. A
-  proof idea in three or four plain sentences is welcome when it explains why
-  something works.
-- Keep the conditions honest. When a result needs an assumption, such as a
-  policy that visits every state or a step size that shrinks, say so in plain
-  words and say what goes wrong without it.
-- Connect ideas to code. The reader should finish every section knowing which
+- Connect ideas to code. The reader should finish every chapter knowing which
   numpy or PyTorch operations they will write.
 - Be current and exact about the literature. Later parts cover methods from
   2023 to 2026. Name each method's paper with its year, state its objective as
   the paper does, and say plainly where a claim is contested.
 
-Every result on the page must still be correct. Simpler wording must never
-change what a result says.
+## Figures
+
+Every chapter has at least one figure, and most have two or three. A figure
+earns its place when it shows something words struggle with: a shape (a loss
+bowl, a value landscape), a motion (a step downhill, an agent's path), a
+flow (an agent and its environment, a gradient flowing back), or a comparison (before
+and after, good and bad). Put the main figure near the top, where it carries
+the chapter's central picture, and refer to it in the text.
+
+A figure is a fenced block tagged `figure`. It holds one inline SVG, then a
+caption on the lines after `</svg>`:
+
+````markdown
+```figure
+<svg viewBox="0 0 560 220" role="img" aria-label="Three arms and their payouts">
+  <line x1="40" y1="190" x2="520" y2="190" class="stroke-muted"/>
+  <rect x="100" y="110" width="60" height="80" class="fill-a"/>
+  <rect x="240" y="60" width="60" height="130" class="fill-b"/>
+  <rect x="380" y="140" width="60" height="50" class="fill-a"/>
+  <text x="240" y="50">arm 2 paid most</text>
+</svg>
+Figure 1. The best arm is not always the one that paid most so far.
+```
+````
+
+Rules for figures:
+
+- Color only with these classes, never with `fill="#..."`, `stroke="red"`, or
+  a `style` color, so the figure follows the light and dark themes and prints
+  in the PDF book. Shapes draw nothing until a class colors them.
+  - Fills: `fill-ink`, `fill-muted`, `fill-paper`, `fill-sunk`, `fill-a`,
+    `fill-b`, `fill-c`, `fill-d`, `fill-bad`, and the pale area fills
+    `fill-soft-a`, `fill-soft-b`, `fill-soft-c`, `fill-soft-d`.
+  - Strokes: `stroke-ink`, `stroke-muted`, `stroke-grid`, `stroke-a`,
+    `stroke-b`, `stroke-c`, `stroke-d`, `stroke-bad`, plus `dashed`.
+  - Text is ink-colored at 13 px by default. Add `fig-small`, `fig-bold`, or
+    `fig-mono` as needed. `a` is blue, `b` is orange, `c` is green, `d` is
+    purple. Use them consistently: `a` for the environment and data, `b` for the agent's choices.
+- Set a `viewBox` about 560 to 640 units wide and no `width` or `height`. The
+  figure scales to the column. Keep text at least 11 units high.
+- Give the `svg` an `aria-label` that says what it shows.
+- Draw from real numbers. If the figure plots the chapter's worked example,
+  the points must be the example's points, computed, not eyeballed.
+- Text inside SVG is plain text. KaTeX does not render there, so write
+  `w1`, `x²`, or `σ` instead of `$w_1$`.
+- Arrowheads need a `<marker>` in `<defs>` whose path carries a fill class.
+  Give each marker an `id` prefixed with the chapter number, such as
+  `c007-arrow`, because every figure on a page shares one document.
+- Start the caption with `Figure N.` and say what the reader should notice,
+  not only what is drawn.
 
 ## Prose style
 
 Follow the Google developer documentation style guide:
 
 - Address the reader as "you". Use active voice and present tense.
-- One idea per sentence. Split any sentence that needs a second comma-spliced
-  clause to land. Long subordinate chains are the main thing that made these
-  lessons hard to read.
+- Keep sentences short, but never at the cost of the connection between them.
+  A sentence that says why something happens is worth its length.
 - Sentence case for every heading. Start task headings with a bare infinitive.
 - Serial commas. Em dashes with no surrounding spaces.
 - Code, filenames, and identifiers in code font. No `simply`, `just`, `easily`,
@@ -70,27 +145,27 @@ Follow the Google developer documentation style guide:
 
 ## Lesson file
 
-Path: `content/lessons/NN-slug.md`, where `NN` is the two-digit order prefix and
-`slug` matches the `slug` field.
+Path: `content/lessons/NNN-slug.md`, where `NNN` is the three-digit order prefix
+(`001` to `060`) and `slug` matches the `slug` field. The loader orders chapters
+by filename, so keep the prefix at three digits.
 
 The file starts with YAML front matter:
 
 ```yaml
 ---
-title: Temporal-difference learning
-slug: 07-temporal-difference-learning
-part: "Part 2 — Learning from experience"
-summary: One sentence, under 140 characters, that says what the lesson delivers.
-minutes: 55
+title: Learning from one step
+slug: 016-temporal-difference-learning
+part: "Part 3 — Learning from experience"
+summary: One sentence, under 140 characters, that says what the chapter delivers.
+minutes: 35
 gpu: false
 objectives:
   - Update a value estimate toward a bootstrapped target after every step.
-  - Implement SARSA and Q-learning, and explain why they walk different paths on the cliff.
+  - Explain why the target uses the current estimate of the next state.
   - "Say what bootstrapping trades: lower variance for bias from the current estimate."
 prereqs:
-  - 05-dynamic-programming
-  - 06-monte-carlo-methods
-exercise: 07-temporal-difference-learning
+  - 013-monte-carlo-prediction
+exercise: 016-temporal-difference-learning
 ---
 ```
 
@@ -99,7 +174,7 @@ the item as a mapping rather than a string. A mapping that reaches the client
 renders as nothing at all, so `scripts/check_content.py` rejects one.
 
 Every field is required except `prereqs`, which can be omitted. `gpu` is `true`
-only for the three lessons in [Lessons with a GPU run](#lessons-with-a-gpu-run). `minutes` is an honest reading and
+only for the chapters in [Chapters with a GPU run](#chapters-with-a-gpu-run). `minutes` is an honest reading and
 working estimate.
 
 The body is Markdown with these conventions:
@@ -116,7 +191,7 @@ The body is Markdown with these conventions:
   implementation, not a full solution to the exercise.
 - Tables for genuinely two-dimensional data.
 - Callouts, written as a blockquote whose first line is a type marker. The
-  reader renders each type as a coloured box with its own label:
+  reader renders each type as a colored box with its own label:
 
   ```markdown
   > [!KEY]
@@ -126,52 +201,64 @@ The body is Markdown with these conventions:
 
   | Marker | Label | Use it for |
   |---|---|---|
-  | `[!KEY]` | Key idea | The one sentence to remember from a section. Two to four per lesson. |
-  | `[!TIP]` | Tip | A practical shortcut or habit. At most two per lesson. |
-  | `[!WARNING]` | Watch out | A trap the reader is about to fall into. At most two per lesson. |
-  | `[!RECAP]` | Before you build | Three to five bullets, placed right before `## Build it step by step`. One per lesson. |
+  | `[!KEY]` | Key idea | The one sentence to remember from a section. Two to four per chapter. |
+  | `[!TIP]` | Tip | A practical shortcut or habit. At most two per chapter. |
+  | `[!WARNING]` | Watch out | A trap the reader is about to fall into. At most two per chapter. |
+  | `[!RECAP]` | Before you build | Three to five bullets, placed right before `## Build it step by step`. One per chapter. |
 
   `scripts/check_content.py` rejects any other marker, and a second recap.
 
-Every lesson body includes, in this order:
+Every chapter body includes, in this order:
 
-1. An opening that says, in plain words, what problem the lesson solves and why
-   it matters. Two or three short paragraphs. No heading, and no formulas.
-2. `## What you already know` — a short list of the ideas the lesson builds on,
+1. An opening that says, in plain words, what problem the chapter solves and
+   why it matters, starting from a concrete situation. Two or three short
+   paragraphs. No heading, and no formulas.
+2. `## What you already know` — a short list of the ideas the chapter builds on,
    each in one plain sentence. Keep it to five bullets.
-3. The substance, in as many `##` sections as the material needs. Each section
-   leads with intuition, then gives the formula, reads it aloud, and shows it
-   as numpy. Include at least one small example worked by hand with real
-   numbers.
+3. The substance, in as many `##` sections as the material needs, following
+   the ladder in "Build intuition first": picture, words, a tiny example, the
+   formula, code. Include at least one small example worked by hand with real
+   numbers, and at least one figure.
 4. `## Build it step by step` — a numbered walkthrough of the exercise, one
    step per function in the order the checks test them. Each step says what the
    function takes and returns, the numpy operations it needs, and the mistake
    people most often make. It gives the shape of the code, never the full
    answer.
-5. `## Cost and scaling` — how the running time and memory grow as the data or
-   the model gets bigger, in plain words. A short table works well.
-6. `## Where this breaks` — the common ways the method fails in practice, and
-   what people do about each one.
-7. `## Further reading` — three to eight papers or book chapters, each a
-   Markdown link to its arXiv abstract, DOI, or official page, with one
-   sentence on what it adds. In Parts 7 to 10, end the section with two or
-   three open questions a researcher is working on, each in one sentence.
+5. `## Cost and scaling` — optional. How the running time and memory grow as
+   the data or the model gets bigger, in plain words. Include it when cost is
+   part of the idea, and leave it out of a chapter where it is filler.
+6. `## Where this breaks` — optional. The common ways the method fails in
+   practice, and what people do about each one.
+7. `## Further reading` — optional, for a chapter that rests on a paper or a
+   book chapter. Three to eight papers or book chapters, each a Markdown link
+   to its arXiv abstract, DOI, or official page, with one sentence on what it
+   adds. `scripts/check_content.py` requires three linked sources when the
+   section is present. In the chapters on methods from 2023 onward, end the
+   section with two or three open questions a researcher is working on, each in
+   one sentence.
 8. `## The exercise` — one or two paragraphs that say what the reader builds
    and what the checks verify. Name the functions by their exact identifiers.
 
-Aim for 2000 to 3500 words of body, plus math. Short sentences and short
-paragraphs matter more than the word count.
+`scripts/check_content.py` requires the sections `## What you already know`,
+`## Build it step by step`, and `## The exercise`, and checks that any optional
+section sits in the order above.
+
+Aim for 900 to 2000 words of body, plus math and figures. A chapter is a
+sitting of about 20 to 40 minutes, reading and building together. When a draft
+runs past 2000 words, it holds two ideas: split it. `scripts/check_content.py`
+rejects a chapter under 800 or over 2600 words, counting the prose and code but
+not the figure blocks, and one with no figure.
 
 ## Exercise directory
 
-Path: `content/exercises/<id>/`, where `<id>` matches the lesson's `exercise`
+Path: `content/exercises/<id>/`, where `<id>` matches the chapter's `exercise`
 field. It holds exactly four files.
 
 ### `meta.json`
 
 ```json
 {
-  "id": "07-temporal-difference-learning",
+  "id": "016-temporal-difference-learning",
   "title": "TD(0), SARSA, and Q-learning on the cliff",
   "brief": "Estimate values from single steps, then learn to control the cliff walk two ways and see them choose different paths.",
   "needs_gpu": false,
@@ -193,10 +280,10 @@ a CPU exercise.
 
 ### `starter.py`
 
-What the reader sees when the lesson opens. It must:
+What the reader sees when the chapter opens. It must:
 
 - Import only from the standard library, `numpy`, `rlenvs` (see below), and,
-  when the lesson needs it, `torch`.
+  when the chapter needs it, `torch`.
 - Define every function the checks call, with the exact signature, a docstring
   that states the contract including array shapes, and a body that raises
   `NotImplementedError`.
@@ -253,7 +340,7 @@ def test_q_learning_cliff(sub):
 
 The `rlcheck` module is on the path at run time. Its API:
 
-| Name | Signature | Behaviour |
+| Name | Signature | Behavior |
 |---|---|---|
 | `check` | `@check("description")` | Registers a check. The description is what the reader sees. |
 | `close` | `close(got, want, rtol=1e-5, atol=1e-8, label=None)` | Fails with a readable diff when the arrays differ. |
@@ -291,15 +378,16 @@ Rules for checks:
 - Failure messages must say what was expected and what arrived. The reader cannot
   see your code.
 
-### Lessons with a GPU run
+### Chapters with a GPU run
 
-Three lessons set `gpu: true` in their front matter and `"needs_gpu": true` in
-`meta.json`: `35-rlhf-with-ppo`, `37-group-relative-policy-optimization`, and
-`38-reasoning-with-verifiable-rewards`. The flag sends both **Run** and
+Three chapters set `gpu: true` in their front matter and `"needs_gpu": true` in
+`meta.json`: the chapters on RLHF with PPO, on group-relative policy
+optimization, and on reasoning with verifiable rewards. Find them with
+`grep -l 'gpu: true' content/lessons/*.md`. The flag sends both **Run** and
 **Check** to a RunPod worker with a CUDA GPU, when one is configured, and to the
-local CPU runner otherwise. So in these lessons:
+local CPU runner otherwise. So in these chapters:
 
-- `tests.py` is exactly like every other lesson's: CPU only, toy-sized, under
+- `tests.py` is exactly like every other chapter's: CPU only, toy-sized, under
   20 seconds, and never imports `transformers`.
 - The `__main__` block in `starter.py` and `solution.py` runs the reader's
   functions on a real model: `Qwen/Qwen3-0.6B` or `Qwen/Qwen3-0.6B-Base` from

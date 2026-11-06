@@ -28,6 +28,7 @@ app = FastAPI(title="Weights and Wires — RL", docs_url=None, redoc_url=None)
 @app.on_event("startup")
 def startup() -> None:
     db.init()
+    db.carry_progress(curriculum.renames())
 
 
 # Models -----------------------------------------------------------------

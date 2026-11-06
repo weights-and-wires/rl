@@ -1,0 +1,17 @@
+{
+  "id": "021-dyna-planning-with-a-learned-model",
+  "title": "Dyna-Q and prioritized sweeping on the Dyna maze",
+  "brief": "Learn a model from real steps, replay it as extra Q-learning updates to find the maze's goal with far less real experience, then order the updates with a priority queue.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "q_update's target is r + gamma * Q[s2].max() * (not terminated). Forgetting the terminal mask bootstraps from a state with no future.",
+    "In plan, make pairs = list(model) once, then pick pairs[int(rng.integers(len(pairs)))] for each update.",
+    "Dyna-Q's order after each real step is: Q-learning update, model[(s, a)] = (r, s2, done), then plan for n_planning steps.",
+    "heapq is a min-heap, so push (-priority, s, a). Keep a dict of each queued pair's current priority and skip popped entries that no longer match it.",
+    "Build predecessors once: for each (s, a) with model outcome s2, add (s, a) to predecessors[s2]."
+  ]
+}

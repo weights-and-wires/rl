@@ -1,0 +1,14 @@
+{
+  "id": "002-returns-and-discounting",
+  "title": "Discounted returns and Monte Carlo values",
+  "brief": "Weight rewards by a discount, compute every return of an episode in one backward pass, and estimate a policy's value by averaging, checked against the exact answer.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "The weight on a reward k steps ahead is gamma ** k, so discount_weights is gamma ** np.arange(n). With gamma = 0 the first weight is 1, because 0 ** 0 is 1 in numpy.",
+    "Loop over the rewards backward: running = rewards[t] + gamma * running, then store running at index t. One pass, no nested sum.",
+    "The standard error is np.std(returns, ddof=1) / np.sqrt(n_episodes). With ddof=0 it is slightly too small.",
+    "Make one generator from the seed and reuse it for every episode. A fresh generator with the same seed repeats the same episode and reports a standard error of zero."
+  ]
+}

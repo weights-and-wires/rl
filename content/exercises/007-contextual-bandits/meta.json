@@ -1,0 +1,13 @@
+{
+  "id": "007-contextual-bandits",
+  "title": "LinUCB for contextual bandits",
+  "brief": "Fit a ridge regression per arm, score arms with a prediction plus a confidence width, update the inverse in O(d^2), and watch regret stay far below a context-blind arm's.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "linucb_terms: theta_hat = A_inv @ b, the mean is theta_hat @ x, and the width is np.sqrt(x @ A_inv @ x).",
+    "Sherman-Morrison: with u = A_inv @ x, the new inverse is A_inv - outer(u, u) / (1 + x @ u).",
+    "In run_linucb, update only the pulled arm: A_inv[arm] with sherman_morrison and b[arm] += reward * x."
+  ]
+}

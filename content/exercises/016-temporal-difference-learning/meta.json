@@ -1,0 +1,13 @@
+{
+  "id": "016-temporal-difference-learning",
+  "title": "TD(0) on the random walk",
+  "brief": "Update a value estimate after every step toward a bootstrapped target, learn the random walk's values online, and see TD(0) beat constant-step Monte Carlo.",
+  "needs_gpu": false,
+  "timeout": 50,
+  "packages": ["numpy"],
+  "hints": [
+    "The TD target is r + gamma * V[s2] * (not terminated). Forgetting the terminal mask bootstraps from a state that has no future.",
+    "In td0_prediction, copy the update from td0_update: draw the action with rng.choice(A, p=pi[s]), step with mdp.sample(s, a, rng), then call td0_update with done = bool(mdp.terminal[s2]).",
+    "batch_td0 must hold V fixed for a whole sweep. Add each alpha * delta into a separate array, then add that array to V once the sweep ends."
+  ]
+}

@@ -77,6 +77,8 @@ function CodeBlock({ node, children, ...props }: ComponentProps<"pre"> & { node?
   const code = findCode(children);
   const language = /language-(\w+)/.exec(code?.className ?? "")?.[1];
 
+  if (language === "figure") return <Figure source={code?.text ?? ""} />;
+
   function copy() {
     const text = code?.text ?? "";
     navigator.clipboard
@@ -98,6 +100,24 @@ function CodeBlock({ node, children, ...props }: ComponentProps<"pre"> & { node?
       </div>
       <pre {...props}>{children}</pre>
     </div>
+  );
+}
+
+/**
+ * A ```figure block: one inline SVG, then an optional caption on the lines
+ * after `</svg>`. The SVG colours itself with the `fig-*` classes in
+ * index.css, so it follows the light and dark themes and prints in the book.
+ * Lessons are authored in this repository, so the SVG is trusted.
+ */
+function Figure({ source }: { source: string }) {
+  const end = source.lastIndexOf("</svg>");
+  const svg = end >= 0 ? source.slice(0, end + "</svg>".length).trim() : source.trim();
+  const caption = end >= 0 ? source.slice(end + "</svg>".length).trim() : "";
+  return (
+    <figure className="figure">
+      <div className="figure-art" dangerouslySetInnerHTML={{ __html: svg }} />
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
   );
 }
 

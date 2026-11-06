@@ -1,0 +1,13 @@
+{
+  "id": "015-off-policy-importance-sampling",
+  "title": "Ordinary and weighted importance sampling",
+  "brief": "Estimate one policy's value from episodes that a different policy played, reweighting each return by how much likelier the target policy was to produce it, and compare the ordinary and weighted estimators.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "rho_{t:T-1} for every t at once is np.cumprod(step[::-1])[::-1], where step = pi[states, actions] / b[states, actions]. Put the target policy on top, not the behavior policy.",
+    "You only need rho_{0:T-1} and G_0 from each episode: importance_ratios(...)[0] and discounted_returns(...)[0].",
+    "OIS divides the sum of rho * G by the number of episodes. WIS divides it by the sum of rho, and returns 0.0 when every weight is zero."
+  ]
+}

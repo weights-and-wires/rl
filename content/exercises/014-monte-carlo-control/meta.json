@@ -1,0 +1,14 @@
+{
+  "id": "014-monte-carlo-control",
+  "title": "Epsilon-soft Monte Carlo control",
+  "brief": "Learn action values from your own epsilon-greedy episodes on a small grid, and see that the policy you learn is the best epsilon-soft policy, not the optimal one.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "The epsilon-greedy row is np.full(A, epsilon / A) with 1 - epsilon added at the first argmax. The rows must sum to one.",
+    "epsilon_soft_world mixes each action's outcome with the average over actions: (1 - epsilon) * P + epsilon * P.mean(axis=1, keepdims=True), and the same for R.",
+    "In mc_control, break ties among best actions at random with rng.choice(np.flatnonzero(Q[s] == Q[s].max())). With Q = 0 everywhere, argmax always picks action 0 and walks into the top wall.",
+    "Update each first-visited (s, a) pair once per episode: Q[s, a] += alpha * (G[t] - Q[s, a])."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "009-the-bellman-equation",
+  "title": "Solve the Bellman equation exactly",
+  "brief": "Solve (I - gamma P_pi) V = r_pi for a policy's values on the hallway MDP, then turn state values into action values and check that they average back.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "Solve, don't invert: np.linalg.solve(np.eye(S) - mdp.gamma * P_pi, r_pi).",
+    "Solving with P_pi.T answers a different question. The unknown V multiplies P_pi from the left of the vector, so use P_pi as it is.",
+    "mdp.P @ v has shape (S, A): entry [s, a] is the expected next-state value. Add mdp.R and scale by gamma for Q, then set the terminal rows to zero."
+  ]
+}

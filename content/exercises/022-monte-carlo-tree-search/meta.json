@@ -1,0 +1,16 @@
+{
+  "id": "022-monte-carlo-tree-search",
+  "title": "UCT scores and Monte Carlo tree search on Nim",
+  "brief": "Score actions with the UCT rule, then grow a search tree on Nim whose backup flips the value's sign at each ply, until the search finds the winning move.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "uct_scores is q + c * sqrt(log(n_parent) / n). Silence the division warning with np.errstate, then replace the entries where n == 0 with np.inf.",
+    "Keep a dict from state to two arrays, N and W, with one entry per action in game.actions(state). The mean is W / N where N > 0.",
+    "In the backup, negate the value before adding it at each step up the path. The parent's player is the opponent.",
+    "Break ties between equal scores at random with rng.choice(np.flatnonzero(scores == scores.max()))."
+  ]
+}

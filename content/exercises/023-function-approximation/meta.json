@@ -1,0 +1,15 @@
+{
+  "id": "023-function-approximation",
+  "title": "Tile coding and semi-gradient TD",
+  "brief": "Build tile-coding features, measure the value error of a linear estimate, and write the semi-gradient TD update that moves the weights along the features of the state it corrects.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "In tiling k the tile index is floor((x - low) / width + k / n_tilings), and tiling k's entries start at k * (n_tiles + 1). Clip x to [low, high] before anything else.",
+    "The semi-gradient update is w + alpha * delta * x, where delta = r + gamma * (w @ x2) - w @ x and the bootstrap term is dropped when terminated is true. The target is a constant: it gets no gradient.",
+    "value_error is d @ (Phi @ w - v) ** 2, a single dot product."
+  ]
+}

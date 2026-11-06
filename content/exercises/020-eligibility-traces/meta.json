@@ -1,0 +1,14 @@
+{
+  "id": "020-eligibility-traces",
+  "title": "The lambda-return and TD(lambda)",
+  "brief": "Compute the lambda-return by its backward recursion, show that offline TD(lambda) with eligibility traces makes exactly the lambda-return update, and see online TD(lambda) beat TD(0) on the 19-state walk.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "The lambda-return recursion is G[t] = r[t] + gamma * ((1 - lam) * V_next + lam * G_next), with V_next and G_next both 0 after the last step.",
+    "Each step of a trace is: z *= gamma * lam, then z[s] += 1, then use z. Adding before decaying gives the current state gamma * lam instead of 1.",
+    "td_lambda_offline must not change V. Add alpha * delta * z into a separate total and return that.",
+    "Reset the trace to zeros at the start of every episode in td_lambda."
+  ]
+}

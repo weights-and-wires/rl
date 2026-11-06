@@ -1,0 +1,16 @@
+{
+  "id": "024-the-deadly-triad",
+  "title": "The TD fixed point, LSTD, and Baird's counterexample",
+  "brief": "Solve for the point linear TD converges to, estimate it from data with LSTD, then run Baird's counterexample and watch off-policy weighting send the weights to infinity.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "td_fixed_point solves A w = b with A = Phi.T @ D @ (I - gamma * P_pi) @ Phi and b = Phi.T @ D @ r_pi, where D = np.diag(d).",
+    "lstd builds the same A and b from samples: A = X.T @ (X - gamma * live[:, None] * X2) and b = X.T @ rewards, where live = 1 - terminated. Add reg * I to A before solving.",
+    "Baird's feature matrix has a 2 in column i of upper state i, a 1 in column 7 of every upper state, and the lower state row has a 1 in column 6 and a 2 in column 7.",
+    "In Baird's counterexample every state's expected target is gamma * v[6], because the solid action always lands in state 6 with reward 0. The update is w + alpha * Phi.T @ (weights * (gamma * v[6] - v))."
+  ]
+}

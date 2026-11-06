@@ -1,0 +1,13 @@
+{
+  "id": "011-policy-iteration",
+  "title": "Greedy improvement and policy iteration",
+  "brief": "Turn a policy's values into a better policy, then alternate evaluating and improving until the policy stops changing.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "greedy_policy: q = rlenvs.q_from_v(mdp, v), then put a 1 at q.argmax(axis=1) in each row. np.argmax already picks the lowest index among ties.",
+    "improve_policy evaluates exactly with np.linalg.solve(np.eye(S) - gamma * P_pi, r_pi), then calls greedy_policy on that value. Return the value of the policy you started with, not of the new one.",
+    "policy_iteration loops improve_policy. Record the value of every policy you evaluate, and stop when np.array_equal(new_pi, pi) is true."
+  ]
+}

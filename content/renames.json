@@ -1,0 +1,174 @@
+{
+ "01-the-rl-problem": [
+  "001-learning-by-trial-and-error",
+  "002-returns-and-discounting"
+ ],
+ "02-multi-armed-bandits": [
+  "003-explore-or-exploit",
+  "004-optimism-and-ucb",
+  "005-thompson-sampling"
+ ],
+ "03-gradient-and-contextual-bandits": [
+  "006-gradient-bandits",
+  "007-contextual-bandits"
+ ],
+ "04-markov-decision-processes": [
+  "008-markov-decision-processes",
+  "009-the-bellman-equation",
+  "030-where-the-gradient-comes-from"
+ ],
+ "05-dynamic-programming": [
+  "010-policy-evaluation",
+  "011-policy-iteration",
+  "012-value-iteration"
+ ],
+ "06-monte-carlo-methods": [
+  "013-monte-carlo-prediction",
+  "014-monte-carlo-control",
+  "015-off-policy-importance-sampling"
+ ],
+ "07-temporal-difference-learning": [
+  "016-temporal-difference-learning",
+  "017-sarsa-and-q-learning"
+ ],
+ "08-double-learning": [
+  "018-maximization-bias"
+ ],
+ "09-n-step-and-eligibility-traces": [
+  "019-n-step-returns",
+  "020-eligibility-traces"
+ ],
+ "10-planning-and-learning": [
+  "021-dyna-planning-with-a-learned-model",
+  "022-monte-carlo-tree-search"
+ ],
+ "11-value-function-approximation": [
+  "023-function-approximation",
+  "024-the-deadly-triad"
+ ],
+ "12-deep-q-networks": [
+  "025-deep-q-networks"
+ ],
+ "13-dqn-improvements": [
+  "026-double-and-dueling-dqn",
+  "027-prioritized-replay"
+ ],
+ "14-distributional-rl": [
+  "028-distributional-rl"
+ ],
+ "15-policy-gradient-theorem": [
+  "029-the-policy-gradient",
+  "030-where-the-gradient-comes-from"
+ ],
+ "16-actor-critic": [
+  "031-baselines-and-actor-critic"
+ ],
+ "17-generalized-advantage-estimation": [
+  "032-generalized-advantage-estimation"
+ ],
+ "18-natural-gradients-and-trpo": [
+  "033-trust-regions-and-trpo"
+ ],
+ "19-proximal-policy-optimization": [
+  "034-proximal-policy-optimization"
+ ],
+ "20-policy-optimization-theory": [
+  "035-why-policy-optimization-works"
+ ],
+ "21-deterministic-policy-gradients": [
+  "036-deterministic-policy-gradients"
+ ],
+ "22-maximum-entropy-rl": [
+  "037-maximum-entropy-rl"
+ ],
+ "23-soft-actor-critic": [
+  "038-soft-actor-critic"
+ ],
+ "24-model-based-rl": [
+  "039-model-based-rl"
+ ],
+ "25-world-models-and-muzero": [
+  "040-world-models-and-muzero"
+ ],
+ "26-exploration": [
+  "041-exploration-bonuses"
+ ],
+ "27-imitation-learning": [
+  "042-imitation-learning"
+ ],
+ "28-inverse-rl": [
+  "043-inverse-rl-and-gail"
+ ],
+ "29-offline-rl": [
+  "044-offline-rl"
+ ],
+ "30-reward-design": [
+  "045-reward-design-and-shaping"
+ ],
+ "31-evaluating-rl": [
+  "046-evaluating-rl"
+ ],
+ "32-multi-agent-and-self-play": [
+  "047-multi-agent-and-self-play"
+ ],
+ "33-language-models-as-policies": [
+  "048-language-models-as-policies"
+ ],
+ "34-reward-models": [
+  "049-reward-models"
+ ],
+ "35-rlhf-with-ppo": [
+  "050-rlhf-with-ppo"
+ ],
+ "36-direct-preference-optimization": [
+  "051-direct-preference-optimization"
+ ],
+ "37-group-relative-policy-optimization": [
+  "052-group-relative-policy-optimization"
+ ],
+ "38-reasoning-with-verifiable-rewards": [
+  "053-reasoning-with-verifiable-rewards"
+ ],
+ "39-process-rewards-and-search": [
+  "054-process-rewards-and-search"
+ ],
+ "40-ai-feedback-and-self-improvement": [
+  "055-ai-feedback-and-self-improvement"
+ ],
+ "41-agents-and-multi-turn-rl": [
+  "056-agents-and-multi-turn-rl"
+ ],
+ "42-rl-infrastructure-for-llms": [
+  "057-rl-infrastructure-for-llms"
+ ],
+ "43-diffusion-models-as-policies": [
+  "058-diffusion-and-flow-policies"
+ ],
+ "44-preference-tuning-for-diffusion": [
+  "058-diffusion-and-flow-policies"
+ ],
+ "45-flow-models-and-grpo": [
+  "058-diffusion-and-flow-policies"
+ ],
+ "46-vision-language-models": [
+  "059-rl-for-vision-speech-and-robots"
+ ],
+ "47-speech-and-audio": [
+  "059-rl-for-vision-speech-and-robots"
+ ],
+ "48-robotics-and-embodied-agents": [
+  "059-rl-for-vision-speech-and-robots"
+ ],
+ "49-reward-hacking-and-overoptimization": [
+  "060-reward-hacking-and-safe-rl"
+ ],
+ "50-safe-and-constrained-rl": [
+  "060-reward-hacking-and-safe-rl"
+ ],
+ "51-scaling-rl": [
+  "060-reward-hacking-and-safe-rl"
+ ],
+ "52-the-frontier": [
+  "060-reward-hacking-and-safe-rl"
+ ]
+}

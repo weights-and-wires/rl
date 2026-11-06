@@ -1,0 +1,15 @@
+{
+  "id": "004-optimism-and-ucb",
+  "title": "UCB1: pull the arm that could be best",
+  "brief": "Score each arm by its mean plus an uncertainty bonus, pull the top score, and watch regret grow only logarithmically.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "ucb_bonus divides by the count, so fill the result with np.inf first and write the bonus only where counts > 0.",
+    "The bonus uses np.log(t), the total pulls so far, and not np.log(counts). The count goes in the denominator only.",
+    "ucb1_scores is means + ucb_bonus(counts, t). An unpulled arm has an infinite bonus, so its score is infinite too.",
+    "np.flatnonzero(scores == scores.max()) lists every arm tied for the top score. Pick one with rng.choice, because np.argmax always returns the lowest index.",
+    "In the bound, the arms with gap 0 add nothing to the logarithmic sum, so drop them before you divide by the gaps."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "005-thompson-sampling",
+  "title": "Thompson sampling with Beta beliefs",
+  "brief": "Keep a Beta belief about each arm, draw one plausible mean per arm, and play the largest draw.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "With a uniform Beta(1, 1) prior, the posterior after S successes and F failures is Beta(1 + S, 1 + F): add one to each count.",
+    "rng.beta(a, b) with array arguments draws one sample per arm in one call. Thompson sampling plays the argmax of the samples, never of the posterior means.",
+    "For prob_best, rng.beta(a, b, size=(n_samples, k)) draws every round at once. np.argmax(samples, axis=1) names each round's winner, and np.bincount counts them.",
+    "The probabilities from prob_best must add up to 1, because every round has exactly one winner."
+  ]
+}

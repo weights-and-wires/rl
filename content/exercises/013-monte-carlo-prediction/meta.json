@@ -1,0 +1,13 @@
+{
+  "id": "013-monte-carlo-prediction",
+  "title": "Monte Carlo prediction on the random walk",
+  "brief": "Estimate state values by averaging the returns that followed each state in complete episodes, first-visit and every-visit, and check them against the exact values of the random walk.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "For first-visit estimates, make a fresh empty set at the start of each episode and skip a state once it is in the set.",
+    "Keep two arrays, total[s] and count[s]. Add the return G[t] to total[s] and 1 to count[s] each time a visit counts, then divide at the end.",
+    "Divide with np.divide(total, count, out=np.zeros(n_states), where=count > 0) so states that no episode visits stay at 0."
+  ]
+}

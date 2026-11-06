@@ -1,0 +1,13 @@
+{
+  "id": "017-sarsa-and-q-learning",
+  "title": "SARSA and Q-learning on the cliff",
+  "brief": "Write the two TD control updates, learn the cliff walk with each, and see them choose different paths from the same experience.",
+  "needs_gpu": false,
+  "timeout": 50,
+  "packages": ["numpy"],
+  "hints": [
+    "SARSA's target uses the action you will actually take next: r + gamma * Q[s2, a2] * (not terminated). Q-learning's uses the max over actions, whatever you take: Q[s2].max().",
+    "Break ties with rng.choice(np.flatnonzero(q_row == q_row.max())). With Q = 0 everywhere, argmax always goes up into the wall.",
+    "In sarsa, choose the first action before the step loop, choose a2 before the update, and carry a2 into the next step as the action you take."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "025-deep-q-networks",
+  "title": "A replay buffer, a target network, the Huber loss, and DQN on CartPole",
+  "brief": "Build the parts of a deep Q-network one at a time, check each exactly, then wire them into a training loop that balances CartPole.",
+  "needs_gpu": false,
+  "timeout": 130,
+  "packages": [
+    "numpy",
+    "torch"
+  ],
+  "hints": [
+    "A ring buffer keeps a write index i. Each add writes slot i, then sets i = (i + 1) % capacity, and the size grows until it reaches capacity. Sample indices with rng.integers(0, size, batch_size).",
+    "dqn_targets is r + gamma * (1 - terminated) * next_q.max(dim=1).values, computed under torch.no_grad(). Only true terminations zero the bootstrap; a time limit does not.",
+    "The Huber loss is 0.5 * u**2 where |u| <= kappa and kappa * (|u| - 0.5 * kappa) elsewhere. torch.where picks between the two. Its gradient is clip(u, -kappa, kappa) / n.",
+    "In dqn_loss, pick Q(s, a) with q_net(s).gather(1, a[:, None]).squeeze(1). Build y from target_net(s2) inside torch.no_grad().",
+    "soft_update loops over zip(target_net.parameters(), q_net.parameters()) inside torch.no_grad() and does p_target.mul_(1 - tau).add_(tau * p).",
+    "In train_dqn, store `terminated` in the buffer, but reset the environment when terminated or truncated is true."
+  ]
+}

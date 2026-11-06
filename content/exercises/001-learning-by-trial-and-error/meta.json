@@ -1,0 +1,15 @@
+{
+  "id": "001-learning-by-trial-and-error",
+  "title": "The agent-environment loop",
+  "brief": "Build a random agent, run it in a small grid room, and log the state, action, and reward of every step.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "A random policy is a table where every row holds the same probability, 1 / n_actions. np.full((n_states, n_actions), 1.0 / n_actions) builds it.",
+    "Record the state before you call mdp.step, not after. states[t], actions[t], and rewards[t] all belong to the same step.",
+    "rng.choice(mdp.n_actions, p=pi[s]) draws one action with the policy's probabilities.",
+    "Stop the loop when terminated or truncated is True. Return terminated itself, so a time-limit stop reports False.",
+    "np.bincount(states, minlength=n_states) counts how often each state appears."
+  ]
+}

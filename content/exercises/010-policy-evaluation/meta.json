@@ -1,0 +1,13 @@
+{
+  "id": "010-policy-evaluation",
+  "title": "Policy evaluation by sweeping",
+  "brief": "Apply the Bellman equation as an update, sweep until the values stop changing, and check the result against the exact solve and the error guarantee.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "A synchronous sweep computes the whole new vector from the old one: r_pi + mdp.gamma * P_pi @ v. Don't overwrite v entry by entry during a sweep.",
+    "In iterative_policy_evaluation, count a sweep every time you call bellman_sweep, and return the new vector from the last sweep, not the one before it.",
+    "stopping_bound is one line: gamma / (1 - gamma) * last_change."
+  ]
+}

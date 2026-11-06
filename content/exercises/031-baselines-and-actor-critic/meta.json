@@ -1,0 +1,16 @@
+{
+  "id": "031-baselines-and-actor-critic",
+  "title": "Baselines, the optimal baseline, and a one-step actor-critic",
+  "brief": "Measure exactly how much variance a baseline removes, find the constant baseline that removes the most, then swap the return for a critic's TD error and train an actor-critic.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "For a softmax over arms, grad log pi(a) = e_a - pi. np.eye(k) - pi holds all k score vectors as rows.",
+    "One sample's squared length is (R - b)^2 * |e_a - pi|^2. Average it over arms and noise to get the second moment, then subtract |mean|^2 to get the total variance.",
+    "The noise sigma adds pi_a * sigma^2 * |e_a - pi|^2 to the second moment whatever b is, so it drops out of b*.",
+    "mdp.P @ v has shape (S, A): the expected next-state value for every state and action."
+  ]
+}

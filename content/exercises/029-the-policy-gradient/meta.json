@@ -1,0 +1,15 @@
+{
+  "id": "029-the-policy-gradient",
+  "title": "The policy gradient and REINFORCE",
+  "brief": "Write a softmax policy and its score, compute a policy's exact expected return, then build REINFORCE and check that its average over episodes matches the gradient you measure by nudging each logit.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "The score of a softmax is one-hot minus probabilities: row s of grad log pi(a | s) is e_a - pi[s], and every other row is zero.",
+    "Subtract each row's maximum before exponentiating, with theta.max(axis=1, keepdims=True), so that large logits do not overflow.",
+    "J is mdp.mu0 @ rlenvs.policy_evaluation(mdp, pi).",
+    "REINFORCE weights step t by gamma^t * G_t, not by G_t alone. Dropping gamma^t changes the expectation, and the last check detects it.",
+    "np.add.at(grad, states, weights[:, None] * scores) adds each step's scaled score into its state's row, even when a state repeats."
+  ]
+}

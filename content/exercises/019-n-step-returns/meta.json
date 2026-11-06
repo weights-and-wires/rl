@@ -1,0 +1,13 @@
+{
+  "id": "019-n-step-returns",
+  "title": "n-step returns and n-step TD",
+  "brief": "Build the n-step return, check that it shrinks the error of the values it bootstraps from by a factor of gamma to the n, and find the middle n that learns fastest on the 19-state random walk.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "In n_step_return, sum rewards[k] * gamma ** (k - t) for k in range(t, min(t + n, T)), and add gamma ** n * values[t + n] only when t + n < T.",
+    "The expected n-step return is the sum over k < n of gamma**k * P^k r, plus gamma**n * P^n V. Keep a running matrix power with step = step @ P_pi.",
+    "In n_step_td, update the states of an episode in order, each with the current V, and set the terminal state's value to 0 before you start."
+  ]
+}

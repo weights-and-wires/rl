@@ -1,0 +1,13 @@
+{
+  "id": "008-markov-decision-processes",
+  "title": "Sampling trajectories and averaging out the policy",
+  "brief": "Follow a policy through the hallway MDP to sample episodes, then average the policy away to get the Markov chain P_pi and the expected reward r_pi.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "In sample_episode, call mdp.sample(s, a, rng), which returns (next_state, reward). Append the first state before the loop and every next state inside it, so states ends up one longer than actions.",
+    "np.einsum('sa,sat->st', pi, mdp.P) averages the transition rows over the policy's actions. The expected reward is (pi * mdp.R).sum(axis=1).",
+    "Zero the terminal rows with a mask: live = ~mdp.terminal, then P_pi * live[:, None] and r_pi * live."
+  ]
+}
