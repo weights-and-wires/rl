@@ -1,6 +1,6 @@
 ---
 title: Infrastructure for LLM RL
-slug: 059-rl-infrastructure-for-llms
+slug: 060-rl-infrastructure-for-llms
 part: "Part 9 — RL for language models"
 summary: Correct a policy gradient for samples that came from a stale or slightly different policy, and see what truncating the importance weights buys.
 minutes: 40
@@ -14,7 +14,7 @@ prereqs:
   - 015-off-policy-importance-sampling
   - 034-proximal-policy-optimization
   - 054-group-relative-policy-optimization
-exercise: 059-rl-infrastructure-for-llms
+exercise: 060-rl-infrastructure-for-llms
 ---
 
 # Infrastructure for LLM RL

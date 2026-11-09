@@ -1,6 +1,6 @@
 ---
 title: Reward hacking, safety, and the frontier
-slug: 062-reward-hacking-and-safe-rl
+slug: 063-reward-hacking-and-safe-rl
 part: "Part 10 — Beyond text, and what can go wrong"
 summary: Measure how a proxy reward diverges from the goal under best-of-n, delay the fall with ensembles, and enforce a cost budget with a Lagrange multiplier.
 minutes: 45
@@ -13,8 +13,8 @@ objectives:
 prereqs:
   - 050-language-models-as-policies
   - 051-reward-models
-  - 056-process-rewards-and-search
-exercise: 062-reward-hacking-and-safe-rl
+  - 057-process-rewards-and-search
+exercise: 063-reward-hacking-and-safe-rl
 ---
 
 # Reward hacking, safety, and the frontier
@@ -29,7 +29,7 @@ This last chapter asks the question every earlier one leaves open: how far can y
 
 - The KL divergence $\text{KL}(p \,\|\, q) = \sum_i p_i \log(p_i/q_i)$ measures how far a policy $p$ has moved from $q$ (see [Language models as policies](/lessons/050-language-models-as-policies)).
 - A reward model scores outputs with a number learned from human comparisons (see [Reward models from preferences](/lessons/051-reward-models)).
-- Best-of-$n$ draws $n$ outputs and keeps the one with the highest score (see [Process rewards and test-time search](/lessons/056-process-rewards-and-search)).
+- Best-of-$n$ draws $n$ outputs and keeps the one with the highest score (see [Process rewards and test-time search](/lessons/057-process-rewards-and-search)).
 - A policy that maximizes a flawed reward finds the flaw.
 
 ## A proxy and a goal

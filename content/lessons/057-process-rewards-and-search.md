@@ -1,6 +1,6 @@
 ---
 title: Process rewards and test-time search
-slug: 056-process-rewards-and-search
+slug: 057-process-rewards-and-search
 part: "Part 9 — RL for language models"
 summary: Spend compute at answer time with best-of-n, weighted voting, and beam search steered by a process reward model that is a value function.
 minutes: 40
@@ -13,8 +13,8 @@ objectives:
 prereqs:
   - 022-monte-carlo-tree-search
   - 051-reward-models
-  - 055-reasoning-with-verifiable-rewards
-exercise: 056-process-rewards-and-search
+  - 056-reasoning-with-verifiable-rewards
+exercise: 057-process-rewards-and-search
 ---
 
 # Process rewards and test-time search
@@ -27,7 +27,7 @@ The question is how to spend those extra tries. You can draw whole answers and k
 
 - A language model is a policy $\pi(y \mid x)$ that generates one token at a time, from [Language models as policies](/lessons/050-language-models-as-policies).
 - An outcome reward model scores a whole response, and a process reward model scores each step, from [Reward models from preferences](/lessons/051-reward-models).
-- A verifiable reward is a Python rule that returns 0 or 1, from [Reasoning with verifiable rewards](/lessons/055-reasoning-with-verifiable-rewards).
+- A verifiable reward is a Python rule that returns 0 or 1, from [Reasoning with verifiable rewards](/lessons/056-reasoning-with-verifiable-rewards).
 - The value $V^\pi(s)$ of a state is the expected return from $s$ under $\pi$, and it obeys a backward Bellman recursion.
 - Tree search expands the most promising branches first, from [Monte Carlo tree search](/lessons/022-monte-carlo-tree-search).
 
@@ -50,7 +50,7 @@ F_prev = np.concatenate([[0.0], F[:-1]])
 expected = np.sum(rewards[order] * (F**n - F_prev**n))
 ```
 
-With a 0/1 reward the formula collapses to $1 - (1 - p)^n$, because best-of-n fails only when every draw fails. On this chapter's toy, the policy succeeds 8.6% of the time, and a perfect verifier lifts that to 30.3% at $n = 4$, 76.4% at $n = 16$, and 99.7% at $n = 64$. The price is $n$ full generations. A learned scorer is not perfect, and as $n$ grows best-of-n finds what it overrates, which [Reward hacking, safety, and the frontier](/lessons/062-reward-hacking-and-safe-rl) measures.
+With a 0/1 reward the formula collapses to $1 - (1 - p)^n$, because best-of-n fails only when every draw fails. On this chapter's toy, the policy succeeds 8.6% of the time, and a perfect verifier lifts that to 30.3% at $n = 4$, 76.4% at $n = 16$, and 99.7% at $n = 64$. The price is $n$ full generations. A learned scorer is not perfect, and as $n$ grows best-of-n finds what it overrates, which [Reward hacking, safety, and the frontier](/lessons/063-reward-hacking-and-safe-rl) measures.
 
 ## Vote on the final answer
 

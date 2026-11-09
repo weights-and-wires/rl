@@ -1,5 +1,5 @@
 {
-  "id": "062-reward-hacking-and-safe-rl",
+  "id": "063-reward-hacking-and-safe-rl",
   "title": "The Goodhart curve, ensembles, and a Lagrangian budget",
   "brief": "Compute best-of-n exactly and watch gold fall while the proxy climbs, delay the fall with ensembles, then enforce a cost budget with a Lagrange multiplier and a primal-dual loop.",
   "needs_gpu": false,

@@ -1,6 +1,6 @@
 ---
 title: AI feedback and self-improvement
-slug: 057-ai-feedback-and-self-improvement
+slug: 058-ai-feedback-and-self-improvement
 part: "Part 9 — RL for language models"
 summary: Train a model on its own filtered samples, see that this is reward-weighted regression, and see why it collapses, then play it against its past self with SPIN.
 minutes: 40
@@ -13,9 +13,9 @@ objectives:
 prereqs:
   - 029-the-policy-gradient
   - 053-direct-preference-optimization
-  - 055-reasoning-with-verifiable-rewards
-  - 056-process-rewards-and-search
-exercise: 057-ai-feedback-and-self-improvement
+  - 056-reasoning-with-verifiable-rewards
+  - 057-process-rewards-and-search
+exercise: 058-ai-feedback-and-self-improvement
 ---
 
 # AI feedback and self-improvement
@@ -28,8 +28,8 @@ This chapter follows the simplest form of the idea: a model that trains on its o
 
 - The REINFORCE gradient of expected reward is $\mathbb{E}_{y \sim \pi_\theta}[r(y)\nabla_\theta \log \pi_\theta(y)]$, from [The policy gradient and REINFORCE](/lessons/029-the-policy-gradient).
 - DPO trains on a chosen and a rejected response with the loss $-\log\sigma\big(\beta\log\frac{\pi_\theta(y_w)}{\pi_{\text{ref}}(y_w)} - \beta\log\frac{\pi_\theta(y_l)}{\pi_{\text{ref}}(y_l)}\big)$, from [Direct preference optimization](/lessons/053-direct-preference-optimization).
-- A verifiable reward is a 0/1 check such as "the answer is correct", from [Reasoning with verifiable rewards](/lessons/055-reasoning-with-verifiable-rewards).
-- The digit-sum toy from [Process rewards and test-time search](/lessons/056-process-rewards-and-search): four digits from 0 to 7, correct when they sum to a target, with a per-step table of probabilities as the policy.
+- A verifiable reward is a 0/1 check such as "the answer is correct", from [Reasoning with verifiable rewards](/lessons/056-reasoning-with-verifiable-rewards).
+- The digit-sum toy from [Process rewards and test-time search](/lessons/057-process-rewards-and-search): four digits from 0 to 7, correct when they sum to a target, with a per-step table of probabilities as the policy.
 
 ## Keep what works
 
@@ -234,7 +234,7 @@ The checks test the functions in this order. The torch functions take per-token 
 
 **Judges have biases, and the policy learns them.** LLM judges favor whichever answer they see first or second, longer answers, and answers in their own style. Asking in both orders and averaging, $P(y_1 \succ y_2) = \frac{1}{2}(p_{ab} + 1 - p_{ba})$, removes position bias only. When the policy is its own judge, the other biases feed back every round, so people use length control and a fixed held-out human evaluation.
 
-**Right answers can hide wrong reasoning.** A 0/1 check on the final answer keeps a lucky guess with a broken rationale, and expert iteration then trains on it. Process checks from [Process rewards and test-time search](/lessons/056-process-rewards-and-search) help.
+**Right answers can hide wrong reasoning.** A 0/1 check on the final answer keeps a lucky guess with a broken rationale, and expert iteration then trains on it. Process checks from [Process rewards and test-time search](/lessons/057-process-rewards-and-search) help.
 
 ## Further reading
 

@@ -220,7 +220,7 @@ The checks test the functions in this order. The function `k3_kl` is given in fu
 
 **Tied groups.** When every response in a group is right, or every one is wrong, all advantages are zero and the group teaches nothing. DAPO's dynamic sampling drops such groups and refills the batch.
 
-**Entropy collapse.** Symmetric clipping and positive updates on likely tokens make the policy deterministic early, and exploration stops. Clip-higher is one remedy, and [Reasoning with verifiable rewards](/lessons/055-reasoning-with-verifiable-rewards) measures the collapse.
+**Entropy collapse.** Symmetric clipping and positive updates on likely tokens make the policy deterministic early, and exploration stops. Clip-higher is one remedy, and [Reasoning with verifiable rewards](/lessons/056-reasoning-with-verifiable-rewards) measures the collapse.
 
 **Length drift.** Growing length alone does not prove the model reasons more. Check the length of right and wrong answers separately.
 

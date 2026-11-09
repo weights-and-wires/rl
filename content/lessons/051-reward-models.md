@@ -216,7 +216,7 @@ The step reward is the change in value that a token causes, $r^{\text{proc}}_t =
 Each row sums to the outcome reward minus 0.3, because the middle values cancel. In general the process rewards along a response sum to $r(y) - V^\pi(s_0)$: the outcome reward minus a constant. So the two rewards agree on which whole responses are better, and they differ in which tokens get the credit. The first step of $(0, 1)$ gets negative credit even though the response succeeds, because a 0 made success less likely.
 
 > [!KEY]
-> A value-based process reward is $V(s_{t+1}) - V(s_t)$. It telescopes to the outcome reward minus $V(s_0)$, so it moves credit between tokens without changing which responses are better. [Process rewards and test-time search](/lessons/056-process-rewards-and-search) estimates these values from sampled completions.
+> A value-based process reward is $V(s_{t+1}) - V(s_t)$. It telescopes to the outcome reward minus $V(s_0)$, so it moves credit between tokens without changing which responses are better. [Process rewards and test-time search](/lessons/057-process-rewards-and-search) estimates these values from sampled completions.
 
 > [!RECAP]
 > - The Bradley-Terry loss is `softplus(-(r_chosen - r_rejected)).mean()`, and its gradient for the chosen reward is $-(1 - \sigma(\Delta)) / n$.
