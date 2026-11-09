@@ -215,7 +215,7 @@ The checks test the functions in this order. The network, `VecCartPole`, `collec
 
 **The clip does not bound the KL.** Ratios can drift well past $1 \pm \epsilon$ over several epochs, because other samples' gradients move shared parameters. Monitor `approx_kl` and stop the epochs early when it passes a target such as 0.015.
 
-**Implementation details carry much of the performance.** Engstrom et al. (2020) found that code-level choices, such as reward scaling, orthogonal initialization, and learning-rate annealing, explain much of PPO's advantage over TRPO. OpenAI's reference code also clips the critic's update, which the exercise leaves out, and Andrychowicz et al. (2021) found that it can hurt. Compare implementations with their details listed, and run several seeds.
+**Implementation details carry much of the performance.** Engstrom et al. (2020) found that code-level choices, such as reward scaling, orthogonal initialization, and learning-rate annealing, explain much of PPO's advantage over TRPO. OpenAI's reference code also clips the critic's update, which the exercise leaves out, and Andrychowicz et al. (2021) found that it can hurt. [PPO in practice](/lessons/035-ppo-in-practice) carries this clip to a diagonal Gaussian and builds those details. Compare implementations with their details listed, and run several seeds.
 
 **Seed sensitivity.** Even here, 20 seeds gave greedy scores from 255 to 500. Report a spread over seeds, never one run.
 
@@ -228,7 +228,7 @@ The checks test the functions in this order. The network, `VecCartPole`, `collec
 - [Engstrom et al. (2020), Implementation matters in deep policy gradients](https://arxiv.org/abs/2005.12729) shows that code-level optimizations drive much of PPO's performance.
 - [Schulman (2020), Approximating KL divergence](http://joschu.net/blog/kl-approx.html) compares the k1, k2, and k3 estimators.
 
-The next chapter, [Why policy optimization works](/lessons/035-why-policy-optimization-works), proves the identity behind all these surrogates.
+[Why policy optimization works](/lessons/036-why-policy-optimization-works) proves the identity behind these surrogates.
 
 ## The exercise
 
