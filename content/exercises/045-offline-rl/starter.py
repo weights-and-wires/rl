@@ -1,4 +1,4 @@
-"""Offline reinforcement learning: extrapolation error, CQL, and IQL in a table.
+"""Offline reinforcement learning: extrapolation error, CQL, IQL, and a TD3+BC actor loss.
 
 You learn from a fixed dataset of transitions and never touch the
 environment. The dataset is a dict of equal-length arrays:
@@ -172,6 +172,33 @@ def iql_values(
     raise NotImplementedError("iql_values")
 
 
+def bc_regularized_actor_loss(
+    pi_actions: np.ndarray,
+    data_actions: np.ndarray,
+    q_pi: np.ndarray,
+    q_data: np.ndarray,
+    alpha: float = 2.5,
+) -> float:
+    """TD3+BC actor loss to minimize.
+
+    λ = alpha / mean(|q_data|) is a constant. The loss is the mean squared
+    gap between pi_actions and data_actions, minus λ times the mean of q_pi.
+    q_data is Q at the logged actions and does not enter the Q term.
+
+    Args:
+        pi_actions: π(s), shape (N,).
+        data_actions: logged actions, shape (N,).
+        q_pi: Q(s, π(s)), shape (N,).
+        q_data: Q(s, a) at the logged actions, shape (N,).
+        alpha: TD3+BC's coefficient. Fujimoto and Gu use 2.5. This is not
+            CQL's penalty weight.
+
+    Returns:
+        A float.
+    """
+    raise NotImplementedError("bc_regularized_actor_loss")
+
+
 if __name__ == "__main__":
     mdp = rlenvs.cliff_walking(gamma=0.9)
     S, A = mdp.n_states, mdp.n_actions
@@ -191,3 +218,8 @@ if __name__ == "__main__":
     for tau in (0.5, 0.7, 0.9, 0.99):
         Q, V = iql_values(data, S, A, mdp.gamma, tau)
         print(f"IQL tau={tau:<4}  V(start)={V[start]:7.3f}")
+
+    pi = np.array([0.5, 0.0, 0.1])
+    logged = np.array([0.0, 0.2, -0.4])
+    loss = bc_regularized_actor_loss(pi, logged, 4.0 * pi, np.array([10.0, -20.0, 30.0]), alpha=2.5)
+    print(f"TD3+BC actor loss: {loss:.2f}")

@@ -93,7 +93,7 @@ chapters that cover it, and the app carries your completed work across.
 | `042-exploration-bonuses` | Exploration beyond epsilon | Count bonuses, an empirical model, posterior sampling, and random network distillation on RiverSwim |
 | `043-imitation-learning` | Imitation learning | Behavior cloning, the compounding-error gap measured on a tightrope, and DAgger closing it |
 | `044-inverse-rl-and-gail` | Inverse RL and GAIL | Soft value iteration, state visitation, MaxEnt IRL feature matching, and the GAIL discriminator and reward |
-| `045-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, and expectile value learning in IQL |
+| `045-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, IQL's expectile, and the TD3+BC actor loss |
 
 ## Part 8 — Rewards, evaluation, and many agents
 
