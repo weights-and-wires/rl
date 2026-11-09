@@ -59,6 +59,21 @@ BANNED = [
 ]
 
 
+def _is_draft(meta: dict) -> bool:
+    """True when front matter says `draft: true`.
+
+    Matches `backend/app/curriculum.py`. A published lesson omits the field,
+    and only a boolean or the string `true` counts, so a typo cannot skip the
+    prose minimum.
+    """
+    value = meta.get("draft", False)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() == "true"
+    return False
+
+
 def parse_frontmatter(text: str) -> tuple[dict, str]:
     if not text.startswith("---\n"):
         raise ValueError("the file does not start with YAML front matter")
@@ -236,7 +251,9 @@ def check_lesson(path: Path, problems: list[str], seen_exercises: set[str]) -> N
         problems.append(f"{path.name}: further reading needs at least three linked sources")
 
     words = len(re.sub(r"```figure\n.*?```", "", body, flags=re.S).split())
-    if words < 800:
+    # A draft holds a number while the chapter is written. The published
+    # lesson still has to meet the prose minimum; a draft does not.
+    if words < 800 and not _is_draft(meta):
         problems.append(f"{path.name}: {words} words, the contract asks for 900 or more")
     if words > 2600:
         problems.append(f"{path.name}: {words} words; split the chapter, the contract caps it near 2000")
