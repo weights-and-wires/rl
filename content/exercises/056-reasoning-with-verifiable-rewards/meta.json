@@ -1,5 +1,5 @@
 {
-  "id": "055-reasoning-with-verifiable-rewards",
+  "id": "056-reasoning-with-verifiable-rewards",
   "title": "pass@k, entropy collapse, and RLVR on a toy arithmetic task",
   "brief": "Build the unbiased pass@k estimator, a verifiable answer reward, and the entropy covariance law, then train a toy arithmetic model with RLVR and watch pass@1 rise while pass@64 falls. The GPU run trains Qwen3-0.6B-Base R1-Zero style.",
   "needs_gpu": true,

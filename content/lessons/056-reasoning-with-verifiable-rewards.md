@@ -1,6 +1,6 @@
 ---
 title: Reasoning with verifiable rewards
-slug: 055-reasoning-with-verifiable-rewards
+slug: 056-reasoning-with-verifiable-rewards
 part: "Part 9 — RL for language models"
 summary: Train on answers a program can check, measure pass@k without bias, and see why entropy collapse lets pass@1 rise while pass@k falls.
 minutes: 40
@@ -13,7 +13,7 @@ objectives:
 prereqs:
   - 051-reward-models
   - 054-group-relative-policy-optimization
-exercise: 055-reasoning-with-verifiable-rewards
+exercise: 056-reasoning-with-verifiable-rewards
 ---
 
 # Reasoning with verifiable rewards

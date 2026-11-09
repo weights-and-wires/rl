@@ -219,7 +219,7 @@ $$
 
 $w_i$ is 1 when sample $i$ is among the $k$ highest rewards for its prompt. The weighted sum equals the supervised loss on the kept rows. The same sum with the raw rewards as weights does not: a reward of 0.9 is a different number from a weight of 1.
 
-The sampler stays frozen, a discarded reply sends no gradient, and the loss has no advantage and no KL term. Reinforcement learning, in the chapters ahead, can give a near miss a small advantage. Drawing the next round from the updated model is expert iteration, which [AI feedback and self-improvement](/lessons/057-ai-feedback-and-self-improvement) builds. One round is still cloning.
+The sampler stays frozen, a discarded reply sends no gradient, and the loss has no advantage and no KL term. Reinforcement learning, in the chapters ahead, can give a near miss a small advantage. Drawing the next round from the updated model is expert iteration, which [AI feedback and self-improvement](/lessons/058-ai-feedback-and-self-improvement) builds. One round is still cloning.
 
 > [!KEY]
 > Rejection sampling fine-tuning is supervised learning on the kept rows. It matches reward-weighted regression only when the weights are 0 or 1, not the raw rewards.

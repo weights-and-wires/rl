@@ -1,5 +1,5 @@
 {
-  "id": "056-process-rewards-and-search",
+  "id": "057-process-rewards-and-search",
   "title": "Best-of-n, weighted voting, and PRM-guided beam search",
   "brief": "Compute best-of-n's expected reward exactly, build majority and weighted voting, then steer beam search on a toy with a known step-level value.",
   "needs_gpu": false,

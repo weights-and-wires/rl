@@ -1,5 +1,5 @@
 {
-  "id": "058-agents-and-multi-turn-rl",
+  "id": "059-agents-and-multi-turn-rl",
   "title": "Loss masks, turn-level credit, and a calculator agent",
   "brief": "Mask tool output out of the policy loss and prove its gradient is zero, compute turn-level and token-level returns, then train a tabular agent to use a calculator.",
   "needs_gpu": false,

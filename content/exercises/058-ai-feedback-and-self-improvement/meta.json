@@ -1,5 +1,5 @@
 {
-  "id": "057-ai-feedback-and-self-improvement",
+  "id": "058-ai-feedback-and-self-improvement",
   "title": "Expert iteration as reward-weighted regression, and the SPIN loss",
   "brief": "Show that filtering a model's own samples and fine-tuning on them is reward-weighted regression, compute the exact EM step on a toy, and implement SPIN exactly as its paper writes it.",
   "needs_gpu": false,
