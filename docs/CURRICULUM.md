@@ -1,6 +1,6 @@
 # Curriculum
 
-Sixty chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Sixty-one chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -106,21 +106,22 @@ chapters that cover it, and the app carries your completed work across.
 
 | Slug | Title | Exercise delivers |
 |---|---|---|
-| `048-language-models-as-policies` | Language models as policies | Token and sequence log-probabilities, the KL-regularized optimum, and best-of-n's distribution and KL |
-| `049-reward-models` | Reward models from preferences | The Bradley-Terry loss, reward-model fitting, reward ensembles, and prefix values with process rewards |
-| `050-rlhf-with-ppo` | RLHF with PPO | KL-shaped rewards, the k1, k2, and k3 estimators, and PPO on a toy language model that nears the KL-regularized optimum — **GPU**: PPO with a KL penalty on Qwen3-0.6B against a rule-based reward |
-| `051-direct-preference-optimization` | Direct preference optimization | The DPO loss and gradient, IPO, and likelihood displacement in a linear model |
-| `052-group-relative-policy-optimization` | Group-relative policy optimization | RLOO and GRPO advantages, their bias, the clipped surrogate with separate bounds, loss aggregation, and the GRPO loss — **GPU**: GRPO on Qwen3-0.6B, with and without the Dr. GRPO fixes |
-| `053-reasoning-with-verifiable-rewards` | Reasoning with verifiable rewards | The pass@k estimator, a verifiable answer reward, the policy-gradient loss, entropy collapse, and RLVR on a toy task — **GPU**: R1-Zero-style RLVR on Qwen3-0.6B-Base for arithmetic, with pass@k tracked |
-| `054-process-rewards-and-search` | Process rewards and test-time search | Best-of-n expected reward, majority and weighted voting, step values, and PRM-guided beam search |
-| `055-ai-feedback-and-self-improvement` | AI feedback and self-improvement | Filtered SFT loss, expert iteration as reward-weighted regression, an EM step, and the SPIN loss |
-| `056-agents-and-multi-turn-rl` | Agents and multi-turn RL | Loss masks over tool output, a masked policy-gradient loss, turn-level returns, and a toy tool-using agent |
-| `057-rl-infrastructure-for-llms` | Infrastructure for LLM RL | Truncated and masked importance weights, their bias and variance, sequence ratios, and stale-rollout drift |
+| `048-sft-and-the-post-training-pipeline` | Supervised fine-tuning and the post-training pipeline | Masked next-token loss with the label shift, sequence packing with a block-diagonal mask, and rejection sampling as reward-weighted regression with weights of 0 or 1 |
+| `049-language-models-as-policies` | Language models as policies | Token and sequence log-probabilities, the KL-regularized optimum, and best-of-n's distribution and KL |
+| `050-reward-models` | Reward models from preferences | The Bradley-Terry loss, reward-model fitting, reward ensembles, and prefix values with process rewards |
+| `051-rlhf-with-ppo` | RLHF with PPO | KL-shaped rewards, the k1, k2, and k3 estimators, and PPO on a toy language model that nears the KL-regularized optimum — **GPU**: PPO with a KL penalty on Qwen3-0.6B against a rule-based reward |
+| `052-direct-preference-optimization` | Direct preference optimization | The DPO loss and gradient, IPO, and likelihood displacement in a linear model |
+| `053-group-relative-policy-optimization` | Group-relative policy optimization | RLOO and GRPO advantages, their bias, the clipped surrogate with separate bounds, loss aggregation, and the GRPO loss — **GPU**: GRPO on Qwen3-0.6B, with and without the Dr. GRPO fixes |
+| `054-reasoning-with-verifiable-rewards` | Reasoning with verifiable rewards | The pass@k estimator, a verifiable answer reward, the policy-gradient loss, entropy collapse, and RLVR on a toy task — **GPU**: R1-Zero-style RLVR on Qwen3-0.6B-Base for arithmetic, with pass@k tracked |
+| `055-process-rewards-and-search` | Process rewards and test-time search | Best-of-n expected reward, majority and weighted voting, step values, and PRM-guided beam search |
+| `056-ai-feedback-and-self-improvement` | AI feedback and self-improvement | Filtered SFT loss, expert iteration as reward-weighted regression, an EM step, and the SPIN loss |
+| `057-agents-and-multi-turn-rl` | Agents and multi-turn RL | Loss masks over tool output, a masked policy-gradient loss, turn-level returns, and a toy tool-using agent |
+| `058-rl-infrastructure-for-llms` | Infrastructure for LLM RL | Truncated and masked importance weights, their bias and variance, sequence ratios, and stale-rollout drift |
 
 ## Part 10 — Beyond text, and what can go wrong
 
 | Slug | Title | Exercise delivers |
 |---|---|---|
-| `058-diffusion-and-flow-policies` | Diffusion and flow models as policies | Gaussian log-probabilities, the DDPM mean, a denoising rollout, DDPO, the Diffusion-DPO loss, and a toy DDPO training run |
-| `059-rl-for-vision-speech-and-robots` | RL for vision, speech, and robots | IoU and detection rewards, word error rate, minimum-WER training, and residual action with a REINFORCE gradient |
-| `060-reward-hacking-and-safe-rl` | Reward hacking, safety, and the frontier | Best-of-n KL, the Goodhart curve with ensembles, and the Lagrangian dual value and primal-dual update |
+| `059-diffusion-and-flow-policies` | Diffusion and flow models as policies | Gaussian log-probabilities, the DDPM mean, a denoising rollout, DDPO, the Diffusion-DPO loss, and a toy DDPO training run |
+| `060-rl-for-vision-speech-and-robots` | RL for vision, speech, and robots | IoU and detection rewards, word error rate, minimum-WER training, and residual action with a REINFORCE gradient |
+| `061-reward-hacking-and-safe-rl` | Reward hacking, safety, and the frontier | Best-of-n KL, the Goodhart curve with ensembles, and the Lagrangian dual value and primal-dual update |
