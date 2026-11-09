@@ -257,3 +257,65 @@ def test_iql_tau(sub):
     if not gap <= 0.1:
         fail(f"at tau = 0.99, V should be within 0.1 of the best in-data value, the gap is {gap:.3f}")
 
+
+def _bc_reference(pi, data_actions, q_pi, q_data, alpha):
+    """The paper's minimized actor loss, with λ held constant."""
+    lam = float(alpha) / float(np.mean(np.abs(q_data)))
+    return float(np.mean((pi - data_actions) ** 2) - lam * np.mean(q_pi))
+
+
+# Wrong implementation this check catches: using alpha as lambda, without
+# dividing by the mean absolute Q. On the three-row batch that loss is -1.82,
+# not 0.08.
+@check("bc_regularized_actor_loss is the mean squared gap minus lambda times the mean Q")
+def test_bc_regularized_actor_loss(sub):
+    bc_regularized_actor_loss = has(sub, "bc_regularized_actor_loss")
+    pi = np.array([0.5, 0.0, 0.1])
+    logged = np.array([0.0, 0.2, -0.4])
+    q_pi = 4.0 * pi
+    q_data = np.array([10.0, -20.0, 30.0])
+    got = bc_regularized_actor_loss(pi, logged, q_pi, q_data, 2.5)
+    almost(got, 0.08, tol=1e-12, label="loss at alpha = 2.5 on the three-row batch")
+    almost(bc_regularized_actor_loss(pi, logged, q_pi, q_data, 1.0), 0.14, tol=1e-12,
+           label="loss at alpha = 1 on the three-row batch")
+    rng = np.random.default_rng(0)
+    pi_r = rng.normal(size=6)
+    logged_r = rng.normal(size=6)
+    q_pi_r = rng.normal(size=6)
+    q_data_r = rng.normal(size=6)
+    want = _bc_reference(pi_r, logged_r, q_pi_r, q_data_r, 1.7)
+    almost(bc_regularized_actor_loss(pi_r, logged_r, q_pi_r, q_data_r, 1.7), want, tol=1e-12,
+           label="loss on a seeded batch of 6 at alpha = 1.7")
+
+
+@check("bc_regularized_actor_loss gradient matches a finite difference, with lambda held fixed")
+def test_bc_regularized_actor_grad(sub):
+    bc_regularized_actor_loss = has(sub, "bc_regularized_actor_loss")
+    pi = np.array([0.5, 0.0, 0.1])
+    logged = np.array([0.0, 0.2, -0.4])
+    q_data = np.array([10.0, -20.0, 30.0])
+
+    def lesson_loss(x):
+        return bc_regularized_actor_loss(x, logged, 4.0 * x, q_data, 2.5)
+
+    fd = finite_difference(lesson_loss, pi.copy())
+    lam = 2.5 / np.mean(np.abs(q_data))
+    want = 2.0 * (pi - logged) / pi.size - lam * 4.0 / pi.size
+    close(fd, want, rtol=1e-6, atol=1e-8, label="gradient on the three-row batch")
+    close(fd, np.array([1.0 / 6.0, -0.3, 1.0 / 6.0]), atol=1e-8,
+          label="gradient against 1/6, -0.3, 1/6")
+
+    rng = np.random.default_rng(1)
+    pi0 = rng.normal(size=5)
+    logged_r = rng.normal(size=5)
+    q_data_r = rng.normal(size=5)
+    slope = 1.5
+
+    def seeded_loss(x):
+        return bc_regularized_actor_loss(x, logged_r, slope * x + 0.25, q_data_r, 2.5)
+
+    fd2 = finite_difference(seeded_loss, pi0.copy())
+    lam2 = 2.5 / np.mean(np.abs(q_data_r))
+    want2 = 2.0 * (pi0 - logged_r) / pi0.size - lam2 * slope / pi0.size
+    close(fd2, want2, rtol=1e-6, atol=1e-8, label="gradient on a seeded batch with Q = 1.5 pi + 0.25")
+

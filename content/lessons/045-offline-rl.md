@@ -2,13 +2,14 @@
 title: Offline reinforcement learning
 slug: 045-offline-rl
 part: "Part 7 — Models, exploration, and fixed data"
-summary: See Q-learning on a fixed dataset trust actions it never saw, then fix it with CQL's penalty and IQL's expectile value.
-minutes: 40
+summary: See Q-learning trust unseen actions, then fix the values with CQL and IQL and the actor with TD3+BC.
+minutes: 45
 gpu: false
 objectives:
   - Explain extrapolation error, and measure it exactly on a table where unseen actions keep their starting values.
   - Compute the CQL penalty and its gradient, and show that it sinks the values of actions the data never took.
   - Implement IQL's expectile loss, check its gradient, and show that tau = 0.5 gives the mean and tau near 1 the best in-data action.
+  - "Compute the TD3+BC actor loss: a squared gap to the logged action, minus lambda times mean Q, with lambda equal to alpha over the mean absolute Q."
 prereqs:
   - 017-sarsa-and-q-learning
   - 018-maximization-bias
@@ -106,7 +107,7 @@ On the cliff, the same thing happens at scale. Stepping right from the start int
 > [!KEY]
 > Offline, the values of actions the data never took are guesses that nothing can correct. A max over actions picks the most optimistic guess, and the policy follows it off the cliff.
 
-BCQ (Fujimoto and colleagues, 2019) and TD3+BC (Fujimoto and Gu, 2021) keep the policy close to the data's actions. CQL makes unseen actions look bad, and IQL never evaluates an unseen action at all. The rest of this chapter builds the last two.
+BCQ (Fujimoto and colleagues, 2019) keeps the policy close to the data's actions. CQL makes unseen actions look bad, and IQL never evaluates an unseen action at all. You build those two next, then TD3+BC (Fujimoto and Gu, 2021) in Where this breaks.
 
 ## Push unseen values down: CQL
 
@@ -248,6 +249,7 @@ The checks test the functions in this order. The helpers `make_dataset`, `action
 5. **`expectile_loss` and `expectile_loss_grad`.** One `np.where` gives the weight. Divide the gradient by `u.size`, because the loss is a mean.
 6. **`expectile(values, weights, tau, iters)`.** Work along the last axis so one call handles every state, and start at the weighted mean.
 7. **`iql_values(data, ..., tau, iters)`.** Alternate `V = expectile(Q, counts, tau)` and the mean target `r + gamma * (1 - done) * V[s2]`. A max anywhere here defeats the method.
+8. **`bc_regularized_actor_loss(pi_actions, data_actions, q_pi, q_data, alpha)`.** Arrays have shape `(N,)`. Divide `alpha` by `np.mean(np.abs(q_data))`, hold that quotient fixed, and subtract it times `np.mean(q_pi)` from the mean squared gap. Skipping the division is the common mistake.
 
 ## Where this breaks
 
@@ -255,15 +257,31 @@ The checks test the functions in this order. The helpers `make_dataset`, `action
 
 **Tuning needs evaluation that you do not have.** Picking $\alpha$ or $\tau$ by running the policy in the real environment defeats the purpose, and offline policy evaluation is its own hard problem.
 
+**Keep the actor on actions the log contains.** TD3's actor steps to increase $Q(s, \pi(s))$ and can leave every logged action (see [Deterministic policy gradients](/lessons/037-deterministic-policy-gradients)). Fujimoto and Gu (2021) add a squared penalty. Their $\alpha$ in this example is $2.5$, and it is not CQL's $\alpha$.
+
+Logged actions $0$, $0.2$, $-0.4$ have Q values $10$, $-20$, $30$, so the mean absolute Q is $20$ and $\lambda = 0.125$. Under $Q = 4\pi$, policy actions $0.5$, $0$, $0.1$ are worth $2$, $0$, $0.4$ (mean $0.8$). Squared gaps average $0.18$, so the minimized loss is $0.18 - 0.125 \times 0.8 = 0.08$. The paper maximizes the negation of that loss and holds $\lambda$ constant:
+
+$$
+\pi = \operatorname*{arg\,max}_{\pi} \mathbb{E}_{(s, a) \sim \mathcal{D}}\big[\lambda Q(s, \pi(s)) - (\pi(s) - a)^{2}\big], \qquad \lambda = \frac{\alpha}{\frac{1}{N}\sum_{i=1}^{N}|Q(s_i, a_i)|}
+$$
+
+Read it aloud: credit the policy's action by Q, then charge the squared distance to the logged action. $\lambda$ divides $\alpha$ by the mean absolute Q at the logged actions, so a negative Q cannot flip the scale. Hold `lam = alpha / np.mean(np.abs(q_data))` fixed, and minimize `np.mean((pi - a) ** 2) - lam * np.mean(q_pi)`.
+
+Drop the Q term and this loss is $0.18$. Use $\alpha$ as $\lambda$, without dividing by $20$, and the loss is $-1.82$. With $\lambda$ fixed and $Q = 4\pi$, each derivative is $2(\pi - a)/3 - 4\lambda/3$, here $1/6$, $-0.3$, and $1/6$.
+
+The authors' code detaches this average at $\pi(s)$. This exercise uses the logged actions. This lesson does not run off-policy evaluation or take new environment steps after the offline run, and it does not build advantage-weighted regression (AWR), advantage-weighted actor-critic (AWAC), or maximum a posteriori policy optimization (MPO).
+
 ## Further reading
 
 - [Levine, Kumar, Tucker, and Fu (2020), Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems](https://arxiv.org/abs/2005.01643). A survey of why offline RL is hard.
 - [Fujimoto, Meger, and Precup (2019), Off-Policy Deep Reinforcement Learning without Exploration](https://arxiv.org/abs/1812.02900). Names extrapolation error and introduces BCQ.
 - [Kumar, Zhou, Tucker, and Levine (2020), Conservative Q-Learning for Offline Reinforcement Learning](https://arxiv.org/abs/2006.04779). The CQL penalty and its lower-bound theorems.
 - [Kostrikov, Nair, and Levine (2022), Offline Reinforcement Learning with Implicit Q-Learning](https://arxiv.org/abs/2110.06169). The expectile value loss, and advantage-weighted policy extraction.
+- [Fujimoto and Gu (2021), A Minimalist Approach to Offline Reinforcement Learning](https://arxiv.org/abs/2106.06860). The TD3 actor plus a squared cloning penalty, scaled by $\alpha$ over the mean absolute Q.
+- [CS285, Spring 2026, lecture 17, "Offline RL Part 1"](https://rail.eecs.berkeley.edu/deeprlcourse/). Distribution shift on a fixed log. Lecture 18 is "Offline RL Part 2".
 
 ## The exercise
 
-You build all three methods on the cliff world, from a cautious demonstrator's 2,370 transitions. Write `offline_q_iteration` to see the failure, then `cql_penalty`, `cql_penalty_grad`, and `cql_q_iteration`. For IQL, write `expectile_loss`, `expectile_loss_grad`, `expectile`, and `iql_values`.
+You build the value methods on the cliff world, from a cautious demonstrator's 2,370 transitions, and the TD3+BC actor loss on a batch of three. Write `offline_q_iteration` to see the failure, then `cql_penalty`, `cql_penalty_grad`, and `cql_q_iteration`. For IQL, write `expectile_loss`, `expectile_loss_grad`, `expectile`, and `iql_values`. Then write `bc_regularized_actor_loss`.
 
-The checks confirm the corridor's exact numbers and the cliff table's fixed point, with a greedy value near $-1000$. They test the CQL penalty against $2.4076$ and its gradient by finite differences, and require CQL's greedy policy to use only data actions and reach the best in-data value. The expectile checks cover the loss at $\tau = 0.7$, its gradient, and the mean at $\tau = 0.5$. IQL at $\tau = 0.5$ must equal policy evaluation of the empirical behavior policy, and as $\tau$ rises its values must climb within 0.1 of the best in-data value without passing it.
+The checks confirm the corridor's exact numbers and the cliff table's fixed point, with a greedy value near $-1000$. They test the CQL penalty against $2.4076$ and its gradient by finite differences, and require CQL's greedy policy to use only data actions and reach the best in-data value. The expectile checks cover the loss at $\tau = 0.7$, its gradient, and the mean at $\tau = 0.5$. IQL at $\tau = 0.5$ must equal policy evaluation of the empirical behavior policy, and as $\tau$ rises its values must climb within 0.1 of the best in-data value without passing it. The TD3+BC check expects $0.08$ at $\alpha = 2.5$, $0.14$ at $\alpha = 1$, and a finite-difference gradient.

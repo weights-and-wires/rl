@@ -140,6 +140,22 @@ def iql_values(
     return Q, V
 
 
+def bc_regularized_actor_loss(
+    pi_actions: np.ndarray,
+    data_actions: np.ndarray,
+    q_pi: np.ndarray,
+    q_data: np.ndarray,
+    alpha: float = 2.5,
+) -> float:
+    pi_actions = np.asarray(pi_actions, dtype=float)
+    data_actions = np.asarray(data_actions, dtype=float)
+    q_pi = np.asarray(q_pi, dtype=float)
+    q_data = np.asarray(q_data, dtype=float)
+    # Fujimoto and Gu, equation 5: λ uses Q at the logged actions and is not differentiated.
+    lam = float(alpha) / float(np.mean(np.abs(q_data)))
+    return float(np.mean((pi_actions - data_actions) ** 2) - lam * float(np.mean(q_pi)))
+
+
 def cautious_behavior(mdp) -> np.ndarray:
     """A demonstrator that heads for the goal but never steps down toward the cliff edge."""
     S, A = mdp.n_states, mdp.n_actions
@@ -176,3 +192,8 @@ if __name__ == "__main__":
     for tau in (0.5, 0.7, 0.9, 0.99):
         Q, V = iql_values(data, S, A, mdp.gamma, tau)
         print(f"IQL tau={tau:<4}  V(start)={V[start]:7.3f}")
+
+    pi = np.array([0.5, 0.0, 0.1])
+    logged = np.array([0.0, 0.2, -0.4])
+    loss = bc_regularized_actor_loss(pi, logged, 4.0 * pi, np.array([10.0, -20.0, 30.0]), alpha=2.5)
+    print(f"TD3+BC actor loss: {loss:.2f}")
