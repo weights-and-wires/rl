@@ -1,0 +1,15 @@
+{
+  "id": "053-rlhf-with-ppo",
+  "title": "KL-shaped rewards and KL estimators for RLHF with PPO",
+  "brief": "Spread a KL penalty over tokens, compare the k1, k2, and k3 KL estimators as values and as losses, and run PPO built on them to close most of the gap to the exact KL-regularized optimum on a toy policy. On the GPU worker, the same functions train Qwen3-0.6B with a value head.",
+  "needs_gpu": true,
+  "timeout": 900,
+  "packages": [
+    "torch",
+    "transformers"
+  ],
+  "hints": [
+    "In kl_shaped_rewards, the last response token of row b is at index mask[b].sum() - 1. Add seq_rewards there, after multiplying the KL term by the mask.",
+    "kl_estimators works with log_r = ref_logp - logp. k3 is torch.expm1(log_r) - log_r, which is accurate when the ratio is near 1."
+  ]
+}
