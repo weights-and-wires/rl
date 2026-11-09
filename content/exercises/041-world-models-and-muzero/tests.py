@@ -3,7 +3,7 @@
 import numpy as np
 
 import rlenvs
-from rlcheck import almost, check, close, equal, fail, has, shape
+from rlcheck import CheckFailure, almost, check, close, equal, fail, has, shape
 
 GRID = ["S..#", ".#..", "...G"]
 
@@ -190,3 +190,141 @@ def test_mcts_grid(sub):
         if not np.isclose(q_star[s, a], q_star[s].max()):
             fail(f"from cell {mdp.names['cells'][s]} MCTS chose action {a} with visits {visits}; "
                  f"optimal Q values are {np.round(q_star[s], 3)}")
+
+
+def _worked_dynamics():
+    return {
+        "W": np.array([[1.0, -1.0, 1.0]]),
+        "reward": np.array([1.0, -1.0, 1.0]),
+    }
+
+
+def _true_k_step(x, actions, gamma):
+    """Return from the lesson's rule: action 0 adds -1, action 1 adds +1, reward and value are the new x."""
+    total = 0.0
+    for t, action in enumerate(actions):
+        x = x + (1.0 if int(action) == 1 else -1.0)
+        total += gamma ** t * x
+    total += gamma ** len(actions) * x
+    return total
+
+
+@check("encode maps the worked observation [2, 5] through [1, 0] to the latent 2")
+def test_encode(sub):
+    encode = has(sub, "encode")
+    got = encode(np.array([2.0, 5.0]), np.array([[1.0, 0.0]]))
+    shape(got, (1,), label="encode")
+    close(got, [2.0], atol=1e-12, label="[1, 0] keeps x from [2, 5]")
+    close(encode(np.array([2.0, 5.0]), np.array([[0.0, 1.0]])), [5.0], atol=1e-12,
+          label="[0, 1] keeps the noise from [2, 5]")
+
+
+@check("latent_step on the worked weights sends action 1 to latent 3 and reward 3")
+def test_latent_step(sub):
+    latent_step = has(sub, "latent_step")
+    dynamics = _worked_dynamics()
+    z_next, reward = latent_step(np.array([2.0]), 1, dynamics)
+    shape(z_next, (1,), label="next latent")
+    close(z_next, [3.0], atol=1e-12, label="action 1, input [2, 0, 1]")
+    almost(reward, 3.0, 1e-12, label="reward equals the new latent")
+    z_next, reward = latent_step(np.array([2.0]), 0, dynamics)
+    close(z_next, [1.0], atol=1e-12, label="action 0, input [2, 1, 0]")
+    almost(reward, 1.0, 1e-12, label="action 0 reward")
+
+
+@check("unroll_value matches the worked returns 4.5 at k = 1 and 5.125 at k = 3")
+def test_unroll_value(sub):
+    unroll_value = has(sub, "unroll_value")
+    z = np.array([2.0])
+    dynamics = _worked_dynamics()
+    value_head = np.array([1.0])
+    gamma = 0.5
+    almost(unroll_value(z, [1], dynamics, value_head, gamma), 4.5, 1e-12, label="1-step unroll")
+    actions = [1, 0, 1]
+    almost(unroll_value(z, actions, dynamics, value_head, gamma), 5.125, 1e-12, label="3-step unroll")
+
+    def unroll_one_step(z, actions, dynamics, value_head, gamma):
+        # Wrong implementation: unroll_one_step returns the 1-step value when asked for k = 3.
+        return unroll_value(z, list(actions)[:1], dynamics, value_head, gamma)
+
+    wrong = unroll_one_step(z, actions, dynamics, value_head, gamma)
+    try:
+        almost(wrong, 5.125, 1e-8, label="k = 3")
+    except CheckFailure:
+        almost(wrong, 4.5, 1e-12, label="unroll_one_step returns the 1-step value")
+    else:
+        fail("the k = 3 check must fail unroll_one_step, which returns the 1-step value")
+
+
+@check("k_step_value_error is 0 when the arrays match and 15.8203125 when they do not")
+def test_k_step_value_error(sub):
+    k_step_value_error = has(sub, "k_step_value_error")
+    almost(k_step_value_error([4.5, 5.125], [4.5, 5.125]), 0.0, 1e-12, label="matching arrays")
+    almost(k_step_value_error([4.5, 10.75], [4.5, 5.125]), 15.8203125, 1e-12,
+           label="mean square of [4.5, 10.75] against [4.5, 5.125]")
+
+
+@check("learn_latent_model drives the k-step value error to about 0, and encode_noise_only does not")
+def test_learn_latent_model(sub):
+    learn_latent_model = has(sub, "learn_latent_model")
+    encode = has(sub, "encode")
+    unroll_value = has(sub, "unroll_value")
+    k_step_value_error = has(sub, "k_step_value_error")
+    # Fixed rows from the lesson. The value column is the next state's x.
+    rows = [
+        ([2.0, 5.0], 1, [3.0, 9.0], 3.0, 3.0),
+        ([3.0, 9.0], 0, [2.0, 1.0], 2.0, 2.0),
+        ([0.0, 4.0], 1, [1.0, 8.0], 1.0, 1.0),
+        ([1.0, 8.0], 0, [0.0, 2.0], 0.0, 0.0),
+    ]
+    observations = np.array([row[0] for row in rows])
+    actions = np.array([row[1] for row in rows])
+    next_observations = np.array([row[2] for row in rows])
+    rewards = np.array([row[3] for row in rows])
+    values = np.array([row[4] for row in rows])
+    gamma = 0.5
+    model = learn_latent_model(
+        observations, actions, rewards, next_observations, values, rank=1, n_actions=2)
+    if not isinstance(model, dict):
+        fail(f"learn_latent_model should return a dict, got {type(model).__name__}")
+    for key in ("encoder", "dynamics", "value_head"):
+        if key not in model:
+            fail(f"learn_latent_model result has no {key!r}")
+    dynamics = model["dynamics"]
+    if not isinstance(dynamics, dict) or "W" not in dynamics or "reward" not in dynamics:
+        fail("dynamics needs keys W and reward")
+    shape(model["encoder"], (1, 2), label="encoder")
+    shape(model["value_head"], (1,), label="value head")
+    shape(dynamics["W"], (1, 3), label="dynamics W")
+    shape(dynamics["reward"], (3,), label="dynamics reward")
+
+    queries = [(observations[i], [int(actions[i])]) for i in range(len(rows))]
+    queries.append((np.array([2.0, 5.0]), [1, 0, 1]))
+    predicted, target = [], []
+    for observation, query_actions in queries:
+        latent = encode(observation, model["encoder"])
+        predicted.append(unroll_value(latent, query_actions, dynamics, model["value_head"], gamma))
+        target.append(_true_k_step(float(observation[0]), query_actions, gamma))
+    predicted = np.asarray(predicted, dtype=float)
+    target = np.asarray(target, dtype=float)
+    got = k_step_value_error(predicted, target)
+    almost(got, 0.0, 1e-6, label="k-step value error of the fitted model")
+    almost(predicted[-1], 5.125, 1e-6, label="fitted 3-step unroll")
+    one_step = unroll_value(
+        encode(np.array([2.0, 5.0]), model["encoder"]), [1], dynamics, model["value_head"], gamma)
+    almost(one_step, 4.5, 1e-6, label="fitted 1-step unroll")
+
+    def encode_noise_only(observation, weights):
+        # Wrong implementation: encode_noise_only keeps the noise column and drops the value.
+        observation = np.asarray(observation, dtype=float)
+        latent = np.zeros(np.asarray(weights).shape[0])
+        latent[0] = observation[1]
+        return latent
+
+    noisy = []
+    for observation, query_actions in queries:
+        latent = encode_noise_only(observation, model["encoder"])
+        noisy.append(unroll_value(latent, query_actions, dynamics, model["value_head"], gamma))
+    bad = k_step_value_error(np.asarray(noisy, dtype=float), target)
+    if not bad > 1.0:
+        fail(f"encode_noise_only should have a large k-step value error, got {bad}")
