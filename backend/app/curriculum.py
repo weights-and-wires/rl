@@ -60,9 +60,32 @@ def renames() -> dict[str, list[str]]:
     return {str(k): [str(s) for s in v] for k, v in json.loads(path.read_text()).items()}
 
 
-@lru_cache
-def load_lessons() -> list[dict[str, Any]]:
-    """Every lesson, ordered by the numeric prefix of its filename."""
+def _is_draft(meta: dict[str, Any]) -> bool:
+    """True when the lesson's front matter marks it `draft: true`.
+
+    `scripts/check_content.py` uses the same rule. A published lesson omits
+    the field.
+    """
+    value = meta.get("draft", False)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() == "true"
+    return False
+
+
+def drafts_visible() -> bool:
+    """Draft lessons stay visible until the app serves the built frontend.
+
+    Production is the image that copies `frontend/dist` and mounts it from
+    `main._mount_frontend`. A checkout has no build there, so the Vite dev
+    server is the UI and a draft stays on the syllabus while it is written.
+    """
+    return not get_settings().frontend_dist.is_dir()
+
+
+def _read_lessons() -> list[dict[str, Any]]:
+    """Every lesson file, including drafts, ordered by filename."""
     lessons: list[dict[str, Any]] = []
     directory = _lessons_dir()
     if not directory.is_dir():
@@ -82,10 +105,24 @@ def load_lessons() -> list[dict[str, Any]]:
                 "prereqs": _text_list(meta.get("prereqs", [])),
                 "exercise": meta.get("exercise"),
                 "gpu": bool(meta.get("gpu", False)),
+                "draft": _is_draft(meta),
                 "body": post.content,
             }
         )
     return lessons
+
+
+@lru_cache
+def load_lessons() -> list[dict[str, Any]]:
+    """Every lesson the reader should see, ordered by filename.
+
+    Drafts are included while `drafts_visible()` is true and omitted in
+    production, so an unfinished chapter does not appear on the deployed site.
+    """
+    lessons = _read_lessons()
+    if drafts_visible():
+        return lessons
+    return [lesson for lesson in lessons if not lesson["draft"]]
 
 
 def lesson_list() -> list[dict[str, Any]]:
@@ -153,6 +190,20 @@ def load_exercises() -> dict[str, dict[str, Any]]:
             "solution": read("solution.py"),
             "directory": str(path),
         }
+    if not drafts_visible():
+        lessons = _read_lessons()
+        hidden = {
+            str(lesson["exercise"])
+            for lesson in lessons
+            if lesson["draft"] and lesson.get("exercise")
+        }
+        published = {
+            str(lesson["exercise"])
+            for lesson in lessons
+            if not lesson["draft"] and lesson.get("exercise")
+        }
+        for exercise_id in hidden - published:
+            exercises.pop(exercise_id, None)
     return exercises
 
 
