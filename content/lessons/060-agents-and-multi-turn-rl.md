@@ -191,7 +191,7 @@ The checks test the functions in this order. The environment, `rollout`, `token_
 
 **Tool spam and tool avoidance.** Reward the tool call itself and the agent calls tools it does not need. Charge too much and it never calls them. The exercise's break-even cost is 0.775, and real tasks have no such clean number.
 
-**Slow tools.** One slow test run stalls every episode in a synchronous batch. Systems overlap generation and training, which makes rollouts come from slightly older policies. [Infrastructure for LLM RL](/lessons/061-rl-infrastructure-for-llms) covers the correction.
+**Slow tools.** One slow test run stalls every episode in a synchronous batch. Systems overlap generation and training, which makes rollouts come from slightly older policies. [Stale samples and importance weights](/lessons/061-rl-infrastructure-for-llms) covers the correction.
 
 ## Further reading
 

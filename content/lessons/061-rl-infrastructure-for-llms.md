@@ -1,5 +1,5 @@
 ---
-title: Infrastructure for LLM RL
+title: Stale samples and importance weights
 slug: 061-rl-infrastructure-for-llms
 part: "Part 9 — RL for language models"
 summary: Correct a policy gradient for samples that came from a stale or slightly different policy, and see what truncating the importance weights buys.
@@ -17,13 +17,13 @@ prereqs:
 exercise: 061-rl-infrastructure-for-llms
 ---
 
-# Infrastructure for LLM RL
+# Stale samples and importance weights
 
 A fast RL system for language models has two programs. An inference engine writes thousands of responses quickly. A trainer reads those responses and updates the weights. The gradient formula you have used since the policy gradient theorem assumes the responses came from the policy being trained. Do they?
 
 Often they do not. The engine may hold weights from a few updates ago, because training and generation overlap. Even with identical weights, the two programs use different kernels and number formats, so their probabilities differ in the last digits. The gradient then points a little in the wrong direction.
 
-This chapter measures that error on a three-token example, then fixes it with importance weights. You will see why an exact fix explodes in variance, and why people cap the weights and accept a small bias.
+This chapter measures that error on a three-token example, then fixes it with importance weights. You will see why an exact fix explodes in variance, and why people cap the weights and accept a small bias. This chapter corrects stale and mismatched samples, and asynchronous layouts, sequence packing, and KV-cache reuse are outside it.
 
 ## What you already know
 
