@@ -1,0 +1,16 @@
+{
+  "id": "047-evaluating-rl",
+  "title": "A small rliable: IQM, performance profiles, and bootstrap intervals",
+  "brief": "Build a robust aggregate, a performance profile, and a stratified bootstrap interval, and see why three seeds and a mean cannot tell two algorithms apart.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "iqm pools everything first: np.sort(scores.ravel()), then cut = int(0.25 * n), then the mean of x[cut : n - cut].",
+    "performance_profile compares every score with every tau at once: (x[None, :] > taus[:, None]).mean(axis=1). The inequality is strict.",
+    "stratified_resample indexes with two arrays: scores[idx, np.arange(n_tasks)[None, :]], where idx has shape (n_runs, n_tasks). Each column then only reads its own task.",
+    "percentile_ci with confidence 0.95 asks np.percentile for 2.5 and 97.5, not 0.025 and 0.975."
+  ]
+}

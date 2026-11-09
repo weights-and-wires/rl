@@ -128,7 +128,7 @@ $$
 \max_\theta\; L(\theta) = \hat{\mathbb{E}}\left[\frac{\pi_\theta(a \mid s)}{\pi_{\theta_{\text{old}}}(a \mid s)}\, \hat A\right] \quad \text{subject to} \quad \hat{\mathbb{E}}_s\big[\operatorname{KL}(\pi_{\theta_{\text{old}}} \,\|\, \pi_\theta)\big] \le \delta
 $$
 
-Read it as: reweight each sampled advantage by how much more likely the new policy makes that action than the policy that sampled it. That ratio is an *importance weight*. At $\theta_{\text{old}}$ every ratio is one, and the gradient of $L$ is exactly the policy gradient. The usual trust-region size is $\delta = 0.01$. [Why policy optimization works](/lessons/035-why-policy-optimization-works) explains why this surrogate is worth maximizing.
+Read it as: reweight each sampled advantage by how much more likely the new policy makes that action than the policy that sampled it. That ratio is an *importance weight*. At $\theta_{\text{old}}$ every ratio is one, and the gradient of $L$ is exactly the policy gradient. The usual trust-region size is $\delta = 0.01$. [Why policy optimization works](/lessons/036-why-policy-optimization-works) explains why this surrogate is worth maximizing.
 
 One update has four steps:
 
