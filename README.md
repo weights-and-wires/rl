@@ -73,8 +73,8 @@ shaping, evaluating agents honestly, and multi-agent learning and self-play.
 post-training pipeline, language models as policies, reward models, reward-model
 and judge evaluation, RLHF with PPO, DPO, GRPO and its successors, verifiable
 rewards, reasoning with verifiable rewards, process rewards and test-time
-search, AI feedback and self-improvement, multi-turn agents, and the
-infrastructure behind large-scale runs.
+search, AI feedback and self-improvement, multi-turn agents, and stale
+samples and importance weights.
 
 **Part 10 — Beyond text, and what can go wrong (062–064).** Diffusion and flow
 models as policies, vision, speech, and robot learning, and reward hacking,
