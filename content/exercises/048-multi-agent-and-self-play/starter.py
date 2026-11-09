@@ -1,16 +1,23 @@
 """Multi-agent learning: regret matching, fictitious play, and self-play.
 
-The matrix games here are two-player and zero-sum. The row player picks a
-mixed strategy x (probabilities over rows), the column player picks y (over
-columns), and the row player wins x @ A @ y, which the column player loses.
-The row player maximises and the column player minimises.
+Rock-paper-scissors and the worked 2 by 2 matrix are zero-sum: the row
+player wins x @ A @ y, and the column player loses that amount. The bridge
+is general-sum. BRIDGE_ROW[i, j] is the row player's payoff and
+BRIDGE_COL[i, j] is the column player's. Action 0 is yield and action 1
+is push.
 
-`ROCK_PAPER_SCISSORS` and `nim_legal` are written for you. Fill in the rest.
+`ROCK_PAPER_SCISSORS`, `BRIDGE_ROW`, `BRIDGE_COL`, and `nim_legal` are
+written for you. Fill in the rest.
 """
 
 import numpy as np
 
 ROCK_PAPER_SCISSORS = np.array([[0.0, -1.0, 1.0], [1.0, 0.0, -1.0], [-1.0, 1.0, 0.0]])
+
+# One-lane bridge. Action 0 is yield and action 1 is push. BRIDGE_ROW[i, j]
+# is the row player's payoff, and BRIDGE_COL[i, j] is the column player's.
+BRIDGE_ROW = np.array([[2.0, 1.0], [3.0, 0.0]])
+BRIDGE_COL = np.array([[2.0, 3.0], [1.0, 0.0]])
 
 
 def exploitability(A: np.ndarray, x: np.ndarray, y: np.ndarray) -> float:
@@ -62,6 +69,43 @@ def fictitious_play(A: np.ndarray, iters: int, first_x: int = 0, first_y: int = 
         (x, y): each player's action counts over the `iters` rounds, divided by iters.
     """
     raise NotImplementedError("fictitious_play")
+
+
+def bimatrix_best_responses(
+    A: np.ndarray, B: np.ndarray, y: np.ndarray, x: np.ndarray
+) -> tuple[int, int]:
+    """Pure best responses for a general-sum game.
+
+    A and B have shape (n, m). A is the row player's payoff and B is the
+    column player's. y has shape (m,) and x has shape (n,). A vector of
+    counts works in place of probabilities.
+
+    Returns:
+        (i, j). i maximizes A @ y and j maximizes x @ B. A tie returns the
+        lowest index.
+    """
+    raise NotImplementedError("bimatrix_best_responses")
+
+
+def general_sum_fictitious_play(
+    A: np.ndarray,
+    B: np.ndarray,
+    iters: int,
+    first_x: int = 0,
+    first_y: int = 0,
+) -> dict:
+    """Fictitious play when each player has a payoff table.
+
+    Plays `iters` rounds. Round 0 plays the pure actions first_x and
+    first_y. Each later round, both players best-respond to the opponent's
+    counts so far, then both counts increase. Ties break to the lowest index.
+
+    Returns:
+        A dict with "x_avg" and "y_avg" (the counts divided by iters, shapes
+        (n,) and (m,)) and "last_x" and "last_y" (the actions in the final
+        round).
+    """
+    raise NotImplementedError("general_sum_fictitious_play")
 
 
 def nim_legal(n_max: int, max_take: int = 3) -> np.ndarray:
@@ -116,6 +160,12 @@ if __name__ == "__main__":
           "average y", np.round(out["y_avg"], 4), "(Nash 2/7, 5/7)")
     x, y = fictitious_play(A, 5000)
     print("fictitious play on RPS after 5000 rounds:", np.round(x, 3), np.round(y, 3))
+
+    print("\nbridge, both players open on yield (mixed Nash puts weight 1/2 on yield)")
+    for rounds in (1, 2, 3, 4, 8):
+        out = general_sum_fictitious_play(BRIDGE_ROW, BRIDGE_COL, rounds, 0, 0)
+        print(f"  rounds={rounds}  average x={np.round(out['x_avg'], 3)}  "
+              f"last=({out['last_x']}, {out['last_y']})")
 
     Q = nim_self_play(n_max=15, episodes=3000, alpha=0.5, epsilon=0.2, seed=0)
     legal = nim_legal(15)
