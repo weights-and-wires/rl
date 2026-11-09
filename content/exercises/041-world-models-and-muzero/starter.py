@@ -2,7 +2,8 @@
 
 Fill in the functions below, in order. You compute Dreamer's lambda-returns
 over an imagined trajectory, check when a wrong model is still good enough for
-planning (value equivalence), and write MuZero's pUCT search over a model.
+planning (value equivalence), write MuZero's pUCT search over a model, and fit
+a latent whose k-step unroll matches the real return. `encode` is provided.
 
 A deterministic model here is a function step(state, action) that returns a
 tuple. In `mcts` it returns (next_state, reward, done). A prediction function
@@ -121,6 +122,89 @@ def mcts(model_step, predict, root_state, n_actions, n_simulations, gamma, c1=1.
     raise NotImplementedError("mcts")
 
 
+def encode(observation, weights):
+    """Map an observation to a latent with a linear encoder.
+
+    Args:
+        observation: shape (D,).
+        weights: shape (R, D).
+
+    Returns:
+        The latent, shape (R,), equal to weights @ observation.
+    """
+    return np.asarray(weights, dtype=float) @ np.asarray(observation, dtype=float)
+
+
+def latent_step(z, action, dynamics):
+    """Apply one deterministic step of a linear latent model.
+
+    Args:
+        z: latent, shape (R,).
+        action: an integer action in 0 .. A - 1.
+        dynamics: a dict with "W" of shape (R, R + A) and "reward" of
+            shape (R + A,).
+
+    Returns:
+        (z_next, reward). Build inp by concatenating z with a one-hot
+        action. z_next = W @ inp and reward = reward_row @ inp.
+    """
+    raise NotImplementedError("latent_step")
+
+
+def unroll_value(z, actions, dynamics, value_head, gamma):
+    """Discounted return from unrolling the latent for k = len(actions) steps.
+
+    Apply latent_step once per action. Add gamma**t * reward at step t,
+    then add gamma**k * (value_head @ z_k) after the last step.
+
+    Args:
+        z: starting latent, shape (R,).
+        actions: length k.
+        dynamics: the dict latent_step expects.
+        value_head: shape (R,).
+        gamma: the discount.
+
+    Returns:
+        A scalar k-step return.
+    """
+    raise NotImplementedError("unroll_value")
+
+
+def k_step_value_error(predicted, target):
+    """Mean squared error between a predicted k-step return and its target.
+
+    Args:
+        predicted: array of predicted returns.
+        target: array of the same shape.
+
+    Returns:
+        The mean of the squared elementwise differences.
+    """
+    raise NotImplementedError("k_step_value_error")
+
+
+def learn_latent_model(observations, actions, rewards, next_observations, values, rank, n_actions):
+    """Fit a deterministic linear latent by least squares.
+
+    Args:
+        observations: shape (N, D).
+        actions: integer actions, shape (N,).
+        rewards: shape (N,).
+        next_observations: shape (N, D).
+        values: shape (N,). values[i] is the value of next_observations[i].
+        rank: latent width R.
+        n_actions: A, the one-hot width.
+
+    Returns:
+        A dict with "encoder" of shape (R, D), "dynamics" holding "W" of
+        shape (R, R + A) and "reward" of shape (R + A,), and "value_head"
+        of shape (R,). The latent of each next observation predicts values,
+        and one step from encode(observation) and the action matches
+        encode(next_observation) and the reward.
+    """
+    raise NotImplementedError("learn_latent_model")
+
+
 # Helpers shared by the checks and the demo -----------------------------------
 
 
@@ -186,3 +270,11 @@ if __name__ == "__main__":
     q_star = rlenvs.q_from_v(mdp, rlenvs.value_iteration(mdp))
     best = np.flatnonzero(np.isclose(q_star[start], q_star[start].max()))
     print(f"  the optimal first actions are {best} (1 is right, 2 is down)")
+
+    observation = np.array([2.0, 5.0])
+    latent = encode(observation, np.array([[1.0, 0.0]]))
+    dynamics = {"W": np.array([[1.0, -1.0, 1.0]]), "reward": np.array([1.0, -1.0, 1.0])}
+    head = np.array([1.0])
+    print(f"latent of [2, 5]: {latent}")
+    print(f"1-step unroll: {unroll_value(latent, [1], dynamics, head, 0.5)}")
+    print(f"3-step unroll: {unroll_value(latent, [1, 0, 1], dynamics, head, 0.5)}")

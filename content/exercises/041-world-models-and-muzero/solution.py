@@ -93,6 +93,66 @@ def mcts(model_step, predict, root_state, n_actions, n_simulations, gamma, c1=1.
     return root.N.copy(), root.Q.copy()
 
 
+def encode(observation, weights):
+    return np.asarray(weights, dtype=float) @ np.asarray(observation, dtype=float)
+
+
+def latent_step(z, action, dynamics):
+    z = np.asarray(z, dtype=float)
+    transition = np.asarray(dynamics["W"], dtype=float)
+    reward_row = np.asarray(dynamics["reward"], dtype=float)
+    one_hot = np.zeros(transition.shape[1] - z.shape[0])
+    one_hot[int(action)] = 1.0
+    inp = np.concatenate([z, one_hot])
+    return transition @ inp, float(reward_row @ inp)
+
+
+def unroll_value(z, actions, dynamics, value_head, gamma):
+    z = np.asarray(z, dtype=float)
+    value_head = np.asarray(value_head, dtype=float)
+    total = 0.0
+    for step, action in enumerate(actions):
+        z, reward = latent_step(z, action, dynamics)
+        total += (gamma ** step) * reward
+    horizon = len(actions)
+    total += (gamma ** horizon) * float(value_head @ z)
+    return total
+
+
+def k_step_value_error(predicted, target):
+    predicted = np.asarray(predicted, dtype=float)
+    target = np.asarray(target, dtype=float)
+    return float(np.mean((predicted - target) ** 2))
+
+
+def learn_latent_model(observations, actions, rewards, next_observations, values, rank, n_actions):
+    observations = np.asarray(observations, dtype=float)
+    next_observations = np.asarray(next_observations, dtype=float)
+    actions = np.asarray(actions, dtype=int)
+    rewards = np.asarray(rewards, dtype=float).reshape(-1)
+    values = np.asarray(values, dtype=float).reshape(-1)
+    direction, *_ = np.linalg.lstsq(next_observations, values, rcond=None)
+    encoder = np.zeros((rank, observations.shape[1]))
+    value_head = np.zeros(rank)
+    # The value is one direction. Put it in the first coordinate and read it with weight 1.
+    encoder[0] = direction
+    value_head[0] = 1.0
+    latent = observations @ encoder.T
+    latent_next = next_observations @ encoder.T
+    one_hot = np.eye(n_actions)[actions]
+    inputs = np.concatenate([latent, one_hot], axis=1)
+    dynamics_T, *_ = np.linalg.lstsq(inputs, latent_next, rcond=None)
+    reward, *_ = np.linalg.lstsq(inputs, rewards, rcond=None)
+    return {
+        "encoder": encoder,
+        "dynamics": {
+            "W": np.asarray(dynamics_T, dtype=float).T,
+            "reward": np.asarray(reward, dtype=float),
+        },
+        "value_head": value_head,
+    }
+
+
 # Helpers shared by the checks and the demo -----------------------------------
 
 
@@ -158,3 +218,11 @@ if __name__ == "__main__":
     q_star = rlenvs.q_from_v(mdp, rlenvs.value_iteration(mdp))
     best = np.flatnonzero(np.isclose(q_star[start], q_star[start].max()))
     print(f"  the optimal first actions are {best} (1 is right, 2 is down)")
+
+    observation = np.array([2.0, 5.0])
+    latent = encode(observation, np.array([[1.0, 0.0]]))
+    dynamics = {"W": np.array([[1.0, -1.0, 1.0]]), "reward": np.array([1.0, -1.0, 1.0])}
+    head = np.array([1.0])
+    print(f"latent of [2, 5]: {latent}")
+    print(f"1-step unroll: {unroll_value(latent, [1], dynamics, head, 0.5)}")
+    print(f"3-step unroll: {unroll_value(latent, [1, 0, 1], dynamics, head, 0.5)}")
