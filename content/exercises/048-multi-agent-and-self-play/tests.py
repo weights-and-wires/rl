@@ -13,6 +13,9 @@ def almost(got, want, tol, label=None):
 
 RPS = np.array([[0.0, -1.0, 1.0], [1.0, 0.0, -1.0], [-1.0, 1.0, 0.0]])
 GAME = np.array([[3.0, -1.0], [-2.0, 1.0]])  # Nash: x = (3/7, 4/7), y = (2/7, 5/7), value 1/7
+# Bridge: action 0 is yield, action 1 is push. Mixed Nash is (1/2, 1/2).
+BRIDGE_ROW = np.array([[2.0, 1.0], [3.0, 0.0]])
+BRIDGE_COL = np.array([[2.0, 3.0], [1.0, 0.0]])
 X_NASH, Y_NASH = np.array([3 / 7, 4 / 7]), np.array([2 / 7, 5 / 7])
 ROCK = np.array([1.0, 0.0, 0.0])
 
@@ -110,6 +113,54 @@ def test_fictitious_play(sub):
     close(y, Y_NASH, atol=0.02, label="column mixture in the 2x2 game")
     x, y = fictitious_play(RPS, 2, 0, 0)
     close(x, np.array([0.5, 0.5, 0.0]), atol=1e-12, label="after rock, the best response to rock is paper")
+
+
+@check("bimatrix_best_responses uses each player's own table, and a tie returns the lowest index")
+def test_bimatrix_best_responses(sub):
+    # Wrong implementation `column_br_from_row_payoff` ignores B and returns
+    # argmin(x @ A). When the row player pushes, x @ B is [1, 0], so the
+    # column player yields (action 0). argmin([3, 0]) returns 1.
+    # argmax(x @ A) fails the third call: at x = [1, 0] it returns 0, and
+    # the column table pays 3 for push against 2 for yield.
+    best = has(sub, "bimatrix_best_responses")
+    yield_pure = np.array([1.0, 0.0])
+    push_pure = np.array([0.0, 1.0])
+    half = np.array([0.5, 0.5])
+    row, col = best(BRIDGE_ROW, BRIDGE_COL, yield_pure, push_pure)
+    equal(np.array([row, col]), np.array([1, 0]),
+          label="row faces yield (expected push, 1) and column faces push (expected yield, 0)")
+    row, col = best(BRIDGE_ROW, BRIDGE_COL, half, half)
+    equal(np.array([row, col]), np.array([0, 0]),
+          label="a 3/2 tie for both players (expected the lowest index, 0)")
+    row, col = best(BRIDGE_ROW, BRIDGE_COL, push_pure, yield_pure)
+    equal(np.array([row, col]), np.array([0, 1]),
+          label="row faces push (expected yield, 0) and column faces yield (expected push, 1)")
+
+
+@check("general-sum fictitious play counts the latest action, and that action keeps flipping")
+def test_general_sum_fictitious_play(sub):
+    # Wrong implementation `fictitious_play_average_forgets_latest` averages
+    # the first iters - 1 actions. After yield, push, yield that average is
+    # [1/2, 1/2]. Counting the latest yield gives [2/3, 1/3].
+    play = has(sub, "general_sum_fictitious_play")
+    out = play(BRIDGE_ROW, BRIDGE_COL, 3, 0, 0)
+    close(out["x_avg"], np.array([2 / 3, 1 / 3]), atol=1e-12,
+          label="row average after yield, push, yield (expected 2/3, 1/3)")
+    close(out["y_avg"], np.array([2 / 3, 1 / 3]), atol=1e-12,
+          label="column average after yield, push, yield (expected 2/3, 1/3)")
+    equal(np.array([out["last_x"], out["last_y"]]), np.array([0, 0]),
+          label="round 3 plays yield against yield (expected 0, 0)")
+    out = play(BRIDGE_ROW, BRIDGE_COL, 4, 0, 0)
+    close(out["x_avg"], np.array([0.5, 0.5]), atol=1e-12,
+          label="row average after four rounds (expected 1/2, 1/2)")
+    equal(np.array([out["last_x"], out["last_y"]]), np.array([1, 1]),
+          label="round 4 plays push against push (expected 1, 1)")
+    out = play(BRIDGE_ROW, BRIDGE_COL, 7, 0, 0)
+    close(out["x_avg"], np.array([4 / 7, 3 / 7]), atol=1e-12,
+          label="row average after seven rounds (expected 4/7, 3/7)")
+    equal(out["last_x"], 0, label="round 7 plays yield (expected 0, not a settled push)")
+    out = play(BRIDGE_ROW, BRIDGE_COL, 8, 0, 0)
+    equal(out["last_x"], 1, label="round 8 plays push (expected 1, so the latest action flipped)")
 
 
 @check("nim_self_play learns the winning rule, take n mod 4, from playing itself")

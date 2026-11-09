@@ -3,6 +3,8 @@
 import numpy as np
 
 ROCK_PAPER_SCISSORS = np.array([[0.0, -1.0, 1.0], [1.0, 0.0, -1.0], [-1.0, 1.0, 0.0]])
+BRIDGE_ROW = np.array([[2.0, 1.0], [3.0, 0.0]])
+BRIDGE_COL = np.array([[2.0, 3.0], [1.0, 0.0]])
 
 
 def exploitability(A: np.ndarray, x: np.ndarray, y: np.ndarray) -> float:
@@ -58,6 +60,43 @@ def fictitious_play(A: np.ndarray, iters: int, first_x: int = 0, first_y: int = 
     return count_x / iters, count_y / iters
 
 
+def bimatrix_best_responses(
+    A: np.ndarray, B: np.ndarray, y: np.ndarray, x: np.ndarray
+) -> tuple[int, int]:
+    A = np.asarray(A, dtype=float)
+    B = np.asarray(B, dtype=float)
+    return int(np.argmax(A @ y)), int(np.argmax(np.asarray(x, dtype=float) @ B))
+
+
+def general_sum_fictitious_play(
+    A: np.ndarray,
+    B: np.ndarray,
+    iters: int,
+    first_x: int = 0,
+    first_y: int = 0,
+) -> dict:
+    A = np.asarray(A, dtype=float)
+    B = np.asarray(B, dtype=float)
+    n, m = A.shape
+    count_x, count_y = np.zeros(n), np.zeros(m)
+    count_x[first_x] += 1
+    count_y[first_y] += 1
+    last_x, last_y = int(first_x), int(first_y)
+    for _ in range(iters - 1):
+        # Both players answer the counts so far, then the counts record this round.
+        last_x, last_y = bimatrix_best_responses(
+            A, B, count_y / count_y.sum(), count_x / count_x.sum()
+        )
+        count_x[last_x] += 1
+        count_y[last_y] += 1
+    return {
+        "x_avg": count_x / iters,
+        "y_avg": count_y / iters,
+        "last_x": last_x,
+        "last_y": last_y,
+    }
+
+
 def nim_legal(n_max: int, max_take: int = 3) -> np.ndarray:
     """legal[n, k - 1] is True when you may take k sticks from a pile of n."""
     n = np.arange(n_max + 1)[:, None]
@@ -110,6 +149,12 @@ if __name__ == "__main__":
           "average y", np.round(out["y_avg"], 4), "(Nash 2/7, 5/7)")
     x, y = fictitious_play(A, 5000)
     print("fictitious play on RPS after 5000 rounds:", np.round(x, 3), np.round(y, 3))
+
+    print("\nbridge, both players open on yield (mixed Nash puts weight 1/2 on yield)")
+    for rounds in (1, 2, 3, 4, 8):
+        out = general_sum_fictitious_play(BRIDGE_ROW, BRIDGE_COL, rounds, 0, 0)
+        print(f"  rounds={rounds}  average x={np.round(out['x_avg'], 3)}  "
+              f"last=({out['last_x']}, {out['last_y']})")
 
     Q = nim_self_play(n_max=15, episodes=3000, alpha=0.5, epsilon=0.2, seed=0)
     legal = nim_legal(15)

@@ -101,7 +101,7 @@ chapters that cover it, and the app carries your completed work across.
 |---|---|---|
 | `046-reward-design-and-shaping` | Reward design and shaping | Potential-based shaping that keeps the optimal policy, and a bonus that breaks it |
 | `047-evaluating-rl` | Evaluating RL honestly | The interquartile mean, performance profiles, stratified bootstrap intervals, and their coverage |
-| `048-multi-agent-and-self-play` | Many agents and self-play | Regret matching, exploitability, fictitious play, and Nim self-play |
+| `048-multi-agent-and-self-play` | Many agents and self-play | Regret matching, exploitability, fictitious play on zero-sum and general-sum games, and Nim self-play |
 
 ## Part 9 — RL for language models
 
