@@ -93,7 +93,11 @@ $$
 \text{WER} = \frac{S + D + I}{N_{\text{ref}}}
 $$
 
-Reference `the cat sat` against hypothesis `the cat sit` is one substitution, so $\text{WER} = 1/3$. Insertions can push it above 1: `a b` against `x y z w` gives 2. You count the edits by dynamic programming, taking the cheapest last move for each prefix pair.
+Reference `the cat sat` against hypothesis `the cat sit` is one substitution, so $\text{WER} = 1/3$. Insertions can push it above 1: `a b` against `x y z w` gives 2. You count the edits by dynamic programming, taking the cheapest last move for the first $i$ reference and $j$ hypothesis words:
+
+```python
+cur[j] = min(prev[j - 1] + (ref[i - 1] != hyp[j - 1]), prev[j] + 1, cur[j - 1] + 1)
+```
 
 WER is a property of a whole transcript and cannot be differentiated. A recognizer assigns a probability $P(y \mid x)$ to every transcript $y$, and what you want to lower is the *expected* number of errors, a sum over every possible sentence. You cannot compute that sum. Minimum word error rate (MWER) training (Prabhavalkar and colleagues, 2018) restricts it to the $N$ best hypotheses from beam search and renormalizes their probabilities to sum to one over the list:
 
@@ -243,7 +247,7 @@ The checks test these in order.
 - [Kim and colleagues (2024), OpenVLA](https://arxiv.org/abs/2406.09246). Action tokens, 256 bins, and percentile ranges.
 - [Brohan and colleagues (2023), RT-2](https://arxiv.org/abs/2307.15818). Robot actions as text tokens in a vision-language model.
 - [Li and colleagues (2025), SimpleVLA-RL](https://arxiv.org/abs/2509.09674). GRPO on a VLA with a 0-or-1 success reward.
-- Stanford CS 224R, Spring 2026, ["RL for Robots: RL for VLAs"](https://cs224r.stanford.edu/) (lecture 17) and "RL for Robots: Sim-to-Real Transfer" (lecture 16, guest Guanya Shi). Lecture numbers come from the course's slide files.
+- Stanford CS 224R, Spring 2026, ["RL for Robots: RL for VLAs"](https://cs224r.stanford.edu/) and "RL for Robots: Sim-to-Real Transfer (Guest Lecture: Guanya Shi)". Spring 2026 lectures on VLAs and sim-to-real.
 - [Sun and colleagues (2025), F5R-TTS](https://arxiv.org/abs/2504.02407). GRPO for a flow-matching speech model.
 
 Open questions researchers are working on:
