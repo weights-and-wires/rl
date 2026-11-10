@@ -15,18 +15,14 @@ def _iou_reference(a, b):
     union = wa + wb - inter
     return inter / union if union > 0 else 0.0
 
-@check("iou gives 1 for identical boxes, 0 for disjoint ones, and 1/7 for the offset squares")
-def test_iou_known_values(sub):
+@check("iou gives 1, 0, 1/7 and 0.5 on known boxes, broadcasts over batches, is symmetric, and returns 0 for degenerate boxes")
+def test_iou(sub):
     iou = has(sub, "iou")
     almost(iou([0, 0, 2, 2], [0, 0, 2, 2]), 1.0, 1e-12, label="identical boxes")
     almost(iou([0, 0, 1, 1], [2, 2, 3, 3]), 0.0, 1e-12, label="disjoint boxes")
     almost(iou([0, 0, 1, 1], [1, 0, 2, 1]), 0.0, 1e-12, label="boxes that share only an edge")
     almost(iou([0, 0, 2, 2], [1, 1, 3, 3]), 1 / 7, 1e-12, label="(0,0,2,2) against (1,1,3,3)")
     almost(iou([0, 0, 4, 2], [1, 0, 3, 2]), 0.5, 1e-12, label="a box inside a box twice its area")
-
-@check("iou broadcasts over batches, is symmetric, and returns 0 for degenerate boxes")
-def test_iou_batched_and_degenerate(sub):
-    iou = has(sub, "iou")
     rng = np.random.default_rng(0)
     corners = rng.uniform(0, 1, size=(6, 5, 2, 2))
     a = np.concatenate([corners[..., 0, :].min(-1, keepdims=True), corners[..., 1, :].min(-1, keepdims=True),
@@ -181,3 +177,47 @@ def test_reinforce_gradient_worked(sub):
     rewards = -((action - 1.0) ** 2)[:, None]
     got = np.asarray(reinforce_gradient(rewards, np.ones((n, 1, 1)), eps, sigma))
     almost(got[0], 0.4, 0.02, label="d E[r] / d w at w = 0, exactly -2 (0.8 - 1)")
+
+# Plausible wrong implementations this check catches:
+#   - decoding to the bin's left edge instead of its centre: the round-trip error reaches a
+#     full bin width, so the half-bin bound fails;
+#   - encoding with round() on (a - low) / width, which makes n_bins + 1 bins: the top end
+#     maps to token n_bins, and every hand value near a bin edge lands one token off.
+@check("action_to_tokens and tokens_to_action round-trip within half a bin, map the ends to 0 and n_bins - 1, and clip")
+def test_action_tokens(sub):
+    action_to_tokens = has(sub, "action_to_tokens")
+    tokens_to_action = has(sub, "tokens_to_action")
+    # Hand values: 8 bins on [-1, 1] have width 0.25 and centres -0.875, -0.625, ..., 0.875.
+    hand = [(0.30, 5, 0.375), (0.5, 6, 0.625), (-0.9, 0, -0.875), (0.0, 4, 0.125), (-0.24, 3, -0.125), (0.40, 5, 0.375)]
+    for value, token, centre in hand:
+        got = action_to_tokens(np.array([value]), -1.0, 1.0, 8)
+        if int(np.asarray(got)[0]) != token:
+            fail(f"action_to_tokens({value}, low=-1, high=1, n_bins=8) should be token {token}, got {np.asarray(got)[0]}")
+        almost(float(np.asarray(tokens_to_action(np.array([token]), -1.0, 1.0, 8))[0]), centre, 1e-12,
+               label=f"decoded centre of token {token}")
+    # The ends of the range land in the first and last bins, not in a bin n_bins.
+    ends = np.asarray(action_to_tokens(np.array([-1.0, 1.0]), -1.0, 1.0, 8))
+    if not np.array_equal(ends, [0, 7]):
+        fail(f"the endpoints -1 and 1 should map to tokens [0, 7], got {ends}")
+    # Out-of-range actions clip to the end bins.
+    clipped = np.asarray(action_to_tokens(np.array([-5.0, 3.0]), -1.0, 1.0, 8))
+    if not np.array_equal(clipped, [0, 7]):
+        fail(f"actions -5 and 3 are outside [-1, 1] and should clip to tokens [0, 7], got {clipped}")
+    # Random actions: a vectorised call, per-dimension ranges, and the half-bin round-trip bound.
+    rng = np.random.default_rng(0)
+    low = np.array([-0.02, 0.0, -3.0])
+    high = np.array([0.02, 1.0, 1.0])
+    for n_bins in (8, 256):
+        actions = rng.uniform(low, high, size=(500, 3))
+        tokens = np.asarray(action_to_tokens(actions, low, high, n_bins))
+        shape(tokens, (500, 3), label="tokens for 500 actions of 3 dimensions")
+        if tokens.min() < 0 or tokens.max() > n_bins - 1:
+            fail(f"tokens should lie in 0 .. {n_bins - 1}, got range {tokens.min()} .. {tokens.max()}")
+        back = np.asarray(tokens_to_action(tokens, low, high, n_bins))
+        half_bin = (high - low) / n_bins / 2
+        worst = np.max(np.abs(back - actions) / half_bin)
+        if worst > 1 + 1e-9:
+            fail(f"with {n_bins} bins the round-trip error should be at most half a bin width, "
+                 f"but the worst error was {worst:.3f} half-bins")
+        if n_bins == 8 and worst < 0.8:
+            fail(f"the worst round-trip error over 1500 random values should come close to half a bin, got {worst:.3f} half-bins")
