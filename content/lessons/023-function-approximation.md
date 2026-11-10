@@ -209,7 +209,7 @@ Figure 3. Change at each input after one update at 0.3, as a fraction of the err
 
 ### Why "semi"
 
-The update is the gradient of $\tfrac12 (\text{target} - \hat V_w(s_t))^2$ with the target held fixed. But the target depends on $w$ too, through $\hat V_w(s_{t+1})$, and the update ignores that dependence. So semi-gradient TD is not gradient descent on any loss. That is harmless on-policy with a shrinking step size, and decisive off-policy, as [the next chapter](/lessons/024-the-deadly-triad) shows.
+The update is the gradient of $\tfrac12 (\text{target} - \hat V_w(s_t))^2$ with the target held fixed. But the target depends on $w$ too, through $\hat V_w(s_{t+1})$, and the update ignores that dependence. So semi-gradient TD is not gradient descent on any loss. That is harmless on-policy with a shrinking step size, and decisive off-policy, as [the next chapter](/lessons/025-the-deadly-triad) shows.
 
 ## Control with function approximation
 
@@ -298,9 +298,9 @@ The checks test the functions in this order. `stationary_distribution` and the `
 
 **Bad features.** Two states with the same features always get the same value, whatever the update rule. If the features cannot tell two states apart, or two actions apart, no learning rule can.
 
-**Dimension.** The number of tiles grows exponentially with the input dimension: fine for two inputs, hopeless for pixels. [Deep Q-networks](/lessons/025-deep-q-networks) learn the features with a neural network instead.
+**Dimension.** The number of tiles grows exponentially with the input dimension: fine for two inputs, hopeless for pixels. [Deep Q-networks](/lessons/026-deep-q-networks) learn the features with a neural network instead.
 
-**What the weights converge to.** On-policy, linear semi-gradient TD settles at a specific point that is not the best fit. [The deadly triad](/lessons/024-the-deadly-triad) finds that point and shows what happens when the data comes from a different policy.
+**What the weights converge to.** On-policy, linear semi-gradient TD settles at a specific point that is not the best fit. [The deadly triad](/lessons/025-the-deadly-triad) finds that point and shows what happens when the data comes from a different policy.
 
 ## Further reading
 

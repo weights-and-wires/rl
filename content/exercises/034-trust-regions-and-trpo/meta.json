@@ -1,0 +1,14 @@
+{
+  "id": "034-trust-regions-and-trpo",
+  "title": "Fisher-vector products, conjugate gradient, and a TRPO step",
+  "brief": "Multiply by the Fisher matrix without building it, solve for the natural gradient with conjugate gradient, and take a TRPO step that a backtracking line search keeps inside a KL trust region.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "In fisher_vector_product, compute logits once, then the KL between logits.detach() and logits. Its gradient at this point is zero, but its Hessian is the Fisher matrix. Use create_graph=True on the first gradient.",
+    "Conjugate gradient keeps x, the residual r = b - A x, and a search direction p. Each iteration: alpha = (r . r) / (p . A p), x += alpha p, r -= alpha A p, p = r + (new r . r / old r . r) p.",
+    "The scale in natural_step is sqrt(2 * max_kl / (x . F x)), where x solves F x = g. Reuse fvp to get F x.",
+    "Record logp_old and the old logits under torch.no_grad() before you change anything. The KL in the line search compares each candidate against those fixed old logits."
+  ]
+}

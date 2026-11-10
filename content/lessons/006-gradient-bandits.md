@@ -133,7 +133,7 @@ Read it as: raise the preference of an arm that pays more than the policy's curr
 
 Now average the update itself. You pull arm $x$ with probability $\pi(x)$, and it pays $q(x)$ on average. So the expected update is $\sum_x \pi(x)\,(q(x) - b)\,(\mathbf{1}\{a = x\} - \pi(a))$ for the preference of arm $a$. The $q(x)$ part is the gradient above. The $b$ part is $b$ times $\sum_x \pi(x)(\mathbf{1}\{a = x\} - \pi(a)) = \pi(a) - \pi(a) = 0$. It vanishes, which means any baseline that does not depend on which arm you just pulled leaves the average update unchanged.
 
-There is a compact way to say the same thing. The factor $\mathbf{1}\{a = a_t\} - \pi(a)$ is the gradient of $\ln \pi(a_t)$ with respect to $H(a)$. So the update is the step size times the news times the gradient of the log-probability of the arm you chose. Keep that shape in mind. It returns in [The policy gradient and REINFORCE](/lessons/029-the-policy-gradient) for whole sequences of actions.
+There is a compact way to say the same thing. The factor $\mathbf{1}\{a = a_t\} - \pi(a)$ is the gradient of $\ln \pi(a_t)$ with respect to $H(a)$. So the update is the step size times the news times the gradient of the log-probability of the arm you chose. Keep that shape in mind. It returns in [The policy gradient and REINFORCE](/lessons/030-the-policy-gradient) for whole sequences of actions.
 
 > [!KEY]
 > The gradient bandit update is, on average, the exact gradient of expected reward. A baseline changes nothing on average, because the direction $\mathbf{1}\{a = a_t\} - \pi(a)$ averages to zero.

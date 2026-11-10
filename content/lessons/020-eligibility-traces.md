@@ -262,7 +262,7 @@ Tabular TD($\lambda$) updates every state at every step, so it costs $S$ per ste
 - [Sutton, "Learning to predict by the methods of temporal differences" (1988)](https://doi.org/10.1007/BF00115009). The paper that introduced TD($\lambda$).
 - [Singh and Sutton, "Reinforcement learning with replacing eligibility traces" (1996)](https://doi.org/10.1007/BF00114726). Replacing traces, and why they behave better than accumulating ones.
 - [van Seijen and Sutton, "True online TD($\lambda$)" (2014)](https://proceedings.mlr.press/v32/seijen14.html). A trace that makes the online algorithm match an online $\lambda$-return exactly.
-- [Schulman, Moritz, Levine, Jordan, and Abbeel, "High-dimensional continuous control using generalized advantage estimation" (2016)](https://arxiv.org/abs/1506.02438). The same weighting applied to advantages, which [Generalized advantage estimation](/lessons/032-generalized-advantage-estimation) builds.
+- [Schulman, Moritz, Levine, Jordan, and Abbeel, "High-dimensional continuous control using generalized advantage estimation" (2016)](https://arxiv.org/abs/1506.02438). The same weighting applied to advantages, which [Generalized advantage estimation](/lessons/033-generalized-advantage-estimation) builds.
 
 ## The exercise
 

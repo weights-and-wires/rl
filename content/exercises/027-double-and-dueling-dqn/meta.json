@@ -1,0 +1,13 @@
+{
+  "id": "027-double-and-dueling-dqn",
+  "title": "Double DQN, dueling heads, and n-step targets",
+  "brief": "Change three things in DQN and verify each exactly: the Double DQN target that removes the max bias, the dueling head that splits value from advantage, and the n-step target that looks several rewards ahead.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "Double DQN: best = next_q_online.argmax(dim=1, keepdim=True), then next_q_target.gather(1, best).squeeze(1). Selection and evaluation use different networks.",
+    "dueling_combine reshapes value to (B, 1) and returns value + advantages - advantages.mean(dim=1, keepdim=True). The mean is over actions (dim=1), not over the batch.",
+    "n_step_targets: for each t, add discounted rewards one at a time. Stop without bootstrapping when a step terminates. Otherwise, after n rewards or at the end of the array, add gamma ** m * bootstrap[t + m - 1]."
+  ]
+}
