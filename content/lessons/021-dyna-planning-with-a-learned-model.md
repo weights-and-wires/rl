@@ -247,7 +247,7 @@ The checks test the functions in this order. `dyna_maze` is already written.
 
 **Stochastic worlds.** The model here stores only the last outcome of each pair. When outcomes are random, that single sample is treated as certain. Store counts of outcomes and sample from them, or learn a model of the distribution.
 
-**Wrong models.** A model that is wrong somewhere misleads every planning step that touches it. Dyna-Q+ re-explores stale pairs. [Learning a model and planning with it](/lessons/041-model-based-rl) shows how deep model-based methods keep rollouts short so that errors cannot compound for long.
+**Wrong models.** A model that is wrong somewhere misleads every planning step that touches it. Dyna-Q+ re-explores stale pairs. [Learning a model and planning with it](/lessons/042-model-based-rl) shows how deep model-based methods keep rollouts short so that errors cannot compound for long.
 
 **Huge state spaces.** Both methods keep a table entry per pair. The next chapter, [Monte Carlo tree search](/lessons/022-monte-carlo-tree-search), plans without a table of the whole world.
 

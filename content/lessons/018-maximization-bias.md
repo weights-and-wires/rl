@@ -269,7 +269,7 @@ The checks test the functions in this order. `MaxBiasMDP` and `epsilon_greedy_ac
 
 - **Underestimation.** The double estimator can err low when true values differ, as the $(0, 0.5)$ example shows. A small downward bias usually does less harm than a compounding upward one, but it is not free.
 - **Slower learning per table.** Each table in double Q-learning sees half the data. On problems with little noise, plain Q-learning can learn faster.
-- **Bias with function approximation.** With a neural network, overestimation comes from approximation error as well as reward noise, and it can be large. [Double and dueling DQN](/lessons/026-double-and-dueling-dqn) reuses the online network to choose and the target network to score.
+- **Bias with function approximation.** With a neural network, overestimation comes from approximation error as well as reward noise, and it can be large. [Double and dueling DQN](/lessons/027-double-and-dueling-dqn) reuses the online network to choose and the target network to score.
 - **Expected SARSA in stochastic worlds.** Its advantage comes from removing action noise. When transitions or rewards are noisy, it still needs a small step size.
 
 ## Further reading

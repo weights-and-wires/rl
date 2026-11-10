@@ -15,7 +15,7 @@
  "04-markov-decision-processes": [
   "008-markov-decision-processes",
   "009-the-bellman-equation",
-  "030-where-the-gradient-comes-from"
+  "031-where-the-gradient-comes-from"
  ],
  "05-dynamic-programming": [
   "010-policy-evaluation",
@@ -44,398 +44,524 @@
  ],
  "11-value-function-approximation": [
   "023-function-approximation",
-  "024-the-deadly-triad"
+  "025-the-deadly-triad"
  ],
  "12-deep-q-networks": [
-  "025-deep-q-networks"
+  "026-deep-q-networks"
  ],
  "13-dqn-improvements": [
-  "026-double-and-dueling-dqn",
-  "027-prioritized-replay"
+  "027-double-and-dueling-dqn",
+  "028-prioritized-replay"
  ],
  "14-distributional-rl": [
-  "028-distributional-rl"
+  "029-distributional-rl"
  ],
  "15-policy-gradient-theorem": [
-  "029-the-policy-gradient",
-  "030-where-the-gradient-comes-from"
+  "030-the-policy-gradient",
+  "031-where-the-gradient-comes-from"
  ],
  "16-actor-critic": [
-  "031-baselines-and-actor-critic"
+  "032-baselines-and-actor-critic"
  ],
  "17-generalized-advantage-estimation": [
-  "032-generalized-advantage-estimation"
+  "033-generalized-advantage-estimation"
  ],
  "18-natural-gradients-and-trpo": [
-  "033-trust-regions-and-trpo"
+  "034-trust-regions-and-trpo"
  ],
  "19-proximal-policy-optimization": [
-  "034-proximal-policy-optimization"
+  "035-proximal-policy-optimization"
  ],
  "20-policy-optimization-theory": [
-  "037-why-policy-optimization-works"
+  "038-why-policy-optimization-works"
  ],
  "21-deterministic-policy-gradients": [
-  "038-deterministic-policy-gradients"
+  "039-deterministic-policy-gradients"
  ],
  "22-maximum-entropy-rl": [
-  "039-maximum-entropy-rl"
+  "040-maximum-entropy-rl"
  ],
  "23-soft-actor-critic": [
-  "040-soft-actor-critic"
+  "041-soft-actor-critic"
  ],
  "24-model-based-rl": [
-  "041-model-based-rl"
+  "042-model-based-rl"
  ],
  "25-world-models-and-muzero": [
-  "042-world-models-and-muzero"
+  "043-world-models-and-muzero"
  ],
  "26-exploration": [
-  "043-exploration-bonuses"
+  "044-exploration-bonuses"
  ],
  "27-imitation-learning": [
-  "044-imitation-learning"
+  "045-imitation-learning"
  ],
  "28-inverse-rl": [
-  "045-inverse-rl-and-gail"
+  "046-inverse-rl-and-gail"
  ],
  "29-offline-rl": [
-  "046-offline-rl"
+  "047-offline-rl"
  ],
  "30-reward-design": [
-  "047-reward-design-and-shaping"
+  "048-reward-design-and-shaping"
  ],
  "31-evaluating-rl": [
-  "048-evaluating-rl"
+  "049-evaluating-rl"
  ],
  "32-multi-agent-and-self-play": [
-  "049-multi-agent-and-self-play"
+  "050-multi-agent-and-self-play"
  ],
  "33-language-models-as-policies": [
-  "051-language-models-as-policies"
+  "052-language-models-as-policies"
  ],
  "34-reward-models": [
-  "052-reward-models"
+  "053-reward-models"
  ],
  "35-rlhf-with-ppo": [
-  "054-rlhf-with-ppo"
+  "055-rlhf-with-ppo"
  ],
  "36-direct-preference-optimization": [
-  "055-direct-preference-optimization"
+  "056-direct-preference-optimization"
  ],
  "37-group-relative-policy-optimization": [
-  "056-group-relative-policy-optimization"
+  "057-group-relative-policy-optimization"
  ],
  "38-reasoning-with-verifiable-rewards": [
-  "058-reasoning-with-verifiable-rewards"
+  "059-reasoning-with-verifiable-rewards"
  ],
  "39-process-rewards-and-search": [
-  "059-process-rewards-and-search"
+  "060-process-rewards-and-search"
  ],
  "40-ai-feedback-and-self-improvement": [
-  "060-ai-feedback-and-self-improvement"
+  "061-ai-feedback-and-self-improvement"
  ],
  "41-agents-and-multi-turn-rl": [
-  "061-agents-and-multi-turn-rl"
+  "062-agents-and-multi-turn-rl"
  ],
  "42-rl-infrastructure-for-llms": [
-  "062-rl-infrastructure-for-llms"
+  "063-rl-infrastructure-for-llms"
  ],
  "43-diffusion-models-as-policies": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "44-preference-tuning-for-diffusion": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "45-flow-models-and-grpo": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "46-vision-language-models": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "47-speech-and-audio": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "48-robotics-and-embodied-agents": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "49-reward-hacking-and-overoptimization": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "50-safe-and-constrained-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "51-scaling-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "52-the-frontier": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "048-language-models-as-policies": [
-  "051-language-models-as-policies"
+  "052-language-models-as-policies"
  ],
  "049-reward-models": [
-  "052-reward-models"
+  "053-reward-models"
  ],
  "050-rlhf-with-ppo": [
-  "054-rlhf-with-ppo"
+  "055-rlhf-with-ppo"
  ],
  "051-direct-preference-optimization": [
-  "055-direct-preference-optimization"
+  "056-direct-preference-optimization"
  ],
  "052-group-relative-policy-optimization": [
-  "056-group-relative-policy-optimization"
+  "057-group-relative-policy-optimization"
  ],
  "053-reasoning-with-verifiable-rewards": [
-  "058-reasoning-with-verifiable-rewards"
+  "059-reasoning-with-verifiable-rewards"
  ],
  "054-process-rewards-and-search": [
-  "059-process-rewards-and-search"
+  "060-process-rewards-and-search"
  ],
  "055-ai-feedback-and-self-improvement": [
-  "060-ai-feedback-and-self-improvement"
+  "061-ai-feedback-and-self-improvement"
  ],
  "056-agents-and-multi-turn-rl": [
-  "061-agents-and-multi-turn-rl"
+  "062-agents-and-multi-turn-rl"
  ],
  "057-rl-infrastructure-for-llms": [
-  "062-rl-infrastructure-for-llms"
+  "063-rl-infrastructure-for-llms"
  ],
  "058-diffusion-and-flow-policies": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "059-rl-for-vision-speech-and-robots": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "060-reward-hacking-and-safe-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "035-why-policy-optimization-works": [
-  "037-why-policy-optimization-works"
+  "038-why-policy-optimization-works"
  ],
  "036-deterministic-policy-gradients": [
-  "038-deterministic-policy-gradients"
+  "039-deterministic-policy-gradients"
  ],
  "037-maximum-entropy-rl": [
-  "039-maximum-entropy-rl"
+  "040-maximum-entropy-rl"
  ],
  "038-soft-actor-critic": [
-  "040-soft-actor-critic"
+  "041-soft-actor-critic"
  ],
  "039-model-based-rl": [
-  "041-model-based-rl"
+  "042-model-based-rl"
  ],
  "040-world-models-and-muzero": [
-  "042-world-models-and-muzero"
+  "043-world-models-and-muzero"
  ],
  "041-exploration-bonuses": [
-  "043-exploration-bonuses"
+  "044-exploration-bonuses"
  ],
  "042-imitation-learning": [
-  "044-imitation-learning"
+  "045-imitation-learning"
  ],
  "043-inverse-rl-and-gail": [
-  "045-inverse-rl-and-gail"
+  "046-inverse-rl-and-gail"
  ],
  "044-offline-rl": [
-  "046-offline-rl"
+  "047-offline-rl"
  ],
  "045-reward-design-and-shaping": [
-  "047-reward-design-and-shaping"
+  "048-reward-design-and-shaping"
  ],
  "046-evaluating-rl": [
-  "048-evaluating-rl"
+  "049-evaluating-rl"
  ],
  "047-multi-agent-and-self-play": [
-  "049-multi-agent-and-self-play"
+  "050-multi-agent-and-self-play"
  ],
  "048-sft-and-the-post-training-pipeline": [
-  "050-sft-and-the-post-training-pipeline"
+  "051-sft-and-the-post-training-pipeline"
  ],
  "049-language-models-as-policies": [
-  "051-language-models-as-policies"
+  "052-language-models-as-policies"
  ],
  "050-reward-models": [
-  "052-reward-models"
+  "053-reward-models"
  ],
  "051-rlhf-with-ppo": [
-  "054-rlhf-with-ppo"
+  "055-rlhf-with-ppo"
  ],
  "052-direct-preference-optimization": [
-  "055-direct-preference-optimization"
+  "056-direct-preference-optimization"
  ],
  "053-group-relative-policy-optimization": [
-  "056-group-relative-policy-optimization"
+  "057-group-relative-policy-optimization"
  ],
  "054-reasoning-with-verifiable-rewards": [
-  "058-reasoning-with-verifiable-rewards"
+  "059-reasoning-with-verifiable-rewards"
  ],
  "055-process-rewards-and-search": [
-  "059-process-rewards-and-search"
+  "060-process-rewards-and-search"
  ],
  "056-ai-feedback-and-self-improvement": [
-  "060-ai-feedback-and-self-improvement"
+  "061-ai-feedback-and-self-improvement"
  ],
  "057-agents-and-multi-turn-rl": [
-  "061-agents-and-multi-turn-rl"
+  "062-agents-and-multi-turn-rl"
  ],
  "058-rl-infrastructure-for-llms": [
-  "062-rl-infrastructure-for-llms"
+  "063-rl-infrastructure-for-llms"
  ],
  "059-diffusion-and-flow-policies": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "060-rl-for-vision-speech-and-robots": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "061-reward-hacking-and-safe-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "055-reasoning-with-verifiable-rewards": [
-  "058-reasoning-with-verifiable-rewards"
+  "059-reasoning-with-verifiable-rewards"
  ],
  "056-process-rewards-and-search": [
-  "059-process-rewards-and-search"
+  "060-process-rewards-and-search"
  ],
  "057-ai-feedback-and-self-improvement": [
-  "060-ai-feedback-and-self-improvement"
+  "061-ai-feedback-and-self-improvement"
  ],
  "058-agents-and-multi-turn-rl": [
-  "061-agents-and-multi-turn-rl"
+  "062-agents-and-multi-turn-rl"
  ],
  "059-rl-infrastructure-for-llms": [
-  "062-rl-infrastructure-for-llms"
+  "063-rl-infrastructure-for-llms"
  ],
  "060-diffusion-and-flow-policies": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "061-rl-for-vision-speech-and-robots": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "062-reward-hacking-and-safe-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "052-rlhf-with-ppo": [
-  "054-rlhf-with-ppo"
+  "055-rlhf-with-ppo"
  ],
  "053-direct-preference-optimization": [
-  "055-direct-preference-optimization"
+  "056-direct-preference-optimization"
  ],
  "054-group-relative-policy-optimization": [
-  "056-group-relative-policy-optimization"
+  "057-group-relative-policy-optimization"
  ],
  "055-verifiable-rewards": [
-  "057-verifiable-rewards"
+  "058-verifiable-rewards"
  ],
  "056-reasoning-with-verifiable-rewards": [
-  "058-reasoning-with-verifiable-rewards"
+  "059-reasoning-with-verifiable-rewards"
  ],
  "057-process-rewards-and-search": [
-  "059-process-rewards-and-search"
+  "060-process-rewards-and-search"
  ],
  "058-ai-feedback-and-self-improvement": [
-  "060-ai-feedback-and-self-improvement"
+  "061-ai-feedback-and-self-improvement"
  ],
  "059-agents-and-multi-turn-rl": [
-  "061-agents-and-multi-turn-rl"
+  "062-agents-and-multi-turn-rl"
  ],
  "060-rl-infrastructure-for-llms": [
-  "062-rl-infrastructure-for-llms"
+  "063-rl-infrastructure-for-llms"
  ],
  "061-diffusion-and-flow-policies": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "062-rl-for-vision-speech-and-robots": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "063-reward-hacking-and-safe-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
  ],
  "036-why-policy-optimization-works": [
-  "037-why-policy-optimization-works"
+  "038-why-policy-optimization-works"
  ],
  "037-deterministic-policy-gradients": [
-  "038-deterministic-policy-gradients"
+  "039-deterministic-policy-gradients"
  ],
  "038-maximum-entropy-rl": [
-  "039-maximum-entropy-rl"
+  "040-maximum-entropy-rl"
  ],
  "039-soft-actor-critic": [
-  "040-soft-actor-critic"
+  "041-soft-actor-critic"
  ],
  "040-model-based-rl": [
-  "041-model-based-rl"
+  "042-model-based-rl"
  ],
  "041-world-models-and-muzero": [
-  "042-world-models-and-muzero"
+  "043-world-models-and-muzero"
  ],
  "042-exploration-bonuses": [
-  "043-exploration-bonuses"
+  "044-exploration-bonuses"
  ],
  "043-imitation-learning": [
-  "044-imitation-learning"
+  "045-imitation-learning"
  ],
  "044-inverse-rl-and-gail": [
-  "045-inverse-rl-and-gail"
+  "046-inverse-rl-and-gail"
  ],
  "045-offline-rl": [
-  "046-offline-rl"
+  "047-offline-rl"
  ],
  "046-reward-design-and-shaping": [
-  "047-reward-design-and-shaping"
+  "048-reward-design-and-shaping"
  ],
  "047-evaluating-rl": [
-  "048-evaluating-rl"
+  "049-evaluating-rl"
  ],
  "048-multi-agent-and-self-play": [
-  "049-multi-agent-and-self-play"
+  "050-multi-agent-and-self-play"
  ],
  "049-sft-and-the-post-training-pipeline": [
-  "050-sft-and-the-post-training-pipeline"
+  "051-sft-and-the-post-training-pipeline"
  ],
  "050-language-models-as-policies": [
-  "051-language-models-as-policies"
+  "052-language-models-as-policies"
  ],
  "051-reward-models": [
-  "052-reward-models"
+  "053-reward-models"
  ],
  "052-judge-evaluation": [
-  "053-judge-evaluation"
+  "054-judge-evaluation"
  ],
  "053-rlhf-with-ppo": [
-  "054-rlhf-with-ppo"
+  "055-rlhf-with-ppo"
  ],
  "054-direct-preference-optimization": [
-  "055-direct-preference-optimization"
+  "056-direct-preference-optimization"
  ],
  "055-group-relative-policy-optimization": [
-  "056-group-relative-policy-optimization"
+  "057-group-relative-policy-optimization"
  ],
  "056-verifiable-rewards": [
-  "057-verifiable-rewards"
+  "058-verifiable-rewards"
  ],
  "057-reasoning-with-verifiable-rewards": [
-  "058-reasoning-with-verifiable-rewards"
+  "059-reasoning-with-verifiable-rewards"
  ],
  "058-process-rewards-and-search": [
-  "059-process-rewards-and-search"
+  "060-process-rewards-and-search"
  ],
  "059-ai-feedback-and-self-improvement": [
-  "060-ai-feedback-and-self-improvement"
+  "061-ai-feedback-and-self-improvement"
  ],
  "060-agents-and-multi-turn-rl": [
-  "061-agents-and-multi-turn-rl"
+  "062-agents-and-multi-turn-rl"
  ],
  "061-rl-infrastructure-for-llms": [
-  "062-rl-infrastructure-for-llms"
+  "063-rl-infrastructure-for-llms"
  ],
  "062-diffusion-and-flow-policies": [
-  "063-diffusion-and-flow-policies"
+  "064-diffusion-and-flow-policies"
  ],
  "063-rl-for-vision-speech-and-robots": [
-  "064-rl-for-vision-speech-and-robots"
+  "065-rl-for-vision-speech-and-robots"
  ],
  "064-reward-hacking-and-safe-rl": [
-  "065-reward-hacking-and-safe-rl"
+  "066-reward-hacking-and-safe-rl"
+ ],
+ "024-the-deadly-triad": [
+  "025-the-deadly-triad"
+ ],
+ "025-deep-q-networks": [
+  "026-deep-q-networks"
+ ],
+ "026-double-and-dueling-dqn": [
+  "027-double-and-dueling-dqn"
+ ],
+ "027-prioritized-replay": [
+  "028-prioritized-replay"
+ ],
+ "028-distributional-rl": [
+  "029-distributional-rl"
+ ],
+ "029-the-policy-gradient": [
+  "030-the-policy-gradient"
+ ],
+ "030-where-the-gradient-comes-from": [
+  "031-where-the-gradient-comes-from"
+ ],
+ "031-baselines-and-actor-critic": [
+  "032-baselines-and-actor-critic"
+ ],
+ "032-generalized-advantage-estimation": [
+  "033-generalized-advantage-estimation"
+ ],
+ "033-trust-regions-and-trpo": [
+  "034-trust-regions-and-trpo"
+ ],
+ "034-proximal-policy-optimization": [
+  "035-proximal-policy-optimization"
+ ],
+ "035-ppo-in-practice": [
+  "036-ppo-in-practice"
+ ],
+ "036-impala-and-v-trace": [
+  "037-impala-and-v-trace"
+ ],
+ "037-why-policy-optimization-works": [
+  "038-why-policy-optimization-works"
+ ],
+ "038-deterministic-policy-gradients": [
+  "039-deterministic-policy-gradients"
+ ],
+ "039-maximum-entropy-rl": [
+  "040-maximum-entropy-rl"
+ ],
+ "040-soft-actor-critic": [
+  "041-soft-actor-critic"
+ ],
+ "041-model-based-rl": [
+  "042-model-based-rl"
+ ],
+ "042-world-models-and-muzero": [
+  "043-world-models-and-muzero"
+ ],
+ "043-exploration-bonuses": [
+  "044-exploration-bonuses"
+ ],
+ "044-imitation-learning": [
+  "045-imitation-learning"
+ ],
+ "045-inverse-rl-and-gail": [
+  "046-inverse-rl-and-gail"
+ ],
+ "046-offline-rl": [
+  "047-offline-rl"
+ ],
+ "047-reward-design-and-shaping": [
+  "048-reward-design-and-shaping"
+ ],
+ "048-evaluating-rl": [
+  "049-evaluating-rl"
+ ],
+ "049-multi-agent-and-self-play": [
+  "050-multi-agent-and-self-play"
+ ],
+ "050-sft-and-the-post-training-pipeline": [
+  "051-sft-and-the-post-training-pipeline"
+ ],
+ "051-language-models-as-policies": [
+  "052-language-models-as-policies"
+ ],
+ "052-reward-models": [
+  "053-reward-models"
+ ],
+ "053-judge-evaluation": [
+  "054-judge-evaluation"
+ ],
+ "054-rlhf-with-ppo": [
+  "055-rlhf-with-ppo"
+ ],
+ "055-direct-preference-optimization": [
+  "056-direct-preference-optimization"
+ ],
+ "056-group-relative-policy-optimization": [
+  "057-group-relative-policy-optimization"
+ ],
+ "057-verifiable-rewards": [
+  "058-verifiable-rewards"
+ ],
+ "058-reasoning-with-verifiable-rewards": [
+  "059-reasoning-with-verifiable-rewards"
+ ],
+ "059-process-rewards-and-search": [
+  "060-process-rewards-and-search"
+ ],
+ "060-ai-feedback-and-self-improvement": [
+  "061-ai-feedback-and-self-improvement"
+ ],
+ "061-agents-and-multi-turn-rl": [
+  "062-agents-and-multi-turn-rl"
+ ],
+ "062-rl-infrastructure-for-llms": [
+  "063-rl-infrastructure-for-llms"
+ ],
+ "063-diffusion-and-flow-policies": [
+  "064-diffusion-and-flow-policies"
+ ],
+ "064-rl-for-vision-speech-and-robots": [
+  "065-rl-for-vision-speech-and-robots"
+ ],
+ "065-reward-hacking-and-safe-rl": [
+  "066-reward-hacking-and-safe-rl"
  ]
 }

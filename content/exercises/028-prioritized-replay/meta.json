@@ -1,0 +1,15 @@
+{
+  "id": "028-prioritized-replay",
+  "title": "A sum tree and prioritized replay",
+  "brief": "Build a sum tree that samples in logarithmic time, then use it in a replay buffer that samples transitions in proportion to their priority and returns the importance weights that correct the bias.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "In a SumTree stored as an array of length 2 * capacity, leaf j is node capacity + j and node i's parent is i // 2. After setting a leaf, walk up and set each parent to the sum of its two children.",
+    "SumTree.find starts at node 1. While the node is not a leaf, compare mass with the left child's sum: go left if smaller, otherwise subtract it and go right.",
+    "per_probabilities is priorities ** alpha divided by its sum. importance_weights is (N * probs) ** -beta divided by its maximum.",
+    "The largest importance weight belongs to the item with the smallest probability, so normalize by (N * P_min) ** -beta over every stored item, not only the batch.",
+    "Store p ** alpha in the tree, not p. A new item gets max_priority ** alpha, and update_priorities stores (abs(delta) + eps) ** alpha."
+  ]
+}
