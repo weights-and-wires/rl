@@ -109,106 +109,106 @@
   "052-evaluating-rl"
  ],
  "32-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "33-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "34-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "35-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "36-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "37-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "38-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "39-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "40-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "41-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "42-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "43-diffusion-models-as-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "44-preference-tuning-for-diffusion": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "45-flow-models-and-grpo": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "46-vision-language-models": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "47-speech-and-audio": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "48-robotics-and-embodied-agents": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "49-reward-hacking-and-overoptimization": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "50-safe-and-constrained-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "51-scaling-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "52-the-frontier": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "048-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "049-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "050-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "051-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "052-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "053-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "054-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "055-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "056-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "057-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "058-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "059-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "060-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "035-why-policy-optimization-works": [
   "039-why-policy-optimization-works"
@@ -247,109 +247,109 @@
   "052-evaluating-rl"
  ],
  "047-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "048-sft-and-the-post-training-pipeline": [
-  "054-sft-and-the-post-training-pipeline"
+  "055-sft-and-the-post-training-pipeline"
  ],
  "049-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "050-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "051-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "052-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "053-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "054-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "055-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "056-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "057-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "058-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "059-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "060-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "061-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "055-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "056-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "057-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "058-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "059-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "060-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "061-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "062-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "052-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "053-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "054-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "055-verifiable-rewards": [
-  "061-verifiable-rewards"
+  "062-verifiable-rewards"
  ],
  "056-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "057-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "058-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "059-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "060-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "061-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "062-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "063-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "036-why-policy-optimization-works": [
   "039-why-policy-optimization-works"
@@ -388,55 +388,55 @@
   "052-evaluating-rl"
  ],
  "048-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "049-sft-and-the-post-training-pipeline": [
-  "054-sft-and-the-post-training-pipeline"
+  "055-sft-and-the-post-training-pipeline"
  ],
  "050-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "051-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "052-judge-evaluation": [
-  "057-judge-evaluation"
+  "058-judge-evaluation"
  ],
  "053-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "054-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "055-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "056-verifiable-rewards": [
-  "061-verifiable-rewards"
+  "062-verifiable-rewards"
  ],
  "057-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "058-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "059-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "060-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "061-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "062-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "063-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "064-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "024-the-deadly-triad": [
   "025-the-deadly-triad"
@@ -514,55 +514,55 @@
   "052-evaluating-rl"
  ],
  "049-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "050-sft-and-the-post-training-pipeline": [
-  "054-sft-and-the-post-training-pipeline"
+  "055-sft-and-the-post-training-pipeline"
  ],
  "051-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "052-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "053-judge-evaluation": [
-  "057-judge-evaluation"
+  "058-judge-evaluation"
  ],
  "054-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "055-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "056-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "057-verifiable-rewards": [
-  "061-verifiable-rewards"
+  "062-verifiable-rewards"
  ],
  "058-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "059-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "060-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "061-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "062-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "063-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "064-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "065-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "030-the-policy-gradient": [
   "031-the-policy-gradient"
@@ -625,55 +625,55 @@
   "052-evaluating-rl"
  ],
  "050-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "051-sft-and-the-post-training-pipeline": [
-  "054-sft-and-the-post-training-pipeline"
+  "055-sft-and-the-post-training-pipeline"
  ],
  "052-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "053-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "054-judge-evaluation": [
-  "057-judge-evaluation"
+  "058-judge-evaluation"
  ],
  "055-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "056-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "057-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "058-verifiable-rewards": [
-  "061-verifiable-rewards"
+  "062-verifiable-rewards"
  ],
  "059-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "060-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "061-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "062-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "063-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "064-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "065-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "066-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "045-exploration-bonuses": [
   "046-exploration-bonuses"
@@ -694,55 +694,55 @@
   "052-evaluating-rl"
  ],
  "051-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "052-sft-and-the-post-training-pipeline": [
-  "054-sft-and-the-post-training-pipeline"
+  "055-sft-and-the-post-training-pipeline"
  ],
  "053-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "054-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "055-judge-evaluation": [
-  "057-judge-evaluation"
+  "058-judge-evaluation"
  ],
  "056-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "057-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "058-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "059-verifiable-rewards": [
-  "061-verifiable-rewards"
+  "062-verifiable-rewards"
  ],
  "060-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "061-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "062-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "063-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "064-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "065-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "066-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "067-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
  ],
  "047-imitation-learning": [
   "048-imitation-learning"
@@ -760,54 +760,105 @@
   "052-evaluating-rl"
  ],
  "052-multi-agent-and-self-play": [
-  "053-multi-agent-and-self-play"
+  "054-multi-agent-and-self-play"
  ],
  "053-sft-and-the-post-training-pipeline": [
-  "054-sft-and-the-post-training-pipeline"
+  "055-sft-and-the-post-training-pipeline"
  ],
  "054-language-models-as-policies": [
-  "055-language-models-as-policies"
+  "056-language-models-as-policies"
  ],
  "055-reward-models": [
-  "056-reward-models"
+  "057-reward-models"
  ],
  "056-judge-evaluation": [
-  "057-judge-evaluation"
+  "058-judge-evaluation"
  ],
  "057-rlhf-with-ppo": [
-  "058-rlhf-with-ppo"
+  "059-rlhf-with-ppo"
  ],
  "058-direct-preference-optimization": [
-  "059-direct-preference-optimization"
+  "060-direct-preference-optimization"
  ],
  "059-group-relative-policy-optimization": [
-  "060-group-relative-policy-optimization"
+  "061-group-relative-policy-optimization"
  ],
  "060-verifiable-rewards": [
-  "061-verifiable-rewards"
+  "062-verifiable-rewards"
  ],
  "061-reasoning-with-verifiable-rewards": [
-  "062-reasoning-with-verifiable-rewards"
+  "063-reasoning-with-verifiable-rewards"
  ],
  "062-process-rewards-and-search": [
-  "063-process-rewards-and-search"
+  "064-process-rewards-and-search"
  ],
  "063-ai-feedback-and-self-improvement": [
-  "064-ai-feedback-and-self-improvement"
+  "065-ai-feedback-and-self-improvement"
  ],
  "064-agents-and-multi-turn-rl": [
-  "065-agents-and-multi-turn-rl"
+  "066-agents-and-multi-turn-rl"
  ],
  "065-rl-infrastructure-for-llms": [
-  "066-rl-infrastructure-for-llms"
+  "067-rl-infrastructure-for-llms"
  ],
  "066-diffusion-and-flow-policies": [
-  "067-diffusion-and-flow-policies"
+  "068-diffusion-and-flow-policies"
  ],
  "067-rl-for-vision-speech-and-robots": [
-  "068-rl-for-vision-speech-and-robots"
+  "069-rl-for-vision-speech-and-robots"
  ],
  "068-reward-hacking-and-safe-rl": [
-  "069-reward-hacking-and-safe-rl"
+  "070-reward-hacking-and-safe-rl"
+ ],
+ "053-multi-agent-and-self-play": [
+  "054-multi-agent-and-self-play"
+ ],
+ "054-sft-and-the-post-training-pipeline": [
+  "055-sft-and-the-post-training-pipeline"
+ ],
+ "055-language-models-as-policies": [
+  "056-language-models-as-policies"
+ ],
+ "056-reward-models": [
+  "057-reward-models"
+ ],
+ "057-judge-evaluation": [
+  "058-judge-evaluation"
+ ],
+ "058-rlhf-with-ppo": [
+  "059-rlhf-with-ppo"
+ ],
+ "059-direct-preference-optimization": [
+  "060-direct-preference-optimization"
+ ],
+ "060-group-relative-policy-optimization": [
+  "061-group-relative-policy-optimization"
+ ],
+ "061-verifiable-rewards": [
+  "062-verifiable-rewards"
+ ],
+ "062-reasoning-with-verifiable-rewards": [
+  "063-reasoning-with-verifiable-rewards"
+ ],
+ "063-process-rewards-and-search": [
+  "064-process-rewards-and-search"
+ ],
+ "064-ai-feedback-and-self-improvement": [
+  "065-ai-feedback-and-self-improvement"
+ ],
+ "065-agents-and-multi-turn-rl": [
+  "066-agents-and-multi-turn-rl"
+ ],
+ "066-rl-infrastructure-for-llms": [
+  "067-rl-infrastructure-for-llms"
+ ],
+ "067-diffusion-and-flow-policies": [
+  "068-diffusion-and-flow-policies"
+ ],
+ "068-rl-for-vision-speech-and-robots": [
+  "069-rl-for-vision-speech-and-robots"
+ ],
+ "069-reward-hacking-and-safe-rl": [
+  "070-reward-hacking-and-safe-rl"
  ]
 }

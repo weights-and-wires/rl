@@ -238,7 +238,7 @@ The checks test five functions in this order.
 
 - **The temperature has units.** The bonus $\alpha \mathcal{H}$ is in nats and the reward is in the environment's units. Scale the reward by 10 and the same $\alpha$ makes a very different agent. [Soft actor-critic](/lessons/042-soft-actor-critic) fixes this by tuning $\alpha$ to a target entropy.
 - **You are optimizing a different objective.** With a large $\alpha$, the agent can prefer wandering to reaching the goal, as Figure 2 shows at $\alpha = 1$. Anneal $\alpha$, or report the policy's ordinary return next to its soft return.
-- **Entropy is a KL penalty in disguise.** $\mathcal{H}(p) = \log A - D_{\mathrm{KL}}(p \,\Vert\, \text{uniform})$. Replace the uniform policy with a reference policy $\pi_{\text{ref}}$, and the best policy tilts the reference by $\exp(Q / \alpha)$. That is the form [language models as policies](/lessons/055-language-models-as-policies) use.
+- **Entropy is a KL penalty in disguise.** $\mathcal{H}(p) = \log A - D_{\mathrm{KL}}(p \,\Vert\, \text{uniform})$. Replace the uniform policy with a reference policy $\pi_{\text{ref}}$, and the best policy tilts the reference by $\exp(Q / \alpha)$. That is the form [language models as policies](/lessons/056-language-models-as-policies) use.
 
 ## Further reading
 
