@@ -10,6 +10,7 @@ objectives:
   - Derive the DPO loss from the KL-regularized optimum, and say why the partition function cancels.
   - Compute the DPO margin, loss, and gradient by hand, and implement them on log-probabilities.
   - Say what IPO changes, and why a falling DPO loss does not mean the chosen response became more likely.
+  - Compute the SimPO and KTO losses on a tiny batch, and say what each changes.
 prereqs:
   - 049-sft-and-the-post-training-pipeline
   - 050-language-models-as-policies
@@ -20,9 +21,9 @@ exercise: 054-direct-preference-optimization
 
 # Direct preference optimization
 
-You have thousands of pairs of replies to the same prompt, and for each pair a person marked one reply as better. RLHF with PPO turns those pairs into a reward model, then samples replies from the policy, scores them, and runs reinforcement learning against the score. That is three moving parts, and the policy, the reference, the reward model, and a value head all sit in memory.
+You have thousands of pairs of replies to the same prompt, and a person marked one reply in each pair as better. RLHF with PPO turns those pairs into a reward model, then samples replies, scores them, and runs reinforcement learning against the score. The policy, the reference, the reward model, and a value head all sit in memory.
 
-The pairs already say which reply to make more likely. Why not push the policy toward the chosen reply and away from the rejected one directly, with no reward model and no sampling? This chapter shows the one fix that makes this safe, and the result is *direct preference optimization*, or DPO (Rafailov and colleagues, 2023).
+The pairs already say which reply to make more likely. Why not push the policy toward the chosen reply and away from the rejected one directly? This chapter shows the one fix that makes this safe, and the result is *direct preference optimization*, or DPO (Rafailov and colleagues, 2023).
 
 You will also see the price. DPO's loss can fall while the probability of the reply people preferred falls too.
 
@@ -32,11 +33,11 @@ You will also see the price. DPO's loss can fall while the probability of the re
 - The KL-regularized objective pays for reward and charges $\beta$ times the KL divergence from a reference policy $\pi_{\text{ref}}$. Its best policy has a closed form.
 - A Bradley-Terry reward model says the chance that $y_w$ (the chosen response) beats $y_l$ (the rejected one) is $\sigma(r(x, y_w) - r(x, y_l))$, where $\sigma$ is the sigmoid. It sees only reward differences, from [Reward models from preferences](/lessons/051-reward-models).
 - RLHF with PPO optimizes that objective by sampling, from [RLHF with PPO](/lessons/053-rlhf-with-ppo).
-- A softmax's probabilities must sum to one, so raising one probability lowers the others.
+- A softmax's probabilities sum to one, so raising one lowers the others.
 
 ## The obvious approach, and why it fails
 
-The most direct loss is $-(\log \pi_\theta(y_w) - \log \pi_\theta(y_l))$: make the chosen response more likely and the rejected one less likely. It fails because nothing holds the policy back. The cheapest way to shrink this loss is to push $\log \pi_\theta(y_l)$ toward minus infinity, and a model that has lost the ability to say that sentence has usually lost much else too. PPO-based RLHF avoids this with a KL leash to the reference model. The loss needs the same leash.
+The direct loss is $-(\log \pi_\theta(y_w) - \log \pi_\theta(y_l))$: make the chosen response more likely and the rejected one less likely. It fails because nothing holds the policy back. The cheapest way to shrink this loss is to push $\log \pi_\theta(y_l)$ toward minus infinity, and a model that cannot say that sentence has usually lost much else too. PPO-based RLHF avoids this with a KL leash to the reference model. The loss needs the same leash.
 
 So measure each response by how far the policy has moved it from the reference, not by its raw probability. That quantity is the *log-ratio*, $\log \pi_\theta(y \mid x) - \log \pi_{\text{ref}}(y \mid x)$. Positive means the policy likes the response more than the reference did. The *margin* $h$ of a pair is the chosen log-ratio minus the rejected log-ratio:
 
@@ -44,11 +45,11 @@ $$
 h_\theta = \Big(\log \pi_\theta(y_w \mid x) - \log \pi_{\text{ref}}(y_w \mid x)\Big) - \Big(\log \pi_\theta(y_l \mid x) - \log \pi_{\text{ref}}(y_l \mid x)\Big)
 $$
 
-Read it aloud: how much the policy raised the chosen response, minus how much it raised the rejected one. Training should make $h$ large. At the start the policy equals the reference, so $h = 0$.
+Read it aloud: how much the policy raised the chosen response, minus how much it raised the rejected one. Training should make $h$ large. At the start $h = 0$.
 
 ## A margin by hand
 
-Take one pair. The policy gives the chosen response log-probability $-10$ and the rejected one $-12$. The reference gives them $-11$ and $-11.5$.
+One pair: the policy gives the chosen response log-probability $-10$ and the rejected one $-12$. The reference gives them $-11$ and $-11.5$.
 
 - Chosen log-ratio: $-10 - (-11) = +1$.
 - Rejected log-ratio: $-12 - (-11.5) = -0.5$.
@@ -75,7 +76,7 @@ Figure 1. The policy has moved the chosen response up by 1 and the rejected one 
 
 ## Why this margin is a reward gap
 
-The margin is a good training signal because it is secretly a reward gap. The derivation has three short steps.
+The margin is secretly a reward gap. The derivation has three short steps.
 
 **Step 1: the best policy and the reward determine each other.** From the previous chapters, the policy that maximizes reward minus $\beta$ times KL to the reference is
 
@@ -83,9 +84,9 @@ $$
 \pi^\star(y \mid x) = \frac{\pi_{\text{ref}}(y \mid x)\, e^{r(x, y)/\beta}}{Z(x)}, \qquad Z(x) = \sum_{y} \pi_{\text{ref}}(y \mid x)\, e^{r(x, y)/\beta}
 $$
 
-Read it aloud: take the reference's probability of each response, boost it by $e^{r/\beta}$, and divide by the total so it sums to one. $Z(x)$ is the *partition function*, the normalizer.
+Read it aloud: boost the reference's probability of each response by $e^{r/\beta}$, then divide by the total so it sums to one. $Z(x)$ is the *partition function*, the normalizer.
 
-**Step 2: solve for the reward.** Take the log of both sides and rearrange:
+**Step 2: solve for the reward.** Take logs and rearrange:
 
 $$
 r(x, y) = \beta \log \frac{\pi^\star(y \mid x)}{\pi_{\text{ref}}(y \mid x)} + \beta \log Z(x)
@@ -93,15 +94,15 @@ $$
 
 The reward is $\beta$ times the log-ratio, plus a number that depends only on the prompt. You cannot compute $Z(x)$ for a language model, because it sums over every possible response.
 
-**Step 3: plug it into Bradley-Terry.** Bradley-Terry needs only $r(x, y_w) - r(x, y_l)$, and both responses answer the same prompt, so $\beta \log Z(x)$ appears in both and cancels. The unknown normalizer is gone, and the preference probability is $\sigma(\beta h)$ with $\pi^\star$ replaced by the policy $\pi_\theta$ you train.
+**Step 3: plug it into Bradley-Terry.** Bradley-Terry needs only $r(x, y_w) - r(x, y_l)$, and both responses answer the same prompt, so $\beta \log Z(x)$ appears in both and cancels. The normalizer is gone, and the preference probability is $\sigma(\beta h)$ with $\pi^\star$ replaced by the policy $\pi_\theta$ you train.
 
-Fitting by maximum likelihood means minimizing the negative log of that probability:
+Maximum likelihood minimizes the negative log of that probability:
 
 $$
 \mathcal{L}_{\text{DPO}}(\theta) = -\mathbb{E}_{(x, y_w, y_l)}\Big[\log \sigma\big(\beta\, h_\theta\big)\Big]
 $$
 
-Read it aloud: the reward model's loss from the last chapters, applied to the *implicit reward* $\hat r_\theta(x, y) = \beta \log \frac{\pi_\theta(y \mid x)}{\pi_{\text{ref}}(y \mid x)}$. The policy is its own reward model.
+Read it aloud: the reward model's loss, applied to the *implicit reward* $\hat r_\theta(x, y) = \beta \log \frac{\pi_\theta(y \mid x)}{\pi_{\text{ref}}(y \mid x)}$. The policy is its own reward model.
 
 > [!KEY]
 > DPO is the Bradley-Terry loss on the implicit reward $\beta \log(\pi_\theta / \pi_{\text{ref}})$. The partition function cancels because a preference compares two responses to the same prompt.
@@ -120,7 +121,7 @@ $$
 \frac{\partial \mathcal{L}}{\partial \log \pi_\theta(y_w)} = -\frac{\beta}{B}\, \sigma(-\beta h), \qquad \frac{\partial \mathcal{L}}{\partial \log \pi_\theta(y_l)} = +\frac{\beta}{B}\, \sigma(-\beta h)
 $$
 
-Read it aloud: raise the chosen log-probability and lower the rejected one, each with weight $\sigma(-\beta h)$. The weight is near one for a pair the implicit reward ranks the wrong way, and near zero for a pair it already ranks right by a wide margin, so DPO spends its effort on the pairs it gets wrong. On the example with $B = 1$, the chosen gradient is $-0.1 \times 0.4626 = -0.04626$, and descent moves it up. The reference log-probabilities are constants.
+Read it aloud: raise the chosen log-probability and lower the rejected one, each with weight $\sigma(-\beta h)$. The weight is near one for a pair ranked the wrong way and near zero for a pair ranked right by a wide margin, so DPO spends its effort on the pairs it gets wrong. On the example with $B = 1$, the chosen gradient is $-0.1 \times 0.4626 = -0.04626$, and descent moves it up. 
 
 ```python
 h = (policy_chosen - ref_chosen) - (policy_rejected - ref_rejected)
@@ -132,11 +133,11 @@ g_chosen = -beta * sigmoid(-beta * h) / B     # and the rejected gradient is -g_
 
 DPO's loss sees only the margin $h$. It is satisfied when the chosen response rises *relative to* the rejected one, and nothing forces the chosen response to rise at all. Razin and colleagues (2025) call a fall in the chosen log-probability *likelihood displacement*.
 
-It happens because responses share parameters. Take a softmax policy over 32 responses with logits $z_y = \theta^\top e_y$, where each response has a unit-length embedding $e_y \in \mathbb{R}^4$. The gradient of $\log \pi(y)$ with respect to $\theta$ is $e_y - \bar e$, where $\bar e = \sum_{y'} \pi(y') e_{y'}$. The two DPO gradients are equal and opposite, so the $\bar e$ terms cancel and each step moves $\theta$ along $e_w - e_l$.
+Responses share parameters. Take a softmax policy over 32 responses with logits $z_y = \theta^\top e_y$, where each response has a unit-length embedding $e_y \in \mathbb{R}^4$. The gradient of $\log \pi(y)$ with respect to $\theta$ is $e_y - \bar e$, where $\bar e = \sum_{y'} \pi(y') e_{y'}$. The two DPO gradients are equal and opposite, so the $\bar e$ terms cancel and each step moves $\theta$ along $e_w - e_l$.
 
-Next, make the chosen and rejected embeddings nearly parallel, with cosine similarity $0.95$. A step along $e_w - e_l$ changes each logit in proportion to $e_y^\top(e_w - e_l)$. For the chosen response that is $1 - 0.95 = 0.05$, and for the rejected one it is $-0.05$. Some other response, whose embedding points along $e_w - e_l$, gets $0.258$ in the seeded toy: five times the chosen one. It takes over the normalizer, and the chosen log-probability falls.
+Now make the chosen and rejected embeddings nearly parallel, with cosine similarity $0.95$. A step along $e_w - e_l$ changes each logit in proportion to $e_y^\top(e_w - e_l)$. For the chosen response that is $1 - 0.95 = 0.05$, and for the rejected one it is $-0.05$. Some other response, whose embedding points along $e_w - e_l$, gets $0.258$ in the seeded toy: five times the chosen one. It takes over the normalizer, and the chosen log-probability falls.
 
-The exercise runs 500 steps at $\beta = 0.1$ and step size 1, from a uniform start where every log-probability is $\log(1/32) = -3.466$.
+The exercise runs 500 steps at $\beta = 0.1$ and step size 1, from a uniform start.
 
 | Step | $\log \pi(y_w)$ | $\log \pi(y_l)$ | DPO loss |
 |---|---|---|---|
@@ -187,14 +188,14 @@ The exercise runs 500 steps at $\beta = 0.1$ and step size 1, from a uniform sta
 Figure 2. The chosen log-probability rises for about 70 steps, then falls for good, while the rejected one falls faster. Notice the dashed curve: by step 500 the most-aligned response holds 45% of the probability, up from 3%.
 ```
 
-The loss fell from $0.693$ to $0.583$, so by the loss alone, training worked. With orthogonal embeddings the effect is far weaker, because $e_w^\top(e_w - e_l) = 1$ and the chosen response gains.
+The loss fell from $0.693$ to $0.583$, so by the loss alone, training worked. With orthogonal embeddings the effect is far weaker, because $e_w^\top(e_w - e_l) = 1$.
 
 > [!WARNING]
 > A falling DPO loss says the margin grew. It does not say the chosen response became more likely. Log $\log \pi(y_w)$ and $\log \pi(y_l)$ separately.
 
 ## IPO: a finite target for the margin
 
-When a preference is deterministic, so that $y_w$ always wins, Bradley-Terry needs an infinite reward gap to fit it. DPO then pushes $h$ upward forever, whatever $\beta$ is, and the KL leash stops working. Azar and colleagues (2023) fix this with a squared error toward a finite margin, the *identity preference optimization* loss:
+When a preference is deterministic, so that $y_w$ always wins, Bradley-Terry needs an infinite reward gap to fit it. DPO then pushes $h$ upward forever, and the KL leash stops working. Azar and colleagues (2023) fix this with a squared error toward a finite margin, the *identity preference optimization* loss:
 
 $$
 \mathcal{L}_{\text{IPO}} = \mathbb{E}\Big[\Big(h_\theta - \frac{1}{2\tau}\Big)^2\Big]
@@ -202,10 +203,56 @@ $$
 
 Read it aloud: push the margin toward $1/(2\tau)$, and push back if it overshoots. $\tau$ plays the role of $\beta$. On the example with $\tau = 0.1$, the target is $5$ and the loss is $(1.5 - 5)^2 = 12.25$. The chosen gradient is `2 * (h - 1 / (2 * tau)) / B`.
 
-Two other relatives each change one piece. KTO (Ethayarajh and colleagues, 2024) learns from single thumbs-up or thumbs-down labels instead of pairs. SimPO (Meng, Xia, and Chen, 2024) drops the reference model and scores each response by its average per-token log-probability.
+## SimPO and KTO: two more relatives
+
+SimPO (Meng, Xia, and Chen, 2024) drops the reference model. It scores each response by its average per-token log-probability and asks for a target margin $\gamma$:
+
+$$
+\mathcal{L}_{\text{SimPO}} = -\log \sigma\Big(\frac{\beta}{|y_w|}\log \pi_\theta(y_w \mid x) - \frac{\beta}{|y_l|}\log \pi_\theta(y_l \mid x) - \gamma\Big)
+$$
+
+Read it aloud: the chosen response's average log-probability must beat the rejected one's by at least $\gamma$. Take sums of $-20$ over 10 tokens and $-36$ over 12, with $\beta = 2$ and $\gamma = 0.5$. The averages are $-2$ and $-3$, so the argument is $2(-2) - 2(-3) - 0.5 = 1.5$, and the loss is $0.2014$. Sums would give an argument of $31.5$, so the division by length matters.
+
+KTO (Ethayarajh and colleagues, 2024) learns from single thumbs-up or thumbs-down labels. With $r = \log(\pi_\theta / \pi_{\text{ref}})$ and a reference point $z_{\text{ref}}$, the loss is $\mathbb{E}[\lambda_y - v(x, y)]$, where
+
+$$
+v(x, y) = \begin{cases} \lambda_D\, \sigma\big(\beta (r - z_{\text{ref}})\big) & y \text{ desirable} \\ \lambda_U\, \sigma\big(\beta (z_{\text{ref}} - r)\big) & y \text{ undesirable} \end{cases}
+$$
+
+Read it aloud: a good response costs less the further its log-ratio sits above $z_{\text{ref}}$, and a bad one costs less the further it sits below. The paper sets $z_{\text{ref}}$ to the mean log-ratio of responses paired with other prompts, clamped at zero, with no gradient. Take log-ratios $+1$ (desirable) and $-0.5$ (undesirable), with $\beta = 1$, $\lambda_D = 1$, $\lambda_U = 1.5$, and $z_{\text{ref}} = 0.2$. The costs are $0.3100$ and $0.4977$, so the mean loss is $0.4039$.
+
+```python
+simpo = np.mean(-log_sigmoid(beta * logp_w / len_w - beta * logp_l / len_l - gamma))
+z_ref = max(0.0, np.mean(policy_mismatched - ref_mismatched))
+```
+
+```figure
+<svg viewBox="0 0 600 320" role="img" aria-label="DPO, SimPO, and KTO losses against the scaled reward u. At u = 0 DPO is 0.693, SimPO with gamma 0.5 is 0.974, and KTO is 0.5. KTO stays below 1 for every u.">
+<line x1="80" y1="250" x2="560" y2="250" class="stroke-muted"/>
+<line x1="80" y1="250.0" x2="560" y2="250.0" class="stroke-grid"/><text x="72" y="254.0" class="fig-small" text-anchor="end">0</text><line x1="80" y1="188.9" x2="560" y2="188.9" class="stroke-grid"/><text x="72" y="192.9" class="fig-small" text-anchor="end">1</text><line x1="80" y1="127.7" x2="560" y2="127.7" class="stroke-grid"/><text x="72" y="131.7" class="fig-small" text-anchor="end">2</text><line x1="80" y1="66.6" x2="560" y2="66.6" class="stroke-grid"/><text x="72" y="70.6" class="fig-small" text-anchor="end">3</text>
+<line x1="148.6" y1="250" x2="148.6" y2="256" class="stroke-muted"/><text x="148.6" y="272" class="fig-small" text-anchor="middle">-2</text><line x1="285.7" y1="250" x2="285.7" y2="256" class="stroke-muted"/><text x="285.7" y="272" class="fig-small" text-anchor="middle">0</text><line x1="422.9" y1="250" x2="422.9" y2="256" class="stroke-muted"/><text x="422.9" y="272" class="fig-small" text-anchor="middle">2</text><line x1="560.0" y1="250" x2="560.0" y2="256" class="stroke-muted"/><text x="560.0" y="272" class="fig-small" text-anchor="middle">4</text>
+<polyline points="80.0,34.2 86.9,40.1 93.7,46.0 100.6,51.9 107.4,57.8 114.3,63.6 121.1,69.4 128.0,75.2 134.9,80.9 141.7,86.6 148.6,92.3 155.4,97.9 162.3,103.5 169.1,109.1 176.0,114.5 182.9,120.0 189.7,125.3 196.6,130.6 203.4,135.8 210.3,140.9 217.1,146.0 224.0,150.9 230.9,155.8 237.7,160.5 244.6,165.2 251.4,169.7 258.3,174.1 265.1,178.4 272.0,182.5 278.9,186.6 285.7,190.4 292.6,194.2 299.4,197.8 306.3,201.2 313.1,204.5 320.0,207.6 326.9,210.6 333.7,213.4 340.6,216.1 347.4,218.6 354.3,221.0 361.1,223.3 368.0,225.3 374.9,227.3 381.7,229.1 388.6,230.8 395.4,232.4 402.3,233.9 409.1,235.3 416.0,236.5 422.9,237.7 429.7,238.8 436.6,239.7 443.4,240.6 450.3,241.5 457.1,242.2 464.0,242.9 470.9,243.6 477.7,244.2 484.6,244.7 491.4,245.2 498.3,245.6 505.1,246.0 512.0,246.4 518.9,246.7 525.7,247.0 532.6,247.3 539.4,247.6 546.3,247.8 553.1,248.0 560.0,248.2" class="stroke-c" fill="none"/>
+<polyline points="80.0,63.6 86.9,69.4 93.7,75.2 100.6,80.9 107.4,86.6 114.3,92.3 121.1,97.9 128.0,103.5 134.9,109.1 141.7,114.5 148.6,120.0 155.4,125.3 162.3,130.6 169.1,135.8 176.0,140.9 182.9,146.0 189.7,150.9 196.6,155.8 203.4,160.5 210.3,165.2 217.1,169.7 224.0,174.1 230.9,178.4 237.7,182.5 244.6,186.6 251.4,190.4 258.3,194.2 265.1,197.8 272.0,201.2 278.9,204.5 285.7,207.6 292.6,210.6 299.4,213.4 306.3,216.1 313.1,218.6 320.0,221.0 326.9,223.3 333.7,225.3 340.6,227.3 347.4,229.1 354.3,230.8 361.1,232.4 368.0,233.9 374.9,235.3 381.7,236.5 388.6,237.7 395.4,238.8 402.3,239.7 409.1,240.6 416.0,241.5 422.9,242.2 429.7,242.9 436.6,243.6 443.4,244.2 450.3,244.7 457.1,245.2 464.0,245.6 470.9,246.0 477.7,246.4 484.6,246.7 491.4,247.0 498.3,247.3 505.1,247.6 512.0,247.8 518.9,248.0 525.7,248.2 532.6,248.4 539.4,248.5 546.3,248.6 553.1,248.8 560.0,248.9" class="stroke-b" fill="none"/>
+<polyline points="80.0,191.8 86.9,192.0 93.7,192.4 100.6,192.7 107.4,193.1 114.3,193.5 121.1,193.9 128.0,194.4 134.9,195.0 141.7,195.5 148.6,196.1 155.4,196.8 162.3,197.5 169.1,198.3 176.0,199.1 182.9,200.0 189.7,201.0 196.6,202.0 203.4,203.0 210.3,204.1 217.1,205.3 224.0,206.5 230.9,207.8 237.7,209.1 244.6,210.5 251.4,211.9 258.3,213.4 265.1,214.9 272.0,216.4 278.9,217.9 285.7,219.4 292.6,221.0 299.4,222.5 306.3,224.0 313.1,225.5 320.0,226.9 326.9,228.3 333.7,229.7 340.6,231.0 347.4,232.3 354.3,233.6 361.1,234.7 368.0,235.8 374.9,236.9 381.7,237.9 388.6,238.8 395.4,239.7 402.3,240.6 409.1,241.3 416.0,242.0 422.9,242.7 429.7,243.3 436.6,243.9 443.4,244.4 450.3,244.9 457.1,245.4 464.0,245.8 470.9,246.1 477.7,246.5 484.6,246.8 491.4,247.1 498.3,247.4 505.1,247.6 512.0,247.8 518.9,248.0 525.7,248.2 532.6,248.4 539.4,248.5 546.3,248.7 553.1,248.8 560.0,248.9" class="stroke-a dashed" fill="none"/>
+<circle cx="285.7" cy="207.6" r="4.5" class="fill-b"/>
+<circle cx="285.7" cy="190.4" r="4.5" class="fill-c"/>
+<circle cx="285.7" cy="219.4" r="4.5" class="fill-a"/>
+<line x1="380" y1="60" x2="412" y2="60" class="stroke-c"/>
+<text x="418" y="64" class="fig-small">SimPO, γ = 0.5</text>
+<line x1="380" y1="80" x2="412" y2="80" class="stroke-b"/>
+<text x="418" y="84" class="fig-small">DPO</text>
+<line x1="380" y1="100" x2="412" y2="100" class="stroke-a dashed"/>
+<text x="418" y="104" class="fig-small">KTO, desirable</text>
+<text x="320" y="300" text-anchor="middle">scaled reward u</text>
+<text x="78" y="24" class="fig-small" text-anchor="end">loss</text>
+</svg>
+Figure 3. Three losses against one scaled-reward axis. Notice that SimPO's curve is DPO's shifted right by $\gamma$, and that KTO's loss stays below 1 while DPO's grows without bound.
+```
+
+ORPO (Hong, Lee, and Thorne, 2024) also needs no reference model. It adds an odds-ratio penalty on the disfavored response to the supervised loss, so one stage replaces SFT followed by preference training.
 
 > [!KEY]
-> You wanted to train on preference pairs without a reward model or a sampling loop. DPO does it by treating $\beta \log(\pi_\theta / \pi_{\text{ref}})$ as the reward, so the policy is its own reward model and the reference is the leash. Because the loss sees only the margin, a falling loss is not proof that the chosen response got more likely.
+> DPO trains on preference pairs with no reward model or sampling loop by treating $\beta \log(\pi_\theta / \pi_{\text{ref}})$ as the reward. The policy is its own reward model and the reference is the leash. Because the loss sees only the margin, a falling loss does not prove the chosen response got more likely.
 
 > [!RECAP]
 > - Raising the chosen and lowering the rejected response needs a leash, and the reference log-ratio is the leash.
@@ -213,43 +260,47 @@ Two other relatives each change one piece. KTO (Ethayarajh and colleagues, 2024)
 > - The DPO loss is $-\log \sigma(\beta h)$, and its chosen-gradient is $-\beta\,\sigma(-\beta h)/B$.
 > - IPO regresses $h$ onto $1/(2\tau)$, so the margin stops growing.
 > - The margin can grow while both log-probabilities fall.
+> - SimPO averages log-probabilities per token and adds a margin $\gamma$ with no reference model. KTO scores single labels against a clamped reference point $z_{\text{ref}}$.
 
 ## Build it step by step
 
 The checks test the functions in this order.
 
-1. **`sequence_logprob(token_logps, mask)`.** Takes `(B, T)` arrays and returns `(B,)`. Select the masked tokens and sum over the last axis. Common mistake: multiplying by the mask, because padding can hold `-inf` and `0 * -inf` is `nan`. Use `np.where`.
-2. **`dpo_loss(...)`.** Takes four `(B,)` arrays, `beta`, and optional `weights`. Build `h`, then take the weighted sum of `-log_sigmoid(beta * h)` with `pair_weights`. Common mistake: `-np.log(sigmoid(z))`, which returns `inf` for large negative `z`.
+1. **`sequence_logprob(token_logps, mask)`.** Takes `(B, T)` arrays and returns `(B,)`. Select the masked tokens and sum over the last axis. Common mistake: multiplying by the mask, because `0 * -inf` is `nan`. Use `np.where`.
+2. **`dpo_loss(...)`.** Takes four `(B,)` arrays, `beta`, and optional `weights`. Build `h`, then take the weighted sum of `-log_sigmoid(beta * h)`. Common mistake: `-np.log(sigmoid(z))`, which returns `inf` for large negative `z`.
 3. **`dpo_grad(...)`.** Returns `(grad_chosen, grad_rejected)`. Multiply `-beta * sigmoid(-beta * h)` by the weights. Common mistake: dropping the factor $\beta$ from the chain rule. The finite-difference check catches it.
 4. **`ipo_loss` and `ipo_grad`.** The target is `1 / (2 * tau)`. Common mistake: using `1 / tau`.
 5. **`train_dpo_linear(E, theta0, chosen, rejected, beta, lr, steps)`.** Keep the reference log-probabilities fixed at their starting values. Each step, call `dpo_grad` on one pair, and form the $\theta$ gradient with `g_w * (E[w] - e_bar) + g_l * (E[l] - e_bar)`. Return all `steps + 1` rows. Common mistake: updating the reference as you go, which makes the margin zero every step.
+6. **`simpo_loss(logp_chosen, logp_rejected, len_chosen, len_rejected, beta, gamma)`.** Takes summed log-probabilities and token counts. Divide each by its length before scaling by `beta`. Common mistake: using the sums, which makes the loss depend on length.
+7. **`kto_ref_point(...)` and `kto_loss(...)`.** The reference point is the mean mismatched log-ratio, clamped with `max(0, ...)`. Use `z_ref - r` for undesirable examples. Common mistake: leaving `z_ref` unclamped, or using `r - z_ref` for both labels.
 
 ## Where this breaks
 
-**Likelihood displacement.** Razin and colleagues link it to chosen and rejected responses with similar hidden representations, and show that filtering such pairs helps. People also add a supervised loss on the chosen responses to hold them up.
+**Likelihood displacement.** Razin and colleagues link it to chosen and rejected responses with similar hidden representations, and show that filtering such pairs helps. A supervised loss on the chosen responses also holds them up.
 
-**Offline data.** The pairs usually come from other models, so DPO learns about responses its own policy rarely produces. Online and iterative DPO sample fresh pairs from the current policy and label them with a reward model or a judge.
+**Offline data.** The pairs usually come from other models, so DPO learns about responses its own policy rarely produces. Online DPO samples fresh pairs from the current policy.
 
-**Length.** Preferred responses are often longer, and DPO's summed log-ratio lets length act as a shortcut. Trained models grow verbose.
+**Length.** Preferred responses are often longer, and DPO's summed log-ratio lets length act as a shortcut, so trained models grow verbose.
 
 ## Further reading
 
-The following sources cover the derivation and the relatives in more depth:
+The following sources cover the derivation and the relatives:
 
 - [Rafailov et al., "Direct Preference Optimization: Your Language Model is Secretly a Reward Model" (2023)](https://arxiv.org/abs/2305.18290): the derivation this chapter follows.
 - [Azar et al., "A General Theoretical Paradigm to Understand Learning from Human Preferences" (2023)](https://arxiv.org/abs/2310.12036): the general family of objectives and IPO.
 - [Ethayarajh et al., "KTO: Model Alignment as Prospect Theoretic Optimization" (2024)](https://arxiv.org/abs/2402.01306): learning from unpaired binary labels.
 - [Meng, Xia, and Chen, "SimPO: Simple Preference Optimization with a Reference-Free Reward" (2024)](https://arxiv.org/abs/2405.14734): the length-normalized, reference-free loss.
+- [Hong, Lee, and Thorne, "ORPO: Monolithic Preference Optimization without Reference Model" (2024)](https://arxiv.org/abs/2403.07691): an odds-ratio penalty added to supervised fine-tuning.
 - [Razin et al., "Unintentional Unalignment: Likelihood Displacement in Direct Preference Optimization" (2025)](https://arxiv.org/abs/2410.08847): why both log-probabilities fall, and a filter for the pairs that cause it.
+- [Stanford CS336, Spring 2026, Lecture 15, "Mid/post-training (SFT/RLHF)"](https://cs336.stanford.edu/): a university lecture on the pipeline that DPO replaces in part.
 
 Open questions that researchers are working on:
 
 - Which properties of a preference dataset predict displacement before training starts?
 - When does offline DPO match online RLHF, given equal labels and compute?
-- Can one loss keep DPO's simplicity and IPO's bounded margin without a tuned target?
 
 ## The exercise
 
-You build the losses and the displacement experiment from this chapter. Write `sequence_logprob`, then `dpo_loss` and `dpo_grad`, then `ipo_loss` and `ipo_grad`, then `train_dpo_linear`, which runs DPO on one pair of a softmax policy with shared embeddings.
+You build the losses and the displacement experiment from this chapter. Write `sequence_logprob`, then `dpo_loss` and `dpo_grad`, then `ipo_loss` and `ipo_grad`, then `train_dpo_linear`, which runs DPO on one pair of a softmax policy with shared embeddings. Last, write `simpo_loss`, `kto_ref_point`, and `kto_loss`.
 
-The checks verify each loss against the worked examples and both gradients against finite differences. They train IPO and DPO on a deterministic pair and confirm that only IPO's margin settles. Last, they confirm that `train_dpo_linear` lowers the loss while both log-probabilities fall, that the probability goes to the response aligned with $e_w - e_l$, and that dissimilar pairs lose less.
+The checks verify each loss against the worked examples and both gradients against finite differences. They train IPO and DPO on a deterministic pair and confirm that only IPO's margin settles. They confirm that `train_dpo_linear` lowers the loss while both log-probabilities fall, and that dissimilar pairs lose less. Two last checks test SimPO's length invariance and margin $\gamma$, and KTO's clamped $z_{\text{ref}}$ and its fall as a desirable log-ratio rises.

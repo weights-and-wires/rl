@@ -115,6 +115,43 @@ def train_dpo_linear(E, theta0, chosen, rejected, beta, lr, steps):
     return np.array(history)
 
 
+def simpo_loss(logp_chosen, logp_rejected, len_chosen, len_rejected, beta, gamma):
+    """The SimPO loss of Meng, Xia, and Chen (2024), averaged over the batch.
+
+    The reward of a response is beta times its average per-token log-probability,
+    so this function takes the summed log-probabilities and the token counts.
+    There is no reference model. loss = mean(-log sigmoid(r_w - r_l - gamma)).
+    """
+    r_w = beta * np.asarray(logp_chosen, dtype=float) / np.asarray(len_chosen, dtype=float)
+    r_l = beta * np.asarray(logp_rejected, dtype=float) / np.asarray(len_rejected, dtype=float)
+    return float(np.mean(-log_sigmoid(r_w - r_l - gamma)))
+
+
+def kto_ref_point(policy_mismatched, ref_mismatched):
+    """The KTO reference point z_ref of Ethayarajh et al. (2024).
+
+    Inputs are the log-probabilities of outputs paired with the wrong prompts,
+    shape (m,). z_ref is the mean log-ratio of those outputs, clamped at zero.
+    It is a constant in the loss, so no gradient flows through it.
+    """
+    log_ratio = np.asarray(policy_mismatched, dtype=float) - np.asarray(ref_mismatched, dtype=float)
+    return float(max(0.0, np.mean(log_ratio)))
+
+
+def kto_loss(policy_logp, ref_logp, desirable, beta, lambda_d, lambda_u, z_ref):
+    """The KTO loss, averaged over a batch of single labelled examples.
+
+    A desirable example costs lambda_D * (1 - sigmoid(beta * (r - z_ref))) and an
+    undesirable one costs lambda_U * (1 - sigmoid(beta * (z_ref - r))), where
+    r = log pi(y|x) - log pi_ref(y|x). This is the paper's lambda_y - v(x, y).
+    """
+    r = np.asarray(policy_logp, dtype=float) - np.asarray(ref_logp, dtype=float)
+    good = np.asarray(desirable, dtype=bool)
+    value = np.where(good, lambda_d * sigmoid(beta * (r - z_ref)), lambda_u * sigmoid(beta * (z_ref - r)))
+    lam = np.where(good, lambda_d, lambda_u)
+    return float(np.mean(lam - value))
+
+
 if __name__ == "__main__":
     # 1. The worked example from the lesson.
     beta = 0.1
@@ -128,3 +165,9 @@ if __name__ == "__main__":
     print(f"{'step':>5} {'log pi(y_w)':>12} {'log pi(y_l)':>12}")
     for step in (0, 100, 250, 500):
         print(f"{step:>5} {hist[step, 0]:>12.3f} {hist[step, 1]:>12.3f}")
+
+    # 3. SimPO and KTO on the tiny batches from the lesson.
+    s = simpo_loss(np.array([-20.0]), np.array([-36.0]), np.array([10]), np.array([12]), 2.0, 0.5)
+    z = kto_ref_point(np.array([-9.5, -11.1]), np.array([-10.0, -11.0]))
+    k = kto_loss(np.array([-9.0, -12.0]), np.array([-10.0, -11.5]), np.array([True, False]), 1.0, 1.0, 1.5, z)
+    print(f"SimPO loss: {s:.4f}, KTO z_ref: {z:.2f}, KTO loss: {k:.4f}")

@@ -181,3 +181,66 @@ def test_displacement_needs_similarity(sub):
                 f"seed {seed}: the chosen log-prob changed by {drops[0]:.3f} at cosine 0.95 and "
                 f"{drops[1]:.3f} at cosine 0; the similar pair should lose more"
             )
+
+
+@check("simpo_loss averages log-probs per token: equal per-token log-probs give softplus(gamma) at any length")
+def test_simpo(sub):
+    simpo = has(sub, "simpo_loss")
+    # Worked example: the chosen response has 10 tokens and a sum of -20 (average -2); the
+    # rejected one has 12 tokens and a sum of -36 (average -3). With beta = 2 and gamma = 0.5,
+    # the argument is 2 * (-2) - 2 * (-3) - 0.5 = 1.5, so the loss is log(1 + e^-1.5) = 0.2014.
+    got = simpo(np.array([-20.0]), np.array([-36.0]), np.array([10]), np.array([12]), 2.0, 0.5)
+    almost(got, math.log1p(math.exp(-1.5)), tol=1e-10, label="worked example")
+
+    # Equal per-token log-probs (-2 on both sides) give a reward gap of 0 whatever the lengths,
+    # so the loss is -log sigmoid(-gamma) = log(1 + e^gamma).
+    # A plausible wrong implementation sums the log-probs without dividing by length. Its
+    # reward gap then depends on the lengths (here 2 * (-20) - 2 * (-80) = 120), and it fails.
+    for len_w, len_l in ((10, 10), (10, 40), (3, 25)):
+        got = simpo(np.array([-2.0 * len_w]), np.array([-2.0 * len_l]),
+                    np.array([len_w]), np.array([len_l]), 2.0, 0.5)
+        almost(got, math.log1p(math.exp(0.5)), tol=1e-10,
+               label=f"loss at equal per-token log-probs, lengths {len_w} and {len_l}")
+
+    # A larger target margin gamma raises the loss on the same batch.
+    args = (np.array([-20.0, -9.0]), np.array([-36.0, -14.0]), np.array([10, 6]), np.array([12, 7]), 2.0)
+    low, high = simpo(*args, 0.0), simpo(*args, 1.0)
+    if not high > low:
+        fail(f"a larger gamma should raise the loss: gamma 0 gave {low:.4f} and gamma 1 gave {high:.4f}")
+
+
+@check("kto_loss falls as a desirable example's log-ratio rises above z_ref, and z_ref is clamped at zero")
+def test_kto(sub):
+    ref_point = has(sub, "kto_ref_point")
+    kto = has(sub, "kto_loss")
+    # z_ref is the mean log-ratio of mismatched outputs, clamped at zero.
+    # Log-ratios 0.5 and -0.1 average 0.2.
+    almost(ref_point(np.array([-9.5, -11.1]), np.array([-10.0, -11.0])), 0.2, tol=1e-10,
+           label="z_ref for a positive mean log-ratio")
+    # A plausible wrong implementation leaves z_ref unclamped. Log-ratios -0.4 and -0.2 average
+    # -0.3, and the paper clamps that to 0.
+    almost(ref_point(np.array([-10.4, -11.2]), np.array([-10.0, -11.0])), 0.0, tol=1e-12,
+           label="z_ref for a negative mean log-ratio")
+
+    # Worked example: a desirable example with log-ratio +1 and an undesirable one with -0.5.
+    # With beta = 1, lambda_D = 1, lambda_U = 1.5, z_ref = 0.2:
+    #   desirable:   1.0 * (1 - sigmoid(1 * (1 - 0.2)))      = 0.31003
+    #   undesirable: 1.5 * (1 - sigmoid(1 * (0.2 + 0.5)))    = 0.49773
+    # and the mean is 0.40387. A flipped sign on the undesirable term gives a different value.
+    pol = np.array([-9.0, -12.0])
+    ref = np.array([-10.0, -11.5])
+    good = np.array([True, False])
+    got = kto(pol, ref, good, 1.0, 1.0, 1.5, 0.2)
+    want = 0.5 * (1.0 * (1.0 - _sigmoid(0.8)) + 1.5 * (1.0 - _sigmoid(0.7)))
+    almost(got, want, tol=1e-10, label="worked example")
+    almost(got, 0.40387, tol=1e-5, label="worked example to five places")
+
+    # Raising a desirable example's log-ratio lowers the loss; raising an undesirable one's raises it.
+    lows = [kto(np.array([-10.0 + r]), np.array([-10.0]), np.array([True]), 1.0, 1.0, 1.5, 0.2)
+            for r in (-1.0, 0.0, 1.0, 2.0)]
+    if not all(a > b for a, b in zip(lows, lows[1:])):
+        fail(f"the loss on a desirable example should fall as its log-ratio rises: got {lows}")
+    highs = [kto(np.array([-10.0 + r]), np.array([-10.0]), np.array([False]), 1.0, 1.0, 1.5, 0.2)
+             for r in (-1.0, 0.0, 1.0, 2.0)]
+    if not all(a < b for a, b in zip(highs, highs[1:])):
+        fail(f"the loss on an undesirable example should rise as its log-ratio rises: got {highs}")
