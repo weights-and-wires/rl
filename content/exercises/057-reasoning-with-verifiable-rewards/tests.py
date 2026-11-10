@@ -41,6 +41,27 @@ def test_pass_at_k_stable(sub):
         almost(got, _exact_pass(5000, c, k), tol=1e-10, label=f"n=5000, c={c}, k={k}")
 
 
+@check("zero_signal_probability is p^G + (1-p)^G: hand values, a Monte Carlo estimate, and 1 at p = 0 and p = 1")
+def test_zero_signal(sub):
+    zsp = has(sub, "zero_signal_probability")
+    # Plausible wrong implementations: p ** G alone (forgets the all-wrong group,
+    # so p = 0 gives 0) and 1 - p ** G (the chance that some sample is wrong).
+    almost(zsp(0.5, 8), 2 / 256, tol=1e-12, label="p = 0.5, G = 8")
+    almost(zsp(0.9, 8), 0.9**8 + 0.1**8, tol=1e-12, label="p = 0.9, G = 8 (about 0.4305)")
+    almost(zsp(0.3, 1), 1.0, tol=1e-12, label="G = 1 always gives equal rewards")
+    almost(zsp(0.0, 8), 1.0, tol=1e-12, label="p = 0: every sample is wrong")
+    almost(zsp(1.0, 8), 1.0, tol=1e-12, label="p = 1: every sample is right")
+    ps = np.array([0.0, 0.05, 0.2, 0.5, 0.8, 1.0])
+    got = np.asarray(zsp(ps, 4))
+    shape(got, (6,), label="one probability per pass rate")
+    close(got, ps**4 + (1 - ps) ** 4, atol=1e-12, label="vectorized over p")
+    rng = np.random.default_rng(0)
+    for p, g in ((0.2015, 8), (0.9, 8), (0.5, 4)):
+        right = rng.random((200_000, g)) < p
+        freq = float(np.mean(right.all(axis=1) | ~right.any(axis=1)))
+        almost(float(zsp(p, g)), freq, tol=4e-3, label=f"Monte Carlo, p = {p}, G = {g}")
+
+
 @check("answer_reward pays only a well-formed, exactly correct <answer> after </think>")
 def test_answer_reward(sub):
     reward = has(sub, "answer_reward")

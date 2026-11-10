@@ -102,6 +102,17 @@ def pass_at_k(n, c, k):
     return float(out) if out.ndim == 0 else out
 
 
+def zero_signal_probability(p, group_size):
+    """Chance that a group of `group_size` samples has all-equal rewards.
+
+    A prompt with pass rate p gives GRPO no signal when every sample is right
+    (p ** G) or every sample is wrong ((1 - p) ** G).
+    """
+    p = np.asarray(p, dtype=float)
+    out = p**group_size + (1.0 - p) ** group_size
+    return float(out) if out.ndim == 0 else out
+
+
 INTEGER = re.compile(r"-?\d+")
 
 
