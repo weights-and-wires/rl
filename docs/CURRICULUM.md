@@ -1,6 +1,6 @@
 # Curriculum
 
-Sixty-five chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Sixty-six chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -57,7 +57,7 @@ chapters that cover it, and the app carries your completed work across.
 | Slug | Title | Exercise delivers |
 |---|---|---|
 | `023-function-approximation` | Value-function approximation | Tile features, the semi-gradient TD update, the value error, convergence toward the TD fixed point, and semi-gradient SARSA on Mountain Car with 2-D tile features |
-| `024-control-and-average-reward` | Control and average reward | A draft chapter with a placeholder exercise. |
+| `024-control-and-average-reward` | Control and average reward | Fourier and RBF features, the n-step return, n-step semi-gradient SARSA that beats one-step SARSA on Mountain Car, the closed-form average reward, and differential TD that recovers it exactly on a deterministic cycle |
 | `025-the-deadly-triad` | The deadly triad | The TD fixed point, LSTD, and Baird's counterexample diverging off-policy |
 | `026-deep-q-networks` | Deep Q-networks | A replay buffer, DQN targets, the Huber loss, soft target updates, and a DQN that balances CartPole |
 | `027-double-and-dueling-dqn` | Double and dueling DQN | Double DQN targets, the dueling combination, and n-step targets |

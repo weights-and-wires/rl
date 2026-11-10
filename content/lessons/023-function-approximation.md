@@ -296,7 +296,7 @@ The checks test the functions in this order. `stationary_distribution` and the `
 
 ## Where this breaks
 
-**Bad features.** Two states with the same features always get the same value, whatever the update rule. If the features cannot tell two states apart, or two actions apart, no learning rule can.
+**Bad features.** Two states with the same features always get the same value, whatever the update rule. If the features cannot tell two states apart, or two actions apart, no learning rule can. [Control and average reward](/lessons/024-control-and-average-reward) adds Fourier and RBF features, $n$-step SARSA, and the average-reward setting for tasks that never end.
 
 **Dimension.** The number of tiles grows exponentially with the input dimension: fine for two inputs, hopeless for pixels. [Deep Q-networks](/lessons/026-deep-q-networks) learn the features with a neural network instead.
 

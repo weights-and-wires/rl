@@ -1,11 +1,19 @@
 {
   "id": "024-control-and-average-reward",
-  "title": "Control and average reward",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Fourier and RBF features, n-step SARSA, and differential TD",
+  "brief": "Build Fourier and radial basis features, then write the n-step return and n-step semi-gradient SARSA on Mountain Car. Finish with the average reward of a continuing chain and differential TD, which learns it online.",
   "needs_gpu": false,
-  "timeout": 30,
-  "packages": [],
+  "timeout": 45,
+  "packages": [
+    "numpy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "fourier_features: build every coefficient vector with itertools.product(range(order + 1), repeat=d), stack them as rows of C, and return np.cos(np.pi * C @ x).",
+    "rbf_features: the squared distances are ((centers - x) ** 2).sum(axis=1), and each feature is np.exp(-sq / (2 * sigma ** 2)).",
+    "n_step_return: add gamma ** i * rewards[i] for each reward, then gamma ** len(rewards) * q_boot only when the episode has not terminated. Near the end of an episode the window holds fewer than n rewards.",
+    "n_step_sarsa: store states, actions, and rewards in lists. At step t, tau = t - n + 1. The window is rewards[tau : min(tau + n, T)], and you bootstrap from (states[tau + n], actions[tau + n]) only if tau + n < T. After the terminal step, keep looping t until tau reaches T - 1.",
+    "average_reward is the stationary distribution dotted with r: stationary_distribution(P) @ r.",
+    "differential_td_update: delta = r - r_bar + w @ x2 - w @ x. Both w and r_bar move by a step size times delta. r_bar does not move toward r alone, and there is no gamma.",
+    "differential_td: start at state 0, sample s2 = rng.choice(S, p=P[s]), pass Phi[s] and Phi[s2], and use r[s] as the reward."
   ]
 }
