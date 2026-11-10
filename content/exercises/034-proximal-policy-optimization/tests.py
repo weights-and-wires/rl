@@ -134,6 +134,62 @@ def test_ppo_loss(sub):
         fail("ppo_loss must return a tensor that can be backpropagated")
 
 
+def _epochs_on_fixed_batch(sub, target_kl, epochs=10, lr=0.05):
+    """Run ppo_epochs on one seeded batch with a large learning rate.
+
+    Returns (kls, epochs_run, independent_kl), where independent_kl is the full-batch
+    approx_kl of the updated model against the stored logp, computed here and not by
+    the submission.
+    """
+    ActorCritic, VecCartPole = has(sub, "ActorCritic"), has(sub, "VecCartPole")
+    collect_rollout, ppo_epochs = has(sub, "collect_rollout"), has(sub, "ppo_epochs")
+    torch.manual_seed(0)
+    model = ActorCritic()
+    batch = collect_rollout(VecCartPole(8, seed=0), model, 128)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, eps=1e-5)
+    torch.manual_seed(1)
+    kls, ran = ppo_epochs(model, optimizer, batch, epochs=epochs, minibatches=4, target_kl=target_kl)
+    with torch.no_grad():
+        logits, _ = model(batch["obs"])
+        logp = torch.log_softmax(logits, -1).gather(-1, batch["actions"][:, None]).squeeze(-1)
+        log_ratio = logp - batch["logp"]
+        independent = float((torch.exp(log_ratio) - 1 - log_ratio).mean())
+    return list(kls), ran, independent
+
+
+@check("ppo_epochs with target_kl=None runs every epoch and reports the full-batch approx_kl against the stored logp_old")
+def test_ppo_epochs_reports_kl(sub):
+    kls, ran, independent = _epochs_on_fixed_batch(sub, None)
+    if ran != 10 or len(kls) != 10:
+        fail(f"with target_kl=None and epochs=10, expected 10 epochs run and 10 KL values; "
+             f"got epochs_run={ran} and {len(kls)} values")
+    # Wrong implementation this catches: computing the KL against log-probs recomputed
+    # from the current network instead of the stored batch["logp"]. Every ratio is
+    # then 1, the KL is always 0, and no target_kl ever fires.
+    close(kls[-1], independent, atol=1e-6,
+          label="last per-epoch KL against an independent full-batch approx_kl of the updated model")
+
+
+@check("ppo_epochs stops after the first epoch whose full-batch approx_kl exceeds target_kl")
+def test_ppo_epochs_early_stop(sub):
+    target = 0.015
+    ref, _, _ = _epochs_on_fixed_batch(sub, None)
+    over = [i for i, k in enumerate(ref) if k > target]
+    if not over or over[0] == 0:
+        fail(f"on this seeded batch (learning rate 0.05, 10 epochs) the KL should first pass {target} "
+             f"after epoch 2 or later; the per-epoch KLs from target_kl=None were {np.round(ref, 4).tolist()}")
+    want = over[0] + 1
+    # Wrong implementations this catches: a KL that is always 0 (recomputed log-probs),
+    # and a KL that is checked only after all epochs have run.
+    kls, ran, _ = _epochs_on_fixed_batch(sub, target)
+    if ran != want or len(kls) != want:
+        fail(f"with target_kl={target}, expected the update to stop after epoch {want} "
+             f"(the first KL above {target}; per-epoch KLs without a stop were {np.round(ref, 4).tolist()}); "
+             f"got epochs_run={ran} and {len(kls)} KL values: {np.round(kls, 4).tolist()}")
+    close(np.array(kls), np.array(ref[:want]), atol=1e-9,
+          label="per-epoch KL values up to the stop, which must equal the unstopped run's")
+
+
 @check("train_ppo learns to balance CartPole: the greedy policy averages at least 150 steps")
 def test_train_ppo(sub):
     train_ppo = has(sub, "train_ppo")

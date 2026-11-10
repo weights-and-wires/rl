@@ -234,7 +234,34 @@ def ppo_loss(model, batch, clip_eps=0.2, vf_coef=0.5, ent_coef=0.01):
     raise NotImplementedError("ppo_loss")
 
 
-def train_ppo(seed=0, iterations=20, n_envs=8, n_steps=128, epochs=4, minibatches=4, lr=2.5e-3):
+def ppo_epochs(model, optimizer, batch, epochs=4, minibatches=4, clip_eps=0.2, target_kl=None):
+    """Run PPO's epochs on one batch, with an optional early stop on the KL.
+
+    For each epoch, shuffle the batch's rows with torch.randperm, split them into
+    `minibatches` equal minibatches, and for each one compute ppo_loss, backpropagate,
+    clip the gradient norm to 0.5 with torch.nn.utils.clip_grad_norm_, and step the
+    optimiser. After each epoch, measure approx_kl on the full batch, with no
+    gradient, between the updated model's log-probabilities of batch["actions"] and
+    the stored batch["logp"]. Append it to the list. If target_kl is not None and
+    that KL is above it, stop before the next epoch.
+
+    Args:
+        model: the ActorCritic.
+        optimizer: the optimiser that owns the model's parameters.
+        batch: a dict of tensors, as collect_rollout makes.
+        epochs: the most epochs to run.
+        minibatches: the number of minibatches per epoch.
+        clip_eps: the policy clipping range, passed to ppo_loss.
+        target_kl: stop after the first epoch whose KL exceeds this, or None to run every epoch.
+
+    Returns:
+        (kls, epochs_run): the full-batch approx_kl after each epoch run, as floats,
+        and the number of epochs run, which equals len(kls).
+    """
+    raise NotImplementedError("ppo_epochs")
+
+
+def train_ppo(seed=0, iterations=20, n_envs=8, n_steps=128, epochs=4, minibatches=4, lr=2.5e-3, target_kl=None):
     """Train an ActorCritic on CartPole with PPO.
 
     Call torch.manual_seed(seed), build VecCartPole(n_envs, seed=seed),
@@ -242,10 +269,7 @@ def train_ppo(seed=0, iterations=20, n_envs=8, n_steps=128, epochs=4, minibatche
 
     1. Anneal the learning rate linearly: lr * (1 - iteration / iterations).
     2. Collect a batch with collect_rollout(env, model, n_steps).
-    3. For `epochs` passes, shuffle the n_envs * n_steps samples and split
-       them into `minibatches` equal minibatches. For each one, compute
-       ppo_loss with its defaults, backpropagate, clip the gradient norm to
-       0.5 with torch.nn.utils.clip_grad_norm_, and step the optimiser.
+    3. Call ppo_epochs on the batch with `epochs`, `minibatches`, and `target_kl`.
     4. Append the mean of the last 10 finished episode returns in
        env.finished to the history, or 0.0 if none have finished.
 

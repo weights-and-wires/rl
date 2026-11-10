@@ -9,6 +9,7 @@ objectives:
   - Explain why the clipped surrogate removes the incentive to push a ratio past 1 plus or minus epsilon, and only in the direction the advantage favors.
   - Compute the clipped surrogate and the entropy bonus, and check each against hand-computed values.
   - Monitor an update with the k3 estimate of the KL and the clip fraction.
+  - Stop a PPO update early when the KL estimate passes a target.
   - Assemble a PPO training loop with GAE, minibatch epochs, advantage normalization, and gradient clipping, and train it on CartPole.
 prereqs:
   - 025-deep-q-networks
@@ -144,13 +145,62 @@ approx_kl = (log_ratio.exp() - 1 - log_ratio).mean()
 clipfrac = ((log_ratio.exp() - 1).abs() > eps).float().mean()
 ```
 
+The KL also gives you a brake. The clip does not undo an epoch that has already drifted, so implementations measure the KL after each epoch and skip the remaining epochs once it passes a target such as `target_kl = 0.015`. Compare the updated policy with the stored `logp_old`:
+
+```python
+with torch.no_grad():
+    kl = approx_kl(logp_current(batch), batch["logp"])   # stored logp_old, never recomputed
+if target_kl is not None and kl > target_kl:
+    break
+```
+
+Figure 2 runs 10 epochs on one seeded batch with a learning rate of 0.05, large on purpose. The full-batch KL after epochs 1 to 3 is 0.0049, 0.0059, and 0.0167, so the stop fires after epoch 3, when 28.7% of the ratios are outside the band, and it saves 7 epochs. Without it the KL wanders up to 0.0441 at epoch 9, where the clip fraction is 0.474. It does not climb steadily, because each epoch shuffles the minibatches differently. The target is a trigger, not a bound.
+
+```figure
+<svg viewBox="0 0 600 320" role="img" aria-label="Approximate KL after each of 10 epochs on one batch, against a stopping target of 0.015: the KL first exceeds the target at epoch 3, where the early stop ends the update">
+<line x1="70" y1="250.0" x2="560" y2="250.0" class="stroke-muted"/><text x="62" y="254.0" class="fig-small" text-anchor="end">0.00</text>
+<line x1="70" y1="208.0" x2="560" y2="208.0" class="stroke-grid"/><text x="62" y="212.0" class="fig-small" text-anchor="end">0.01</text>
+<line x1="70" y1="166.0" x2="560" y2="166.0" class="stroke-grid"/><text x="62" y="170.0" class="fig-small" text-anchor="end">0.02</text>
+<line x1="70" y1="124.0" x2="560" y2="124.0" class="stroke-grid"/><text x="62" y="128.0" class="fig-small" text-anchor="end">0.03</text>
+<line x1="70" y1="82.0" x2="560" y2="82.0" class="stroke-grid"/><text x="62" y="86.0" class="fig-small" text-anchor="end">0.04</text>
+<line x1="70" y1="40.0" x2="560" y2="40.0" class="stroke-grid"/><text x="62" y="44.0" class="fig-small" text-anchor="end">0.05</text>
+<text x="70.0" y="270" class="fig-small" text-anchor="middle">1</text>
+<text x="124.4" y="270" class="fig-small" text-anchor="middle">2</text>
+<text x="178.9" y="270" class="fig-small" text-anchor="middle">3</text>
+<text x="233.3" y="270" class="fig-small" text-anchor="middle">4</text>
+<text x="287.8" y="270" class="fig-small" text-anchor="middle">5</text>
+<text x="342.2" y="270" class="fig-small" text-anchor="middle">6</text>
+<text x="396.7" y="270" class="fig-small" text-anchor="middle">7</text>
+<text x="451.1" y="270" class="fig-small" text-anchor="middle">8</text>
+<text x="505.6" y="270" class="fig-small" text-anchor="middle">9</text>
+<text x="560.0" y="270" class="fig-small" text-anchor="middle">10</text>
+<line x1="70" y1="187.0" x2="560" y2="187.0" class="stroke-bad dashed"/>
+<text x="556" y="181.0" class="fig-small" text-anchor="end">target_kl = 0.015</text>
+<polyline points="70.0,229.2 124.4,225.3 178.9,180.0 233.3,241.4 287.8,190.6 342.2,183.2 396.7,226.9 451.1,185.2 505.6,65.0 560.0,197.8" class="stroke-muted dashed" fill="none"/>
+<polyline points="70.0,229.2 124.4,225.3 178.9,180.0" class="stroke-b" fill="none"/>
+<circle cx="70.0" cy="229.2" r="4.5" class="fill-b"/>
+<circle cx="124.4" cy="225.3" r="4.5" class="fill-b"/>
+<circle cx="178.9" cy="180.0" r="4.5" class="fill-b"/>
+<circle cx="233.3" cy="241.4" r="4.5" class="fill-muted"/>
+<circle cx="287.8" cy="190.6" r="4.5" class="fill-muted"/>
+<circle cx="342.2" cy="183.2" r="4.5" class="fill-muted"/>
+<circle cx="396.7" cy="226.9" r="4.5" class="fill-muted"/>
+<circle cx="451.1" cy="185.2" r="4.5" class="fill-muted"/>
+<circle cx="505.6" cy="65.0" r="4.5" class="fill-muted"/>
+<circle cx="560.0" cy="197.8" r="4.5" class="fill-muted"/>
+<text x="170.9" y="172.0" class="fig-small" text-anchor="end">stop: 0.0167</text>
+<text x="315" y="294" text-anchor="middle">epoch on one batch (learning rate 0.05)</text><text x="70" y="24" class="fig-small">full-batch approx_kl after the epoch</text>
+</svg>
+Figure 2. The full-batch KL after each of 10 epochs on one batch, with the stop at target_kl = 0.015. Notice that the first epoch above the target is epoch 3, and that the dashed epochs after it are the ones the stop skips, one of which reaches 0.0441.
+```
+
 ## Assemble the training loop
 
-One PPO iteration has two phases. First, run the current policy in $N$ environments for $T$ steps, record every observation, action, log-probability, and value, and compute GAE advantages and value targets. Second, run $K$ epochs over the batch: shuffle the $N T$ samples, split them into minibatches, and take one gradient step per minibatch.
+One PPO iteration has two phases. First, run the current policy in $N$ environments for $T$ steps, record every observation, action, log-probability, and value, and compute GAE advantages and value targets. Second, run $K$ epochs over the batch: shuffle the $N T$ samples, split them into minibatches, and take one gradient step per minibatch. If the KL after an epoch passes `target_kl`, skip the remaining epochs.
 
 Huang et al. (2022) cataloged the details that make PPO work. The exercise uses the core ones: advantages normalized per minibatch, Adam with $\epsilon = 10^{-5}$ and a learning rate that falls linearly to zero, gradient norm clipped to 0.5, separate tanh networks for policy and critic, and bootstrapping from $V$ at time limits and at the rollout's end.
 
-For CartPole, the exercise runs 8 environments for 128 steps per iteration, with 4 epochs of 4 minibatches, for 20 iterations, about 20,000 environment steps. Over 20 seeds, the greedy policy after training balanced the pole for between 255 and 500 steps on average. Figure 2 shows seed 0.
+For CartPole, the exercise runs 8 environments for 128 steps per iteration, with 4 epochs of 4 minibatches, for 20 iterations, about 20,000 environment steps. Over 20 seeds, the greedy policy after training balanced the pole for between 255 and 500 steps on average. Figure 3 shows seed 0.
 
 ```figure
 <svg viewBox="0 0 600 320" role="img" aria-label="Mean return of the last 10 training episodes over 20 PPO iterations on CartPole, rising from 20 to about 280">
@@ -186,7 +236,7 @@ For CartPole, the exercise runs 8 environments for 128 steps per iteration, with
 <circle cx="540.0" cy="55.0" r="3.5" class="fill-b"/>
 <text x="315" y="294" text-anchor="middle">PPO iteration (8 environments × 128 steps)</text><text x="70" y="24" class="fig-small">mean return of the last 10 episodes (limit 500)</text>
 </svg>
-Figure 2. PPO on CartPole with seed 0, 20 iterations and about 20,000 environment steps. Notice that the return climbs from about 20 to about 280 and dips once around iteration 15, which is why you report several seeds.
+Figure 3. PPO on CartPole with seed 0, 20 iterations and about 20,000 environment steps. Notice that the return climbs from about 20 to about 280 and dips once around iteration 15, which is why you report several seeds.
 ```
 
 > [!WARNING]
@@ -197,6 +247,7 @@ Figure 2. PPO on CartPole with seed 0, 20 iterations and about 20,000 environmen
 > - Entropy uses `log_softmax`, and a uniform policy gives $\log k$.
 > - The k3 KL estimate is the mean of $(\rho - 1) - \log \rho$.
 > - The loss is $-L^{\text{CLIP}} + c_1 L^{\text{VF}} - c_2 H$, with advantages normalized per minibatch.
+- `ppo_epochs` returns the per-epoch KL and the number of epochs run, and stops after the first epoch whose KL, measured against the stored `logp_old`, exceeds `target_kl`.
 
 ## Build it step by step
 
@@ -206,14 +257,15 @@ The checks test the functions in this order. The network, `VecCartPole`, `collec
 2. **`categorical_entropy(logits)`.** Returns `(N,)`. The common mistake is `torch.log(torch.softmax(...))`, which gives `nan` when a probability underflows to zero.
 3. **`approx_kl(logp_new, logp_old)`** and **`clip_fraction(logp_new, logp_old, clip_eps)`.** Each returns a scalar. The KL check draws 200,000 actions from the old policy and compares with the exact KL.
 4. **`ppo_loss(model, batch, ...)`.** Returns a scalar tensor. Gather each action's log-probability, normalize the advantages with `adv.std() + 1e-8`, and combine the three terms with the signs shown in the recap.
-5. **`train_ppo(seed, ...)`.** Returns `(model, history)`. Follow the docstring's steps. The common mistake is to index some batch tensors with the minibatch indices and forget others, which pairs each observation with another sample's advantage.
+5. **`ppo_epochs(model, optimizer, batch, epochs, minibatches, clip_eps, target_kl)`.** Runs the epoch loop on one batch and returns `(kls, epochs_run)`. Measure the full-batch `approx_kl` after each epoch, with no gradient, and stop after the first one above `target_kl`. The common mistake is to recompute the old log-probabilities from the current network, which makes the KL always 0, so it never stops.
+6. **`train_ppo(seed, ..., target_kl=None)`.** Returns `(model, history)`. Call `ppo_epochs` once per iteration. The common mistake is to index some batch tensors with the minibatch indices and forget others, which pairs each observation with another sample's advantage.
 
 > [!TIP]
 > Test the loss before you train. With `logp_new` equal to `logp_old`, the clipped surrogate's gradient must equal the vanilla policy gradient. A failed learning run tells you almost nothing about which piece is wrong.
 
 ## Where this breaks
 
-**The clip does not bound the KL.** Ratios can drift well past $1 \pm \epsilon$ over several epochs, because other samples' gradients move shared parameters. Monitor `approx_kl` and stop the epochs early when it passes a target such as 0.015.
+**The clip does not bound the KL.** Ratios can drift well past $1 \pm \epsilon$ over several epochs, because other samples' gradients move shared parameters. Monitor `approx_kl` and stop the epochs early when it passes a target such as 0.015, as `ppo_epochs` does with `target_kl`.
 
 **Implementation details carry much of the performance.** Engstrom et al. (2020) found that code-level choices, such as reward scaling, orthogonal initialization, and learning-rate annealing, explain much of PPO's advantage over TRPO. OpenAI's reference code also clips the critic's update, which the exercise leaves out, and Andrychowicz et al. (2021) found that it can hurt. [PPO in practice](/lessons/035-ppo-in-practice) carries this clip to a diagonal Gaussian and builds those details. Compare implementations with their details listed, and run several seeds.
 
@@ -227,11 +279,12 @@ The checks test the functions in this order. The network, `VecCartPole`, `collec
 - [Huang, Dossa, Raffin, Kanervisto, and Wang (2022), The 37 implementation details of proximal policy optimization](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/) lists every detail of the reference implementation, with code.
 - [Engstrom et al. (2020), Implementation matters in deep policy gradients](https://arxiv.org/abs/2005.12729) shows that code-level optimizations drive much of PPO's performance.
 - [Schulman (2020), Approximating KL divergence](http://joschu.net/blog/kl-approx.html) compares the k1, k2, and k3 estimators.
+- [UC Berkeley CS285, Deep Reinforcement Learning](https://rail.eecs.berkeley.edu/deeprlcourse/) has Lecture 9, "Advanced Policy Gradients Part 1", and Lecture 10, "Advanced Policy Gradients Part 2", on the surrogate and the step-size limits that PPO approximates.
 
 [Why policy optimization works](/lessons/036-why-policy-optimization-works) proves the identity behind these surrogates.
 
 ## The exercise
 
-You build PPO's pieces and then a PPO agent. Write `clipped_surrogate`, `categorical_entropy`, `approx_kl`, and `clip_fraction`, then `ppo_loss`, which combines them on a minibatch, and `train_ppo`, which runs the rollout, GAE, and minibatch epochs on CartPole.
+You build PPO's pieces and then a PPO agent. Write `clipped_surrogate`, `categorical_entropy`, `approx_kl`, and `clip_fraction`, then `ppo_loss`, which combines them on a minibatch, then `ppo_epochs`, which runs the minibatch epochs on one batch and can stop early on the KL, and `train_ppo`, which runs the rollout, GAE, and `ppo_epochs` on CartPole.
 
-The checks reproduce the worked table for both signs of the advantage, including zero gradients on the clipped rows, and confirm that the surrogate's gradient at the old policy is the policy gradient. They check the entropy of a uniform policy, that the k3 estimate averages to the exact KL, the clip fraction, and the combined loss against an independent computation. Finally, `train_ppo` must produce a greedy policy that balances the pole for at least 150 steps on average over 10 episodes.
+The checks reproduce the worked table for both signs of the advantage, including zero gradients on the clipped rows, and confirm that the surrogate's gradient at the old policy is the policy gradient. They check the entropy of a uniform policy, that the k3 estimate averages to the exact KL, the clip fraction, and the combined loss against an independent computation. Two checks run `ppo_epochs` on one seeded batch with a large learning rate. With `target_kl=None` it runs every epoch, and the last KL it reports matches an independent computation against `logp_old`. With `target_kl=0.015` it stops after the first epoch whose full-batch KL exceeds the target, and it reports the same KLs up to that epoch. Finally, `train_ppo` must produce a greedy policy that balances the pole for at least 150 steps on average over 10 episodes.
