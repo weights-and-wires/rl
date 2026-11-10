@@ -8,7 +8,7 @@ gpu: true
 objectives:
   - Compute RLOO and GRPO advantages from a group of rewards by hand.
   - Show by exact enumeration which group baselines are unbiased.
-  - Implement the clipped GRPO loss with per-sequence, per-token, and constant aggregation.
+  - Implement the clipped GRPO loss with per-sequence, per-token, and constant aggregation, and GSPO's length-normalized sequence ratio.
   - Explain why per-sequence averaging lengthens wrong answers, and why a constant normalizer removes the effect.
   - Run GRPO on Qwen3-0.6B with and without the Dr. GRPO fixes, and read the response lengths.
 prereqs:
@@ -22,7 +22,7 @@ exercise: 055-group-relative-policy-optimization
 
 PPO for language models carries a critic: a second network, as large as the policy, that guesses how much reward a half-written response will earn. It doubles the memory, and it is hard to train, because the reward arrives only once, at the end of the response.
 
-Think about what the critic is for. It tells the policy whether a response was better or worse than usual, so that good responses are pushed up and bad ones pushed down. You can get that comparison without a network. Ask the model the same question several times, score every answer, and compare each answer with its siblings. This chapter builds that idea, called *group-relative policy optimization* (GRPO, from DeepSeekMath, 2024), and then shows two places where its averaging quietly misleads the model.
+The critic tells the policy whether a response was better or worse than usual, so that good responses are pushed up and bad ones pushed down. You can get that comparison without a network. Ask the model the same question several times, score every answer, and compare each answer with its siblings. This chapter builds that idea, called *group-relative policy optimization* (GRPO, from DeepSeekMath, 2024), and then shows two places where its averaging quietly misleads the model.
 
 ## What you already know
 
@@ -178,7 +178,13 @@ The second trap is the standard deviation. With binary rewards and success rate 
 Two more fixes change one piece each:
 
 - **DAPO** (Yu and colleagues, 2025) uses *clip-higher*: $\varepsilon_{\text{low}} = 0.2$ but $\varepsilon_{\text{high}} = 0.28$. A symmetric clip lets a token at probability $0.01$ reach only $0.012$, so exploratory tokens barely move and entropy collapses. With $0.28$ it can reach $0.0128$. DAPO also averages over all tokens in the group, `(x * mask).sum() / mask.sum()`, so long responses are penalized in full.
-- **GSPO** (Zheng and colleagues, 2025) clips one length-normalized ratio per sequence, $s_i = \exp\big(\frac{1}{\lvert o_i \rvert}\sum_t \log \rho_{i,t}\big)$, because token ratios are noisy. It sits near 1, so the paper's clip range is tiny, $3 \times 10^{-4}$ and $4 \times 10^{-4}$.
+- **GSPO** (Zheng and colleagues, 2025) clips one length-normalized ratio per sequence, $s_i = \exp\big(\frac{1}{\lvert o_i \rvert}\sum_t \log \rho_{i,t}\big)$, because token ratios are noisy. It sits near 1, so the paper's clip range is tiny, $3 \times 10^{-4}$ and $4 \times 10^{-4}$ (the paper's GRPO baseline uses $0.2$ and $0.27$).
+
+  ```python
+  s = torch.exp(((logp_new - logp_old) * mask).sum(1) / mask.sum(1))   # (B,)
+  ```
+
+  A response with token ratios $(4, 1)$ has $s = \sqrt{4 \times 1} = 2$. One with $(8, 1, 1, 1)$ has $s = 8^{1/4} = 1.68$, not the whole-sequence ratio $8$.
 
 > [!WARNING]
 > The clip is one-sided, because of the $\min$. For $\hat A < 0$ and $\rho = 1.5$, $\min(-1.5, -1.28) = -1.5$ keeps the unclipped value and its full gradient. Clipping never protects a token that has moved the wrong way.
@@ -202,7 +208,7 @@ Every few steps it prints the mean reward, the mean length of right and wrong re
 > - RLOO subtracts the siblings' mean and is unbiased. GRPO's mean-centring scales it by $(G-1)/G$, and its standard-deviation division biases it.
 > - The GRPO loss is minus the aggregate of the clipped surrogate minus $\beta k_3$.
 > - Per-sequence averaging gives each response an effective advantage of $\hat A_i / \lvert o_i \rvert$, which lengthens wrong answers. A constant normalizer removes that.
-> - DAPO raises only the upper clip, and GSPO clips one geometric-mean ratio per response.
+> - DAPO raises only the upper clip. GSPO clips one geometric-mean ratio per response, which `gspo_ratio` computes.
 
 ## Build it step by step
 
@@ -213,12 +219,13 @@ The checks test the functions in this order. The function `k3_kl` is given in fu
 3. **The exact-expectation check** uses only your two advantage functions.
 4. **`clipped_surrogate(logp_new, logp_old, advantages, eps_low, eps_high)`.** Returns `(B, T)`. Broadcast with `advantages[:, None]` and take `torch.minimum`. Common mistake: clipping the product instead of the ratio.
 5. **`aggregate(per_token, mask, mode, max_tokens)`.** Zero the padding with `torch.where` first, because padded log-probabilities can be anything.
-6. **`grpo_loss(...)`.** Subtract `beta * k3_kl` from the surrogate, aggregate, and negate. Common mistake: forgetting the sign, so training runs downhill.
-7. **`length_bias_toy(mode, steps, lr)`.** Build the `(16, 9)` batch from `torch.log_softmax(logits, dim=1)` on each step. Weight row $o$ by $16\,\pi(o)\,\hat A_o$ with $\pi(o)$ detached, call your `aggregate`, and step with `torch.autograd.grad`. Common mistake: letting gradient flow through $\pi(o)$, which adds a term the policy gradient does not have.
+6. **`gspo_ratio(logp_new, logp_old, mask)`.** Takes three `(B, T)` arrays and returns `(B,)`. Zero the padded log-ratios, sum each row, divide by the row's mask sum, and exponentiate. Common mistakes: skipping the division, which gives the whole-sequence ratio, and dividing by `T`, which counts padding as tokens.
+7. **`grpo_loss(...)`.** Subtract `beta * k3_kl` from the surrogate, aggregate, and negate. Common mistake: forgetting the sign, so training runs downhill.
+8. **`length_bias_toy(mode, steps, lr)`.** Build the `(16, 9)` batch from `torch.log_softmax(logits, dim=1)` on each step. Weight row $o$ by $16\,\pi(o)\,\hat A_o$ with $\pi(o)$ detached, call your `aggregate`, and step with `torch.autograd.grad`. Common mistake: letting gradient flow through $\pi(o)$, which adds a term the policy gradient does not have.
 
 ## Where this breaks
 
-**Tied groups.** When every response in a group is right, or every one is wrong, all advantages are zero and the group teaches nothing. DAPO's dynamic sampling drops such groups and refills the batch.
+**Tied groups.** When every response in a group is right, or every one is wrong, all advantages are zero and the group teaches nothing. [Verifiable rewards](/lessons/056-verifiable-rewards) covers DAPO's dynamic sampling, which drops such groups.
 
 **Entropy collapse.** Symmetric clipping and positive updates on likely tokens make the policy deterministic early, and exploration stops. Clip-higher is one remedy, and [Reasoning with verifiable rewards](/lessons/057-reasoning-with-verifiable-rewards) measures the collapse.
 
@@ -232,8 +239,10 @@ The following papers define the methods in this chapter:
 - [Ahmadian et al., "Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs" (2024)](https://arxiv.org/abs/2402.14740): RLOO for language models.
 - [Liu et al., "Understanding R1-Zero-Like Training: A Critical Perspective" (2025)](https://arxiv.org/abs/2503.20783): the length and difficulty biases, and Dr. GRPO.
 - [Yu et al., "DAPO: An Open-Source LLM Reinforcement Learning System at Scale" (2025)](https://arxiv.org/abs/2503.14476): clip-higher, dynamic sampling, token-level loss, and overlong shaping.
-- [Zheng et al., "Group Sequence Policy Optimization" (2025)](https://arxiv.org/abs/2507.18071): the length-normalized sequence ratio.
+- [Zheng et al., "Group Sequence Policy Optimization" (2025)](https://arxiv.org/abs/2507.18071): the length-normalized sequence ratio, Equation 7.
 - [DeepSeek-AI, "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning" (2025)](https://arxiv.org/abs/2501.12948): GRPO at scale.
+
+For university courses, see Stanford CS336, *Language Modeling from Scratch* (Spring 2026), Lecture 16, "Post-training - RLVR", and Stanford CS 224R, *Deep Reinforcement Learning* (Spring 2026), Lecture 10, "RL for LLMs: Reasoning" (guest lecture), and Lecture 3, "Policy Gradients".
 
 Open questions that researchers are working on:
 
@@ -242,6 +251,6 @@ Open questions that researchers are working on:
 
 ## The exercise
 
-You build the group baselines, the GRPO loss, and the length-bias experiment, then run them on a real model when a GPU is available. Write `rloo_advantages` and `grpo_advantages`, then `clipped_surrogate`, `aggregate`, and `grpo_loss`, then `length_bias_toy`.
+You build the group baselines, the GRPO loss, and the length-bias experiment, then run them on a real model when a GPU is available. Write `rloo_advantages` and `grpo_advantages`, then `clipped_surrogate`, `aggregate`, `gspo_ratio`, and `grpo_loss`, then `length_bias_toy`.
 
-The checks run on the CPU with toy tensors. They verify the advantages against the hand values and, by exact enumeration, which baseline is unbiased. They verify that the clip stops the gradient on the right side, that the three aggregations match hand values on unequal lengths, and that the on-policy loss gradient is $-(\hat A - \beta(1 - \pi_{\text{ref}}/\pi))/(B\lvert o_i \rvert)$ per token. Last, they confirm that GRPO lengthens wrong answers and shortens right ones, while Dr. GRPO leaves both at 4.5.
+The checks run on the CPU with toy tensors. They verify the advantages against the hand values and, by exact enumeration, which baseline is unbiased. They verify that the clip stops the gradient on the right side, that the three aggregations match hand values on unequal lengths, that `gspo_ratio` returns the geometric mean of the token ratios and ignores padding, and that the on-policy loss gradient is $-(\hat A - \beta(1 - \pi_{\text{ref}}/\pi))/(B\lvert o_i \rvert)$ per token. Last, they confirm that GRPO lengthens wrong answers and shortens right ones, while Dr. GRPO leaves both at 4.5.

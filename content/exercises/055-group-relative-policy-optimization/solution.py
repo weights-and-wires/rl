@@ -77,6 +77,17 @@ def grpo_loss(logp_new, logp_old, advantages, mask, ref_logp=None, beta=0.0,
     return -aggregate(per_token, mask, mode, max_tokens)
 
 
+def gspo_ratio(logp_new, logp_old, mask):
+    """GSPO's sequence ratio: the geometric mean of a response's token ratios.
+
+    s_i = exp( (1 / |o_i|) * sum_t log rho_{i,t} ), over the response tokens only.
+    Shapes: logp_new, logp_old and mask are (B, T); the result is (B,).
+    """
+    mask = mask.to(logp_new.dtype)
+    log_ratio = torch.where(mask > 0, logp_new - logp_old, torch.zeros_like(logp_new))
+    return torch.exp(log_ratio.sum(dim=1) / mask.sum(dim=1))
+
+
 def length_bias_toy(mode, steps=300, lr=0.5):
     """Run the two-step length toy with exact expected gradients.
 
