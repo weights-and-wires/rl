@@ -146,6 +146,57 @@ def train_dpo_linear(E, theta0, chosen, rejected, beta, lr, steps):
     raise NotImplementedError("train_dpo_linear")
 
 
+def simpo_loss(logp_chosen, logp_rejected, len_chosen, len_rejected, beta, gamma):
+    """The SimPO loss, averaged over the batch. There is no reference model.
+
+    The reward of a response is beta times its average per-token log-probability:
+    r = beta * log pi(y|x) / |y|. The loss is mean(-log sigmoid(r_w - r_l - gamma)),
+    where gamma is a target margin.
+
+    Args:
+        logp_chosen, logp_rejected: summed sequence log-probs under the policy, shape (B,).
+        len_chosen, len_rejected: token counts |y_w| and |y_l|, shape (B,).
+        beta: the reward scale, a positive float.
+        gamma: the target margin, a non-negative float.
+
+    Returns:
+        The loss as a Python float.
+    """
+    raise NotImplementedError("simpo_loss")
+
+
+def kto_ref_point(policy_mismatched, ref_mismatched):
+    """The KTO reference point z_ref: the mean log-ratio of mismatched outputs, clamped at 0.
+
+    Args:
+        policy_mismatched, ref_mismatched: log-probs of outputs paired with the
+            wrong prompts, under the policy and the reference, shape (m,).
+
+    Returns:
+        z_ref as a Python float. It is a constant: no gradient flows through it.
+    """
+    raise NotImplementedError("kto_ref_point")
+
+
+def kto_loss(policy_logp, ref_logp, desirable, beta, lambda_d, lambda_u, z_ref):
+    """The KTO loss, averaged over a batch of single labelled examples.
+
+    With r = log pi(y|x) - log pi_ref(y|x), a desirable example costs
+    lambda_d * (1 - sigmoid(beta * (r - z_ref))) and an undesirable one costs
+    lambda_u * (1 - sigmoid(beta * (z_ref - r))). This is the paper's lambda_y - v(x, y).
+
+    Args:
+        policy_logp, ref_logp: sequence log-probs, shape (B,).
+        desirable: True for a thumbs-up example and False for a thumbs-down one, shape (B,).
+        beta, lambda_d, lambda_u: the risk-aversion scale and the two loss weights.
+        z_ref: the reference point, a float.
+
+    Returns:
+        The loss as a Python float.
+    """
+    raise NotImplementedError("kto_loss")
+
+
 if __name__ == "__main__":
     # 1. The worked example from the lesson.
     beta = 0.1
@@ -159,3 +210,9 @@ if __name__ == "__main__":
     print(f"{'step':>5} {'log pi(y_w)':>12} {'log pi(y_l)':>12}")
     for step in (0, 100, 250, 500):
         print(f"{step:>5} {hist[step, 0]:>12.3f} {hist[step, 1]:>12.3f}")
+
+    # 3. SimPO and KTO on the tiny batches from the lesson.
+    s = simpo_loss(np.array([-20.0]), np.array([-36.0]), np.array([10]), np.array([12]), 2.0, 0.5)
+    z = kto_ref_point(np.array([-9.5, -11.1]), np.array([-10.0, -11.0]))
+    k = kto_loss(np.array([-9.0, -12.0]), np.array([-10.0, -11.5]), np.array([True, False]), 1.0, 1.0, 1.5, z)
+    print(f"SimPO loss: {s:.4f}, KTO z_ref: {z:.2f}, KTO loss: {k:.4f}")
