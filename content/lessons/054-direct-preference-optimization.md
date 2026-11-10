@@ -294,6 +294,11 @@ The following sources cover the derivation and the relatives:
 - [Razin et al., "Unintentional Unalignment: Likelihood Displacement in Direct Preference Optimization" (2025)](https://arxiv.org/abs/2410.08847): why both log-probabilities fall, and a filter for the pairs that cause it.
 - [Stanford CS336, Spring 2026, Lecture 15, "Mid/post-training (SFT/RLHF)"](https://cs336.stanford.edu/): a university lecture on the pipeline that DPO replaces in part.
 
+Open questions that researchers are working on:
+
+- Which properties of a preference dataset predict displacement before training starts?
+- When does offline DPO match online RLHF, given equal labels and compute?
+
 ## The exercise
 
 You build the losses and the displacement experiment from this chapter. Write `sequence_logprob`, then `dpo_loss` and `dpo_grad`, then `ipo_loss` and `ipo_grad`, then `train_dpo_linear`, which runs DPO on one pair of a softmax policy with shared embeddings. Last, write `simpo_loss`, `kto_ref_point`, and `kto_loss`.
