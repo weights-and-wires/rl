@@ -303,3 +303,5 @@ The checks test the functions in this order:
 You write `categorical_support`, `c51_project`, and `c51_loss` for C51. Then you write `quantile_midpoints` and `quantile_huber_loss` for QR-DQN.
 
 The checks verify the projection against the worked example, including the clipped mean of 0.92, the $l = u$ case, and terminal steps. They check that it conserves probability always and the mean whenever nothing clips. They check the cross-entropy loss and its gradient. Finally, they check the quantile loss against the hand example and against finite differences, and that fitting four locations to 10,000 exponential samples recovers the true quantiles.
+
+The next chapter, [Learning from pixels](/lessons/030-learning-from-pixels), combines C51 with the other DQN fixes into Rainbow.

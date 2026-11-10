@@ -1,0 +1,14 @@
+{
+  "id": "037-ppo-in-practice",
+  "title": "PPO in practice: a diagonal Gaussian and the clips around it",
+  "brief": "Score a continuous action with a diagonal Gaussian, keep a running mean and variance, and assemble one PPO step with advantage normalization, a clipped value loss, and a vectorized rollout.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "The log-probability of a diagonal Gaussian includes -0.5 * log(2π) on every action dimension. A ratio of two log-probabilities hides a constant that both of them drop.",
+    "Divide the variance by the count, not the count minus one. Chan's merge is mean_a + (mean_b - mean_a) * count_b / total, and the same weights on the summed squared deviations.",
+    "Normalize advantages by their own population standard deviation. Dividing by the standard deviation of the returns shrinks the policy step.",
+    "The value loss is the mean of the larger of the two squared errors. The clipped value is the old value plus the move, limited to ±clip_eps."
+  ]
+}

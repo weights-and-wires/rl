@@ -1,0 +1,15 @@
+{
+  "id": "063-agents-and-multi-turn-rl",
+  "title": "Loss masks, turn-level credit, and a calculator agent",
+  "brief": "Mask tool output out of the policy loss and prove its gradient is zero, compute turn-level and token-level returns, then train a tabular agent to use a calculator.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["torch"],
+  "hints": [
+    "loss_mask is (roles == AGENT) cast to a float. Tool outputs, the prompt, and padding are all observations, not actions.",
+    "masked_pg_loss divides by mask.sum(), the number of trained tokens in the whole batch. The gradient on a masked position is then exactly zero, because its log-prob is multiplied by 0.",
+    "turn_returns walks k from the last turn to the first: running = (r_k + gamma * running) * turn_mask[:, k]. token_level_returns is the same walk over positions, with no mask.",
+    "turn_to_token is turn_values.gather(1, turn.clamp(min=0)) * mask. The clamp only keeps the index valid; the mask zeroes those positions afterward.",
+    "In train_agent, play a batch with rollout, get turn returns, subtract the per-turn batch mean over episodes that reached that turn, broadcast with turn_to_token, and step Adam on masked_pg_loss of token_logprobs(theta, tokens, turn). Pass mask_tool_tokens=False by adding (roles == TOOL) to the mask."
+  ]
+}

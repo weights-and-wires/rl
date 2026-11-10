@@ -250,7 +250,7 @@ The checks test the functions in this order.
 
 ## Where this breaks
 
-**A reward that says the wrong thing.** The agent maximizes the reward you wrote, not the one you meant. A reward for touching a ball can teach a robot to vibrate against it. [Reward design and shaping](/lessons/048-reward-design-and-shaping) returns to this.
+**A reward that says the wrong thing.** The agent maximizes the reward you wrote, not the one you meant. A reward for touching a ball can teach a robot to vibrate against it. [Reward design and shaping](/lessons/049-reward-design-and-shaping) returns to this.
 
 **Episodes that never end.** A policy that walks into a wall forever never terminates, so the loop needs a time limit. Cutting the episode off leaves out the rewards that would have followed, which later chapters handle on purpose.
 

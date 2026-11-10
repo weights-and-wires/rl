@@ -1,0 +1,15 @@
+{
+  "id": "030-learning-from-pixels",
+  "title": "Frames, noisy layers, and augmented DQN on pixels",
+  "brief": "Preprocess and stack frames, build a NoisyLinear layer with factorized noise, shift images at random, and train a DQN on pixel Catch with an augmented TD loss.",
+  "needs_gpu": false,
+  "timeout": 120,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "preprocess takes np.maximum(frame_a, frame_b) on the RGB values first, then a dot product with [0.299, 0.587, 0.114], then divides by 255. Converting to gray before the maximum gives different numbers.",
+    "factorized_noise draws f_in = noise_f(rng.standard_normal(n_in)) first, then f_out for n_out. The weight noise is np.outer(f_out, f_in) and the bias noise is f_out.",
+    "NoisyLinear.forward can build weight = self.weight_mu + self.weight_sigma * self.eps_w and then call F.linear. Autograd then gives the gradients for mu and sigma.",
+    "random_shift: padded = np.pad(imgs, ((0, 0), (0, 0), (pad, pad), (pad, pad)), mode='edge'), then shifts = rng.integers(0, 2 * pad + 1, size=(B, 2)) and a crop padded[i, :, dy:dy + H, dx:dx + W] per image.",
+    "In augmented_td_loss, compute the target under torch.no_grad(), and call random_shift on next_obs k_target times before you call it on obs m_q times, so the random draws line up with the checks."
+  ]
+}

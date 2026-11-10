@@ -275,7 +275,7 @@ The checks test the pieces in this order. `greedy_return` is already written.
 
 **Short horizons.** With $\gamma = 0.98$, rewards more than about 50 steps ahead barely count, so the exercise's network often lets the cart drift off the track after 150 to 300 steps.
 
-**Continuous actions.** The max over actions needs a finite list. For continuous actions, [Deterministic policy gradients](/lessons/039-deterministic-policy-gradients) replaces it with a learned actor.
+**Continuous actions.** The max over actions needs a finite list. For continuous actions, [Deterministic policy gradients](/lessons/040-deterministic-policy-gradients) replaces it with a learned actor.
 
 ## Further reading
 
