@@ -246,7 +246,7 @@ The checks test the functions in this order.
 
 ## Where this breaks
 
-**Bonus scale and prior are guesses.** Too small a $\beta$ and optimism behaves like greedy. Too large and the agent wanders after it finds the reward. A prior that rules out the true world can stall posterior sampling.
+**Bonus scale and prior are guesses.** Too small a $\beta$ and optimism behaves like greedy. Too large and the agent wanders after it finds the reward. A prior that rules out the true world can stall posterior sampling. [Sample complexity and regret](/lessons/047-sample-complexity-and-regret) shows what a bonus with a proven scale costs.
 
 **Novelty is not usefulness.** A bonus rewards every novel state, including ones that do not matter. RND works best with its bonus normalized by a running estimate of its spread.
 
