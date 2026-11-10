@@ -1,20 +1,244 @@
-"""Placeholder for a draft chapter.
+"""Advantage-weighted policy improvement: AWR, MPO's temperature, and AWAC.
 
-Fill in `draft_answer`. It receives a step count and returns that count.
+A policy improves by reweighting what it already does. The functions here
+build that step in pieces: the weights, the closed-form improved policy, the
+temperature that sets the step's size, the weighted maximum-likelihood fit,
+and a full AWAC loop on a fixed dataset.
+
+The helpers `make_dataset`, `action_counts`, `cautious_behavior`,
+`behavior_cloning`, and `weight_kl` are written for you (the first three are
+the ones from the offline RL chapter). Fill in the other functions.
 """
 
+import numpy as np
 
-def draft_answer(steps):
-    """Return `steps`, the number of steps this placeholder receives.
+import rlenvs
+
+
+def make_dataset(mdp, behavior: np.ndarray, n_episodes: int, seed: int, max_steps: int = 500) -> dict:
+    """Roll out `behavior` for `n_episodes` episodes and store every transition.
+
+    Returns a dict of equal-length arrays: `s`, `a`, `r`, `s2` (integers or
+    floats, shape (N,)), and `done`, 1.0 where `s2` is terminal. Episodes run
+    until they reach a terminal state or `max_steps` steps.
+    """
+    rng = np.random.default_rng(seed)
+    rows = []
+    for _ in range(n_episodes):
+        s = int(rng.choice(mdp.n_states, p=mdp.mu0))
+        for _ in range(max_steps):
+            a = int(rng.choice(mdp.n_actions, p=behavior[s]))
+            s2, r = mdp.sample(s, a, rng)
+            done = bool(mdp.terminal[s2])
+            rows.append((s, a, r, s2, float(done)))
+            if done:
+                break
+            s = s2
+    s, a, r, s2, done = (np.array(col) for col in zip(*rows))
+    return {"s": s.astype(int), "a": a.astype(int), "r": r.astype(float), "s2": s2.astype(int), "done": done}
+
+
+def action_counts(data: dict, n_states: int, n_actions: int) -> np.ndarray:
+    """How many times each (s, a) pair appears in the data, shape (S, A)."""
+    counts = np.zeros((n_states, n_actions))
+    np.add.at(counts, (data["s"], data["a"]), 1.0)
+    return counts
+
+
+def cautious_behavior(mdp) -> np.ndarray:
+    """A demonstrator that heads for the goal but never steps down toward the cliff edge."""
+    S, A = mdp.n_states, mdp.n_actions
+    cells = mdp.names["cells"]
+    allowed = np.ones((S, A), dtype=bool)
+    for k, (i, j) in enumerate(cells):
+        if i == 2 and 1 <= j <= 10:
+            allowed[k, rlenvs.DOWN] = False
+    allowed[mdp.names["start"], rlenvs.RIGHT] = False
+    q = rlenvs.q_from_v(mdp, rlenvs.value_iteration(mdp))
+    q = np.where(allowed, q, -np.inf)
+    best = q.argmax(axis=1)
+    pi = 0.4 * allowed / allowed.sum(axis=1, keepdims=True)
+    pi[np.arange(S), best] += 0.6
+    return pi
+
+
+def behavior_cloning(data: dict, n_states: int, n_actions: int) -> np.ndarray:
+    """The tabular maximum-likelihood policy: each action's share of the data at that state.
+
+    A state with no data gets the uniform policy. Shape (S, A), rows sum to 1.
+    """
+    counts = action_counts(data, n_states, n_actions)
+    totals = counts.sum(axis=1, keepdims=True)
+    return np.where(totals > 0, counts / np.maximum(totals, 1.0), 1.0 / n_actions)
+
+
+def _softmax(z: np.ndarray) -> np.ndarray:
+    """Softmax along the last axis with the row max subtracted."""
+    e = np.exp(z - z.max(axis=-1, keepdims=True))
+    return e / e.sum(axis=-1, keepdims=True)
+
+
+def awr_weights(adv: np.ndarray, beta: float, clip: float) -> np.ndarray:
+    """AWR's sample weights: exp(adv / beta), capped at `clip`.
 
     Args:
-        steps: an integer step count.
+        adv: advantages, shape (N,).
+        beta: the temperature, positive. Small beta means a sharp weighting.
+        clip: the largest weight allowed.
 
     Returns:
-        The same integer.
+        Shape (N,). Must not overflow, even for an advantage of 1e4.
     """
-    raise NotImplementedError("draft_answer")
+    raise NotImplementedError("awr_weights")
+
+
+def kl_improved_policy(pi_old: np.ndarray, adv: np.ndarray, beta: float) -> np.ndarray:
+    """The policy that maximizes E_pi[adv] - beta * KL(pi || pi_old).
+
+    It is pi_old * exp(adv / beta) / Z, where Z makes it sum to one.
+
+    Args:
+        pi_old: probabilities over actions, shape (A,), all positive.
+        adv: advantage of each action, shape (A,).
+        beta: the temperature, positive.
+
+    Returns:
+        Shape (A,), summing to 1. Must be stable when adv is shifted by 1000.
+    """
+    raise NotImplementedError("kl_improved_policy")
+
+
+def improvement_objective(pi: np.ndarray, pi_old: np.ndarray, adv: np.ndarray, beta: float) -> float:
+    """E_pi[adv] - beta * KL(pi || pi_old), as a float.
+
+    A zero entry of `pi` contributes nothing to the KL (0 log 0 = 0).
+    """
+    raise NotImplementedError("improvement_objective")
+
+
+def mpo_weights(q: np.ndarray, eta: float) -> np.ndarray:
+    """MPO's E-step weights on N sampled actions: softmax(q / eta), shape (N,).
+
+    They sum to one over the batch and must not overflow for q near 1000.
+    """
+    raise NotImplementedError("mpo_weights")
+
+
+def weight_kl(w: np.ndarray) -> float:
+    """KL(w || uniform) for weights w over N samples: sum_i w_i log(N w_i)."""
+    pos = w > 0
+    return float(np.sum(w[pos] * np.log(w.size * w[pos])))
+
+
+def mpo_dual(q: np.ndarray, eta: float, eps: float) -> float:
+    """MPO's temperature dual: eta * eps + eta * log mean_i exp(q_i / eta).
+
+    Use a stable log-mean-exp. Its derivative in eta is eps - KL(w || uniform),
+    where w = mpo_weights(q, eta).
+    """
+    raise NotImplementedError("mpo_dual")
+
+
+def mpo_temperature(q: np.ndarray, eps: float) -> float:
+    """The eta > 0 that minimizes `mpo_dual`, found by a one-dimensional search.
+
+    At the minimum, the weights softmax(q / eta) sit exactly eps away from
+    uniform: weight_kl(mpo_weights(q, eta)) == eps. The KL falls as eta grows,
+    so bisect on it in log eta.
+
+    Args:
+        q: action values of N sampled actions, shape (N,), not all equal.
+        eps: the KL budget, positive and below log N.
+    """
+    raise NotImplementedError("mpo_temperature")
+
+
+def awr_loss(logits: np.ndarray, actions: np.ndarray, weights: np.ndarray) -> float:
+    """The weighted negative log-likelihood of a batch of discrete actions.
+
+    -(1/N) sum_i weights_i * log softmax(logits_i)[actions_i].
+
+    Args:
+        logits: shape (N, A).
+        actions: integer actions, shape (N,).
+        weights: non-negative sample weights, shape (N,), treated as constants.
+    """
+    raise NotImplementedError("awr_loss")
+
+
+def awr_loss_grad(logits: np.ndarray, actions: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    """Gradient of `awr_loss` with respect to `logits`, shape (N, A)."""
+    raise NotImplementedError("awr_loss_grad")
+
+
+def weighted_gaussian_mle(actions: np.ndarray, weights: np.ndarray) -> tuple:
+    """The Gaussian that maximizes sum_i weights_i * log N(actions_i; mu, sigma^2).
+
+    Args:
+        actions: shape (N,).
+        weights: non-negative, shape (N,). They need not sum to one.
+
+    Returns:
+        (mu, sigma), the weighted mean and weighted standard deviation.
+    """
+    raise NotImplementedError("weighted_gaussian_mle")
+
+
+def mpo_gaussian_step(actions: np.ndarray, q: np.ndarray, eps: float) -> tuple:
+    """One MPO step for a Gaussian policy from N sampled actions and their values.
+
+    E-step: choose eta with `mpo_temperature`, then weight with `mpo_weights`.
+    M-step: fit a Gaussian to the weighted actions with `weighted_gaussian_mle`.
+
+    Returns:
+        (mu, sigma, eta).
+    """
+    raise NotImplementedError("mpo_gaussian_step")
+
+
+def awac_tabular(
+    data: dict,
+    n_states: int,
+    n_actions: int,
+    gamma: float,
+    beta: float,
+    clip: float = 20.0,
+    rounds: int = 10,
+    eval_iters: int = 300,
+) -> np.ndarray:
+    """Tabular AWAC on a fixed dataset. Returns the final policy, shape (S, A).
+
+    Start from `behavior_cloning`. Then repeat `rounds` times:
+      1. Critic: starting from zeros, run `eval_iters` sweeps of
+         Q[s, a] <- mean over the data's (s, a) transitions of
+         r + gamma * (1 - done) * sum_a2 pi[s2, a2] * Q[s2, a2].
+         Pairs the data never took stay at 0.
+      2. Advantage: for each transition, Q[s, a] - sum_a2 pi[s, a2] * Q[s, a2].
+      3. Weights: awr_weights(advantage, beta, clip).
+      4. Actor: the weighted maximum-likelihood tabular policy,
+         pi[s, a] proportional to the sum of the weights of the transitions
+         with that (s, a). A state with no data keeps the uniform policy.
+    """
+    raise NotImplementedError("awac_tabular")
 
 
 if __name__ == "__main__":
-    print(draft_answer(3))
+    pi_old = np.array([0.5, 0.3, 0.2])
+    adv = np.array([1.0, 0.0, 2.0])
+    print("improved policy, beta=1:", np.round(kl_improved_policy(pi_old, adv, 1.0), 4))
+    print("AWR weights, beta=0.5, clip=20:", np.round(awr_weights(adv, 0.5, 20.0), 3))
+
+    rng = np.random.default_rng(0)
+    q = rng.normal(size=64)
+    eta = mpo_temperature(q, 0.1)
+    print(f"MPO temperature for eps=0.1: {eta:.4f}, KL of weights: {weight_kl(mpo_weights(q, eta)):.4f}")
+
+    mdp = rlenvs.cliff_walking(gamma=0.9)
+    S, A = mdp.n_states, mdp.n_actions
+    start = mdp.names["start"]
+    data = make_dataset(mdp, cautious_behavior(mdp), n_episodes=100, seed=0)
+    bc = behavior_cloning(data, S, A)
+    print(f"behavior cloning value at the start: {rlenvs.policy_evaluation(mdp, bc)[start]:.3f}")
+    for beta in (3.0, 1.0, 0.3):
+        pi = awac_tabular(data, S, A, mdp.gamma, beta)
+        print(f"AWAC beta={beta:<4} value at the start: {rlenvs.policy_evaluation(mdp, pi)[start]:.3f}")

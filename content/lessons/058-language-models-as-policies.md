@@ -188,7 +188,7 @@ Here is why it is the best. Expand $\mathrm{KL}(\pi \,\|\, \pi^*)$ using the for
 The leash length shows in the limits. When $\beta$ is huge, $r / \beta$ is near zero and $\pi^* = \pi_{\text{ref}}$. When $\beta$ is tiny, the best response's boost swamps every other. At $\beta = 0.5$, the example gives $\pi^* = (0.2477, 0.0201, 0.7322)$ at a KL of 0.7218. This is the maximum-entropy result in a different coat, with $\beta$ as the temperature and $\pi_{\text{ref}}$ as the prior.
 
 > [!KEY]
-> The KL-regularized optimum is $\pi^* \propto \pi_{\text{ref}} \exp(r / \beta)$, and its value is $\beta \log Z$. A real model cannot compute $Z$, because it sums over every possible response, so later chapters sample or cancel it.
+> The KL-regularized optimum is $\pi^* \propto \pi_{\text{ref}} \exp(r / \beta)$, and its value is $\beta \log Z$. A real model cannot compute $Z$, because it sums over every possible response, so later chapters sample or cancel it. [Advantage-weighted policy improvement](/lessons/051-advantage-weighted-policy-improvement) shows the sampling route, a weighted likelihood fit, on small policies.
 
 ## Measure best-of-n
 

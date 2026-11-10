@@ -1,6 +1,6 @@
 # Curriculum
 
-Seventy-one chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy-two chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -99,7 +99,7 @@ chapters that cover it, and the app carries your completed work across.
 | `048-imitation-learning` | Imitation learning | Behavior cloning, the compounding-error gap measured on a tightrope, and DAgger closing it |
 | `049-inverse-rl-and-gail` | Inverse RL and GAIL | Soft value iteration, state visitation, MaxEnt IRL feature matching, and the GAIL discriminator and reward |
 | `050-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, IQL's expectile, and the TD3+BC actor loss |
-| `051-advantage-weighted-policy-improvement` | Advantage weighted policy improvement | A draft chapter with a placeholder exercise. |
+| `051-advantage-weighted-policy-improvement` | Advantage-weighted policy improvement | The AWR weights `exp(A / beta)` with a clip, the KL-optimal improved policy and its objective, MPO's weights, dual, and temperature, the weighted-likelihood loss and Gaussian fit, and a tabular AWAC loop that beats behavior cloning |
 
 ## Part 8 — Rewards, evaluation, and many agents
 
