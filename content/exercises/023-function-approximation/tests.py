@@ -126,3 +126,68 @@ def test_semi_gradient_converges(sub):
     if gap > 0.4 * start:
         fail(f"after 20,000 semi-gradient TD steps the values should be within "
              f"{0.4 * start:.3f} of the TD fixed point; the largest gap is {gap:.3f}")
+
+
+# Plausible wrong implementations that the checks below catch:
+#   1. Features that ignore the action, so one weight vector is shared by all three actions.
+#      The block-placement check and the "only action a changes" check fail, and the learning
+#      check fails because the car never learns to push in the useful direction.
+#   2. Bootstrapping with the current action a instead of the next action a2.
+#      The hand-computed SARSA update fails.
+SARSA_ALPHA = 0.05
+
+
+@check("tile_features_2d and state_action_features give one tile per tiling in the action's own block")
+def test_state_action_features(sub):
+    tile_features_2d = has(sub, "tile_features_2d")
+    saf = has(sub, "state_action_features")
+    # Position -0.095 scales to 2.6 tiles and velocity -0.0105 to 1.7 (4 tiles per axis).
+    # Tiling 0 has no shift: tile (2, 1), entry 2 * 5 + 1 = 11.
+    # Tiling 1 shifts by 0.5 in both axes: tile (3, 2), entry 25 + 3 * 5 + 2 = 42.
+    f = np.asarray(tile_features_2d(-0.095, -0.0105, 4, 2), dtype=float)
+    shape(f, (50,), label="tile_features_2d(-0.095, -0.0105, n_tiles=4, n_tilings=2)")
+    equal(np.flatnonzero(f), np.array([11, 42]), label="active tiles for (-0.095, -0.0105)")
+    g = np.asarray(tile_features_2d(-9.0, -9.0, 4, 2), dtype=float)
+    equal(np.flatnonzero(g), np.array([0, 25]), label="a point below both ranges is clipped to the low corner")
+    per_action = 8 * 81
+    base = np.flatnonzero(np.asarray(saf(-0.5, 0.01, 0), dtype=float))
+    for a in range(3):
+        x = np.asarray(saf(-0.5, 0.01, a), dtype=float)
+        shape(x, (3 * per_action,), label=f"state_action_features(-0.5, 0.01, {a})")
+        equal(np.flatnonzero(x), base + a * per_action,
+              label=f"active entries for action {a}, which must sit in block {a}")
+
+
+@check("semi_gradient_sarsa_update bootstraps from the next action and changes only the taken action's weights")
+def test_sarsa_update(sub):
+    saf = has(sub, "state_action_features")
+    update = has(sub, "semi_gradient_sarsa_update")
+    s, a, s2, a2 = (-0.5, 0.0), 2, (-0.45, 0.01), 0
+    x = np.asarray(saf(s[0], s[1], a), dtype=float)
+    x2 = np.asarray(saf(s2[0], s2[1], a2), dtype=float)
+    # q(s, a) = 8 * 0.25 = 2 and q(s2, a2) = 8 * 0.5 = 4. Action 2 and action 0 use separate blocks.
+    w = 0.25 * x + 0.5 * x2
+    # Target -1 + 0.9 * 4 = 2.6, error 0.6, each of the 8 active weights moves by 0.05 * 0.6 = 0.03.
+    got = update(w.copy(), s, a, -1.0, s2, a2, False, SARSA_ALPHA, 0.9)
+    close(got, w + 0.03 * x, atol=1e-12, label="non-terminal step (q(s,a) goes from 2 to 2.24)")
+    changed = np.flatnonzero(np.abs(got - w) > 1e-12)
+    equal(changed, np.flatnonzero(x), label="entries that changed, which must be those of (s, a) only")
+    # Terminal: target -1, error -3, each active weight moves by 0.05 * -3 = -0.15.
+    got = update(w.copy(), s, a, -1.0, s2, a2, True, SARSA_ALPHA, 0.9)
+    close(got, w - 0.15 * x, atol=1e-12, label="terminal step")
+
+
+@check("semi_gradient_sarsa learns Mountain Car: the last 10 episodes take far fewer than 1000 steps")
+def test_sarsa_learns(sub):
+    sarsa = has(sub, "semi_gradient_sarsa")
+    cap, limit = 1000, 250
+    for seed in range(5):
+        w, steps = sarsa(80, seed=seed, max_steps=cap)
+        steps = np.asarray(steps)
+        shape(steps, (80,), label=f"steps per episode for seed {seed}")
+        if steps.max() > cap:
+            fail(f"seed {seed}: an episode took {steps.max()} steps, more than the cap of {cap}")
+        tail = float(steps[-10:].mean())
+        if tail > limit:
+            fail(f"seed {seed}: the mean of the last 10 episodes should be under {limit} steps "
+                 f"after 80 episodes; got {tail:.1f} (first 3 episodes: {steps[:3].tolist()})")
