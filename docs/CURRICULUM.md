@@ -1,6 +1,6 @@
 # Curriculum
 
-Sixty-six chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Sixty-seven chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -63,7 +63,7 @@ chapters that cover it, and the app carries your completed work across.
 | `027-double-and-dueling-dqn` | Double and dueling DQN | Double DQN targets, the dueling combination, and n-step targets |
 | `028-prioritized-replay` | Prioritized experience replay | A sum tree, prioritized sampling probabilities, importance weights, and a prioritized replay buffer |
 | `029-distributional-rl` | Distributional reinforcement learning | The categorical support, the C51 projection and loss, and the quantile Huber loss |
-| `030-learning-from-pixels` | Learning from pixels | A draft chapter with a placeholder exercise. |
+| `030-learning-from-pixels` | Learning from pixels | Frame preprocessing and stacking, a NoisyLinear layer with factorized noise checked by finite differences, random-shift augmentation, a DrQ-style TD loss, and a noisy DQN trained on pixel Catch |
 
 ## Part 5 — Policy gradients
 
