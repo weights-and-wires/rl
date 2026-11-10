@@ -1,0 +1,15 @@
+{
+  "id": "045-partial-observability-and-memory",
+  "title": "Beliefs, memoryless limits, and a recurrent policy on a T-maze",
+  "brief": "Update a belief on the tiger problem, compute exactly what a policy without memory can earn on a T-maze, then build the hidden-state reset, the masked sequence loss, and the policy-gradient loop that train a recurrent policy to beat that limit.",
+  "needs_gpu": false,
+  "timeout": 60,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "belief_update is two lines: predicted = b @ T[a] pushes the belief through the transition, then multiply by the observation column O[a, :, o] and divide by the sum. Skipping the transition looks right while you listen, because listening leaves the state alone, and breaks as soon as a door opens.",
+    "memoryless_value expands pi_obs to a state policy with pi_obs[obs_of_state], which has shape (S, A), calls rlenvs.policy_evaluation, and returns mdp.mu0 @ v.",
+    "reset_hidden multiplies h by (1 - first)[:, None]. unroll calls it before the cell on every step, so the first step of a new episode starts from zeros.",
+    "masked_pg_loss is -(mask * advantages * logp).sum() / mask.sum(), with logp from log_softmax(logits).gather(-1, actions[..., None]). Dividing by mask.numel() counts padding as steps.",
+    "In train_policy, build the baseline from G and the mask, pass G - baseline as the advantages, and for memory=False pass first = torch.ones_like(data['first']) to sequence_loss."
+  ]
+}
