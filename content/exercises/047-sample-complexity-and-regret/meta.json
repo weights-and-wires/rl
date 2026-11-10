@@ -1,11 +1,16 @@
 {
   "id": "047-sample-complexity-and-regret",
-  "title": "Sample complexity and regret",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "The simulation lemma, UCB-VI, and regret on RiverSwim",
+  "brief": "Check the simulation lemma on 200 random MDP pairs, build UCB-VI with a Hoeffding bonus, confirm that its values stay above Q* on every state-action, and compare its regret with epsilon-greedy.",
   "needs_gpu": false,
-  "timeout": 30,
-  "packages": [],
+  "timeout": 40,
+  "packages": ["numpy"],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "simulation_lemma_bound: eps is np.abs(P_hat - P).sum(axis=2).max(), the largest L1 distance over the rows (s, a). The factor is gamma / (1 - gamma) ** 2, with the square.",
+    "simulation_gap: build P_hat^pi with np.einsum('sat,tb->satb', P_hat, pi).reshape(S * A, S * A), and solve the linear system with np.linalg.solve instead of forming the inverse.",
+    "hoeffding_bonus: the log term uses N.size * horizon, which is S * A * H. Use np.maximum(N, 1) so an untried pair does not divide by zero.",
+    "backward_induction: start from v_next = zeros and loop h from horizon - 1 down to 0. Q[h] = R + P @ v_next, where P @ v_next has shape (S, A).",
+    "ucbvi: an untried pair has a zero row in the counts. Give it a self-loop, as in the exploration chapter, and let the clipped bonus make it look as good as possible.",
+    "estimator_variance: sample k reaches the last estimate with weight alpha_k times the product of (1 - alpha_j) for j after k. np.cumprod on the reversed array gives those products."
   ]
 }

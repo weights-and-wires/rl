@@ -1,6 +1,6 @@
 # Curriculum
 
-Sixty-eight chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Sixty-nine chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -95,7 +95,7 @@ chapters that cover it, and the app carries your completed work across.
 | `044-world-models-and-muzero` | World models and MuZero | Lambda-returns in imagination, value-equivalence loss, pUCT scores, and MCTS over a learned model |
 | `045-partial-observability-and-memory` | Partial observability and memory | Tiger-problem belief updates, the exact best memoryless value on a T-maze, hidden-state resets with a masked sequence loss, and a GRU policy trained by policy gradient |
 | `046-exploration-bonuses` | Exploration beyond epsilon | Count bonuses, an empirical model, posterior sampling, and random network distillation on RiverSwim |
-| `047-sample-complexity-and-regret` | Sample complexity and regret | A draft chapter with a placeholder exercise. |
+| `047-sample-complexity-and-regret` | Sample complexity and regret | The simulation lemma checked on 200 random MDP pairs, UCB-VI with a Hoeffding bonus kept above Q*, regret against epsilon-greedy on RiverSwim, and the Robbins-Monro step-size sums |
 | `048-imitation-learning` | Imitation learning | Behavior cloning, the compounding-error gap measured on a tightrope, and DAgger closing it |
 | `049-inverse-rl-and-gail` | Inverse RL and GAIL | Soft value iteration, state visitation, MaxEnt IRL feature matching, and the GAIL discriminator and reward |
 | `050-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, IQL's expectile, and the TD3+BC actor loss |

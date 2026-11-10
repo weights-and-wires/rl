@@ -1,7 +1,7 @@
 # Reinforcement learning
 
 A hands-on course that teaches reinforcement learning by having you build it.
-Sixty-eight short chapters, each teaching one idea, run from a two-armed bandit to the methods that post-train
+Sixty-nine short chapters, each teaching one idea, run from a two-armed bandit to the methods that post-train
 language, image, speech, and robot models. Each one explains an idea in plain
 words, works a small example by hand, and then walks you through implementing
 it, in an editor beside the text, against checks that verify the mathematics
@@ -27,7 +27,7 @@ The repository is laid out as follows:
 
 | Path | Contents |
 |---|---|
-| `content/lessons/` | Sixty-eight chapters, in Markdown with YAML front matter. |
+| `content/lessons/` | Sixty-nine chapters, in Markdown with YAML front matter. |
 | `content/exercises/` | One directory per exercise: a starter file, checks, and a worked solution. |
 | `backend/` | FastAPI: auth, content, progress, drafts, and the run stream. |
 | `backend/app/runner/` | The harness, the `rlcheck` assertion library the checks use, the `rlenvs` environments every exercise shares, and the execution backends. |
@@ -62,23 +62,23 @@ optimization works.
 **Part 6 — Continuous control and maximum entropy (040–042).** DDPG and TD3,
 maximum-entropy reinforcement learning, and soft actor-critic.
 
-**Part 7 — Models, exploration, and fixed data (043–049).** Model-based
+**Part 7 — Models, exploration, and fixed data (043–050).** Model-based
 reinforcement learning, world models and MuZero, partial observability and
-memory, exploration bonuses, imitation
+memory, exploration bonuses, sample complexity and regret, imitation
 learning, inverse reinforcement learning and GAIL, and offline reinforcement
 learning.
 
-**Part 8 — Rewards, evaluation, and many agents (050–052).** Reward design and
+**Part 8 — Rewards, evaluation, and many agents (051–053).** Reward design and
 shaping, evaluating agents honestly, and multi-agent learning and self-play.
 
-**Part 9 — RL for language models (053–065).** Supervised fine-tuning and the
+**Part 9 — RL for language models (054–066).** Supervised fine-tuning and the
 post-training pipeline, language models as policies, reward models, reward-model
 and judge evaluation, RLHF with PPO, DPO, GRPO and its successors, verifiable
 rewards, reasoning with verifiable rewards, process rewards and test-time
 search, AI feedback and self-improvement, multi-turn agents, and stale
 samples and importance weights.
 
-**Part 10 — Beyond text, and what can go wrong (066–068).** Diffusion and flow
+**Part 10 — Beyond text, and what can go wrong (067–069).** Diffusion and flow
 models as policies, vision, speech, and robot learning, and reward hacking,
 safe reinforcement learning, and the frontier.
 
@@ -175,8 +175,8 @@ Sign out using the shared Authelia portal.
 
 ## The GPU backend
 
-Three lessons—`057-rlhf-with-ppo`, `059-group-relative-policy-optimization`,
-and `061-reasoning-with-verifiable-rewards`—are marked `gpu: true`. Their checks
+Three lessons—`058-rlhf-with-ppo`, `060-group-relative-policy-optimization`,
+and `062-reasoning-with-verifiable-rewards`—are marked `gpu: true`. Their checks
 run on toy policies like every other exercise, and the GPU is there for the
 **Run** block, which post-trains `Qwen/Qwen3-0.6B` with the reader's own loss
 functions.
