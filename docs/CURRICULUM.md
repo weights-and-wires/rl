@@ -56,7 +56,7 @@ chapters that cover it, and the app carries your completed work across.
 
 | Slug | Title | Exercise delivers |
 |---|---|---|
-| `023-function-approximation` | Value-function approximation | Tile features, the semi-gradient TD update, the value error, and convergence toward the TD fixed point |
+| `023-function-approximation` | Value-function approximation | Tile features, the semi-gradient TD update, the value error, convergence toward the TD fixed point, and semi-gradient SARSA on Mountain Car with 2-D tile features |
 | `024-the-deadly-triad` | The deadly triad | The TD fixed point, LSTD, and Baird's counterexample diverging off-policy |
 | `025-deep-q-networks` | Deep Q-networks | A replay buffer, DQN targets, the Huber loss, soft target updates, and a DQN that balances CartPole |
 | `026-double-and-dueling-dqn` | Double and dueling DQN | Double DQN targets, the dueling combination, and n-step targets |

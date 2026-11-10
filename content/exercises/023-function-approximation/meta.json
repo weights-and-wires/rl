@@ -1,15 +1,18 @@
 {
   "id": "023-function-approximation",
-  "title": "Tile coding and semi-gradient TD",
-  "brief": "Build tile-coding features, measure the value error of a linear estimate, and write the semi-gradient TD update that moves the weights along the features of the state it corrects.",
+  "title": "Tile coding, semi-gradient TD, and SARSA on Mountain Car",
+  "brief": "Build tile-coding features, measure the value error of a linear estimate, and write the semi-gradient TD update. Then put the action into 2-D tile features and train a Mountain Car controller with episodic semi-gradient SARSA.",
   "needs_gpu": false,
-  "timeout": 30,
+  "timeout": 45,
   "packages": [
     "numpy"
   ],
   "hints": [
     "In tiling k the tile index is floor((x - low) / width + k / n_tilings), and tiling k's entries start at k * (n_tiles + 1). Clip x to [low, high] before anything else.",
     "The semi-gradient update is w + alpha * delta * x, where delta = r + gamma * (w @ x2) - w @ x and the bootstrap term is dropped when terminated is true. The target is a constant: it gets no gradient.",
-    "value_error is d @ (Phi @ w - v) ** 2, a single dot product."
+    "value_error is d @ (Phi @ w - v) ** 2, a single dot product.",
+    "state_action_features puts tile_features_2d(pos, vel, N_TILES, N_TILINGS) into the block action * PER_ACTION up to (action + 1) * PER_ACTION. Every other entry is 0, so only the taken action's weights change.",
+    "The SARSA target is r + gamma * (w @ x2) * (not terminated), where x2 holds the features of (s2, a2), the action the agent will take next. Using a instead of a2 gives a different method.",
+    "In semi_gradient_sarsa, w.reshape(N_ACTIONS, -1) @ x gives all three action values at once. Take the next action before the update, and carry it into the next step."
   ]
 }
