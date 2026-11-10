@@ -1,6 +1,6 @@
 # Curriculum
 
-Sixty-four chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Sixty-five chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -74,7 +74,7 @@ chapters that cover it, and the app carries your completed work across.
 | `033-trust-regions-and-trpo` | Natural gradients and trust regions | Mean KL, Fisher-vector products, conjugate gradient, the natural step, a KL line search, and a TRPO update |
 | `034-proximal-policy-optimization` | Proximal policy optimization | The clipped surrogate, entropy, approximate KL, clip fraction, the PPO loss, KL early stopping, and a PPO agent on CartPole |
 | `035-ppo-in-practice` | PPO in practice | A diagonal Gaussian log-probability, entropy, and KL; a parallel running mean and variance; reward scaling; advantage normalization; a linear learning-rate schedule; a clipped value loss; a vectorized Pendulum rollout; and one continuous PPO step |
-| `036-impala-and-v-trace` | Impala and v trace | A draft chapter with a placeholder exercise. |
+| `036-impala-and-v-trace` | IMPALA and V-trace | Clipped importance weights, V-trace targets and advantages by backward recursion with episode ends, the n-step and TD(0) limits, and the operator's fixed point checked as the value of an interpolated policy on a random MDP |
 | `037-why-policy-optimization-works` | Why policy optimization works | The performance difference identity, softmax policy gradient rates on a bandit, and natural policy gradient as mirror descent |
 
 ## Part 6 — Continuous control and maximum entropy

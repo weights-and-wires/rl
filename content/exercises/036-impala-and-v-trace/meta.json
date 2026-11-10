@@ -1,11 +1,15 @@
 {
   "id": "036-impala-and-v-trace",
-  "title": "Impala and v trace",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "V-trace targets and the fixed point of lagging actors",
+  "brief": "Clip importance weights, build V-trace targets and advantages by backward recursion, and check on a tabular MDP that the operator's fixed point is the value of an interpolated policy.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": ["numpy"],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "Compute rho and c once from the same exp(log_rhos), then clip each with its own bar. The trace product uses c, never rho.",
+    "Set d_t = gamma * (1 - terminated_t) and use d_t everywhere gamma appears: in delta_t and in the recursion. A terminated step then neither bootstraps nor passes a correction back.",
+    "Loop t from T - 1 down to 0 with a running correction acc. acc = delta[t] + d[t] * c[t] * acc, and v[t] = values[t] + acc.",
+    "The advantage uses the next target, not the next value: rho_t * (r_t + d_t * v_{t+1} - V(x_t)), with bootstrap_value after the last step.",
+    "For the operator, np.einsum('sat,t->sa', P, V) gives the expected next value for every (s, a). Build g and M from mu * rho and mu * c, then solve (I - gamma M) x = g."
   ]
 }

@@ -111,7 +111,7 @@ variance = (mu * x**2).sum() - mean**2
 
 For IS, the second moment is $0.1 \times 1 + 0.1 \times 9 = 1.0$, and the variance is $1.0 - 0.4^2 = 0.84$. That is five times the variance of the uncorrected estimate, which is $0.2 - 0.04 = 0.16$. The big weight on token 2 makes each sample that lands there count for a lot, so the estimate jumps.
 
-The remedy is to cap the weight. *Truncated importance sampling* (TIS) uses $w = \min(\rho, C)$. Take $C = 2$, so the weights are $[1, 2, 0.75]$ and $wf = [1, 2, 0]$. The mean is $0.1 \times 1 + 0.1 \times 2 = 0.3$, so the bias is $0.3 - 0.4 = -0.1$. The second moment is $0.1 \times 1 + 0.1 \times 4 = 0.5$, so the variance is $0.5 - 0.09 = 0.41$. *Masked importance sampling* (MIS) instead zeroes any weight outside a band, here $[0.5, 2]$, which drops token 2 entirely. Figure 2 and the table below give all four.
+The remedy is to cap the weight. *Truncated importance sampling* (TIS) uses $w = \min(\rho, C)$. Take $C = 2$, so the weights are $[1, 2, 0.75]$ and $wf = [1, 2, 0]$. The mean is $0.1 \times 1 + 0.1 \times 2 = 0.3$, so the bias is $0.3 - 0.4 = -0.1$. The second moment is $0.1 \times 1 + 0.1 \times 4 = 0.5$, so the variance is $0.5 - 0.09 = 0.41$. *Masked importance sampling* (MIS) instead zeroes any weight outside a band, here $[0.5, 2]$, which drops token 2 entirely. Figure 2 and the table below give all four. IMPALA caps the weights in its V-trace targets the same way, as [IMPALA and V-trace](/lessons/036-impala-and-v-trace) shows.
 
 | Method | Weight $w$ | Bias | Variance | MSE at $n = 16$ | MSE at $n = 1000$ |
 |---|---|---|---|---|---|
