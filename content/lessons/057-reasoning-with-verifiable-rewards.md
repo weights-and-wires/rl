@@ -13,44 +13,45 @@ objectives:
 prereqs:
   - 051-reward-models
   - 055-group-relative-policy-optimization
+  - 056-verifiable-rewards
 exercise: 057-reasoning-with-verifiable-rewards
 ---
 
 # Reasoning with verifiable rewards
 
-A learned reward model is a guess about what people want, and a policy that pushes hard enough finds where the guess is wrong. For some tasks you need no guess. A math answer is right or wrong, a program passes its tests or fails them, and a few lines of Python can check each one.
+A learned reward model is a guess about what people want, and a policy that pushes hard enough finds where the guess is wrong. For some tasks you need no guess: a math answer is right or wrong, a program passes its tests or fails them, and a few lines of Python can check each.
 
-Reinforcement learning with verifiable rewards, or RLVR (named in Tülu 3, 2024), trains against such checks. DeepSeek-R1-Zero (2025) took a base model, gave it a fixed answer template, and trained it with GRPO on rule-checked math. Accuracy rose steadily.
+Reinforcement learning with verifiable rewards, or RLVR (named in Tülu 3, 2024), trains against such checks. DeepSeek-R1-Zero (2025) trained a base model with GRPO on rule-checked math, using a fixed answer template.
 
-That raises a question worth answering carefully. After RLVR the model is right more often on its first try. Did it learn to solve problems it could not solve before, or did it only get better at picking answers it could already find? This chapter gives you the tools to ask, and a toy where you can watch the answer form.
+After RLVR the model is right more often on its first try. Did it learn to solve problems it could not solve before, or only get better at picking answers it could already find? This chapter gives you tools to ask, and a toy where you watch the answer form.
 
 ## What you already know
 
-- GRPO scores a group of responses per prompt and uses group-normalized advantages, from [Group-relative policy optimization](/lessons/055-group-relative-policy-optimization). With one gradient step per batch its loss has the gradient of plain REINFORCE.
+- GRPO uses group-normalized advantages, and with one gradient step per batch its loss has the gradient of plain REINFORCE, from [Group-relative policy optimization](/lessons/055-group-relative-policy-optimization).
+- A verifier can normalize answers, pay a format bonus, and drop all-equal reward groups, from [Verifiable rewards](/lessons/056-verifiable-rewards).
 - A reward model can be hacked: a policy optimizing it finds its mistakes, from [Reward models from preferences](/lessons/051-reward-models).
-- The *entropy* of a distribution, $H(\pi) = -\sum_a \pi_a \log \pi_a$, is zero when one outcome is certain and largest when all are equally likely.
-- A softmax policy $\pi = \operatorname{softmax}(z)$ moves when its logits $z$ move.
+- The *entropy* of a distribution, $H(\pi) = -\sum_a \pi_a \log \pi_a$, is zero when one outcome is certain and largest when all are equally likely. A softmax policy $\pi = \operatorname{softmax}(z)$ moves when its logits $z$ move.
 
 ## Reward what a program can check
 
-A *verifier* is a function from a response to a reward. DeepSeek-R1-Zero asks the model to reason inside `<think>` tags and answer inside `<answer>` tags. The exercise's `answer_reward(text, target)` pays 1 only when the response closes its reasoning, then holds a closed `<answer>` block with exactly one integer, and that integer equals the target. In Python, `re.search(r"</think>\s*<answer>(.*?)</answer>", text, re.DOTALL)` finds the block and `re.fullmatch(r"-?\d+", content.strip())` accepts it.
+A *verifier* is a function from a response to a reward. [Verifiable rewards](/lessons/056-verifiable-rewards) covers how to design one. Here the rule is strict. DeepSeek-R1-Zero asks the model to reason inside `<think>` tags and answer inside `<answer>` tags, and the exercise's `answer_reward(text, target)` pays 1 only when the response closes its reasoning, then holds a closed `<answer>` block with exactly one integer equal to the target. In Python, `re.search(r"</think>\s*<answer>(.*?)</answer>", text, re.DOTALL)` finds the block and `re.fullmatch(r"-?\d+", content.strip())` accepts it.
 
 > [!WARNING]
-> A loose verifier is a reward model with a bug. A check that accepts any response *containing* the right number pays a model that lists every number from 1 to 1000. Test your verifier on malformed and adversarial strings before you train against it.
+> A loose verifier is a reward model with a bug: one that accepts any response *containing* the right number pays a model that lists every number from 1 to 1000.
 
 ## Measure a model that gets k tries
 
 *pass@k* is the chance that at least one of $k$ independent samples is correct. It asks whether the model *can* solve a problem, given tries, and pass@1 is plain accuracy.
 
-The obvious estimate draws exactly $k$ samples, and that is noisy. Chen and colleagues (2021) draw $n \ge k$ samples, count the $c$ correct ones, and ask: if you picked $k$ of the $n$ at random, without replacement, how likely is at least one correct?
+Drawing exactly $k$ samples is noisy. Chen and colleagues (2021) draw $n \ge k$ samples, count the $c$ correct ones, and ask how likely at least one correct sample is among $k$ of the $n$ picked at random without replacement.
 
 $$
 \text{pass@}k = \mathbb{E}_{\text{problems}}\left[1 - \frac{\binom{n - c}{k}}{\binom{n}{k}}\right]
 $$
 
-Read it aloud: $\binom{n-c}{k}/\binom{n}{k}$ is the fraction of size-$k$ subsets that hold only wrong samples, so one minus it is the fraction with at least one correct sample. With $n = 10$, $c = 3$, and $k = 5$, it is $1 - 21/252 = 0.917$. The shortcut $1 - (1 - c/n)^k = 0.832$ plugs an estimate into a nonlinear formula, which makes it biased.
+Read it aloud: $\binom{n-c}{k}/\binom{n}{k}$ is the fraction of size-$k$ subsets with only wrong samples. With $n = 10$, $c = 3$, and $k = 5$, it is $1 - 21/252 = 0.917$. The shortcut $1 - (1 - c/n)^k = 0.832$ plugs an estimate into a nonlinear formula, which makes it biased.
 
-The binomial coefficients overflow a float once $n$ reaches a few thousand, so cancel them into a product of $c$ factors:
+Binomial coefficients overflow a float for large $n$, so cancel them into a product of $c$ factors:
 
 $$
 \frac{\binom{n - c}{k}}{\binom{n}{k}} = \prod_{j = n - c + 1}^{n}\left(1 - \frac{k}{j}\right)
@@ -68,7 +69,7 @@ return 1.0 - np.prod(1.0 - k / np.arange(n - c + 1, n + 1))
 
 The toy answers 16 addition questions. A response is two tokens: a *method* (a habit such as column sums, drawn from one distribution that ignores the question) and then a digit from a table indexed by question and method. Each question has one *suited* method: ten questions suit method 0, and two each suit methods 1, 2, and 3. The suited method gives the right digit with probability $0.8$, and any other method with $0.002$. In the base model the four methods are equally likely, so each question's success rate is $0.25 \times 0.8 + 0.75 \times 0.002 = 0.2015$.
 
-Training is RLVR as the GPU run does it. For each question, sample a group of 8, reward 1 for the right digit, compute GRPO advantages, and take one SGD step of `pg_loss`, the token-mean policy gradient. On the toy you know each question's exact success probability $p$, so pass@$k$ is $1 - (1 - p)^k$.
+Training is RLVR as the GPU run does it. For each question, sample a group of 8, reward 1 for the right digit, compute GRPO advantages, and take one SGD step of `pg_loss`. The toy gives each question's exact success probability $p$, so pass@$k$ is $1 - (1 - p)^k$.
 
 | Step | pass@1 | pass@8 | pass@64 | Entropy |
 |---|---|---|---|---|
@@ -160,7 +161,7 @@ pass@1 nearly triples, and pass@64 falls from 1 to $0.717$. The next two section
 Figure 2. Entropy falls from 1.57 to 0.57 nats as pass@1 rises, and pass@64 falls with it. Notice that the entropy drops fastest where training helps most.
 ```
 
-Most of the entropy drop is the method habit: the probability of method 0 rises to about $0.99$. Cui and colleagues (2025) found the same pattern on real models: entropy collapses early, and performance levels off once it is spent.
+Most of the entropy drop is the method habit: method 0's probability rises to about $0.99$. Cui and colleagues (2025) found the same on real models: entropy collapses early, and performance levels off.
 
 To see why, differentiate $H$ with respect to one logit:
 
@@ -170,72 +171,86 @@ $$
 \Delta H \approx -\operatorname{Cov}_{a \sim \pi}\big(\log \pi_a,\ \Delta z_a\big)
 $$
 
-Read it aloud: entropy falls when the logits that rise belong to tokens that are already likely, and rises when they belong to unlikely ones. A positive advantage on a likely token is the common case in RLVR, because likely answers are the ones sampled and rewarded. Take $\pi = (0.7, 0.2, 0.1)$, with entropy $0.802$, and a step $\Delta z = 0.1 A$ with $A = (+1, -1, 0)$.
+Read it aloud: entropy falls when the logits that rise belong to tokens that are already likely. A positive advantage on a likely token is the common case in RLVR, because likely answers are the ones sampled and rewarded. Take $\pi = (0.7, 0.2, 0.1)$, with entropy $0.802$, and a step $\Delta z = 0.1 A$ with $A = (+1, -1, 0)$.
 
 - $\log \pi = (-0.357, -1.609, -2.303)$, and $\operatorname{Cov}_\pi(\log \pi, A) = 0.473$.
 - The estimate is $-0.1 \times 0.473 = -0.0473$. The exact change is $-0.0487$.
-- With $A = (-1, +1, 0)$, the estimate is $+0.0473$ and the exact change is $+0.0454$.
+- With $A = (-1, +1, 0)$, the signs flip: $+0.0473$ estimated, $+0.0454$ exact.
 
 In PyTorch, `-(p * (logp - (p * logp).sum(-1, keepdim=True)) * (dz - (p * dz).sum(-1, keepdim=True))).sum(-1)`.
 
 > [!KEY]
 > A step changes entropy by about minus the covariance between each token's log-probability and its logit change. RLVR rewards likely answers, so it drains entropy unless something pushes back.
 
-The shared habit is pushed toward method 0, because ten of sixteen questions reward it. The six questions that need another method get sampled with their suited method less and less, and their success rate falls from $0.20$ to about $0.005$. pass@64 counts those questions, so it falls.
+Ten of sixteen questions reward method 0, so the shared habit moves toward it. The six other questions get their suited method less and less, and their success rate falls from $0.20$ to about $0.005$. pass@64 counts those questions, so it falls.
 
 ## Does RL add capability?
 
-Yue and colleagues (2025) saw the same crossover on real models across math and code: RL models won at small $k$, base models at large $k$. Their reading is that RLVR sharpens the distribution toward answers the base model could already sample, and loses some rare correct paths.
+Yue and colleagues (2025) saw the same crossover on real models across math and code: RL models won at small $k$, base models at large $k$. They read it as RLVR sharpening the distribution toward answers the base model could already sample.
 
-The toy does not settle it. Rerun it with Adam at step size $0.1$ and pass@1 reaches $0.998$ while pass@64 stays at $1.0$. The six minority questions still get a rare correct sample from method 0, with probability $0.002$, and Adam scales each table entry's step by that entry's own gradient history, so those rare successes teach the table in full. So the outcome depends on whether rare correct paths get sampled and followed.
+The toy does not settle it. Rerun it with Adam at step size $0.1$ and pass@1 reaches $0.998$ while pass@64 stays at $1.0$. Adam scales each table entry's step by its own gradient history, so the rare correct samples on the six minority questions teach the table in full. The outcome depends on whether rare correct paths get sampled and followed.
 
-The evidence on real models is contested. ProRL (Liu and colleagues, 2025) trained far longer, with KL control and diverse tasks, and reports pass@$k$ gains even at large $k$. Wen and colleagues (2025) argue that pass@$k$ on final answers counts lucky guesses, and that a metric that also checks the reasoning shows RLVR improving correct reasoning.
+The evidence on real models is contested. ProRL (Liu and colleagues, 2025) trained far longer, with KL control and diverse tasks, and reports pass@$k$ gains even at large $k$. Wen and colleagues (2025) argue that pass@$k$ on final answers counts lucky guesses, and that a metric that checks the reasoning shows RLVR improving it.
 
-A related result is that a reward unrelated to correctness can still raise accuracy on some models (Shao and colleagues, 2025, on Qwen2.5-Math). One part is exact: a random reward gives an advantage independent of the response, so on-policy with one step per batch, $\mathbb{E}[\hat A\, \nabla \log \pi] = \mathbb{E}[\hat A]\,\mathbb{E}[\nabla \log \pi] = 0$. Any drift comes from clipping, several updates per batch, or the optimizer, and the effect did not carry over to Llama 3 or OLMo 2, so test on more than one model family.
+A random reward can still raise accuracy on some models (Shao and colleagues, 2025, on Qwen2.5-Math). On-policy with one step per batch, its expected gradient is exactly zero, because the advantage is independent of the response. Any drift comes from clipping or the optimizer, and it did not carry over to Llama 3 or OLMo 2.
 
 > [!KEY]
-> RLVR reliably raises pass@1. Whether it raises pass@$k$ at large $k$ depends on training length, task diversity, exploration, and the metric, and it remains an open question.
+> RLVR reliably raises pass@1. Whether it raises pass@$k$ at large $k$ depends on training length, task diversity, exploration, and the metric.
+
+## Count the groups that teach nothing
+
+A prompt with pass rate $p$, sampled $G$ times, gives GRPO no signal when all $G$ rewards match. Every sample is right with probability $p^G$, and every sample is wrong with probability $(1 - p)^G$:
+
+$$
+P(\text{zero signal}) = p^{G} + (1 - p)^{G}
+$$
+
+For $p = 0.5$ and $G = 8$ that is $2/256 = 0.0078$. For $p = 0.9$ it is $0.9^8 + 0.1^8 = 0.4305$, so an easy prompt wastes nearly half its groups. At the toy's base $p = 0.2015$, $0.165$ of groups are empty. After training, a minority question has $p \approx 0.005$ and $0.961$ of its groups are empty, so its rare correct samples almost never land in a rewarded group. A group of 64 still wastes $0.726$. It is the quantity behind the all-equal filter in [Verifiable rewards](/lessons/056-verifiable-rewards). In code, `zero_signal_probability(p, group_size)` is `p**G + (1 - p)**G` with `p` as an array. Common mistake: `p**G` alone, which gives $0$ at $p = 0$ instead of $1$.
 
 ## Run R1-Zero-style RLVR on Qwen3-0.6B-Base
 
 The **Run** block trains Qwen3-0.6B-Base, a model with no instruction tuning, with your functions when a GPU is available. The questions have the form $a \times b + c$, with $a$ from 2 to 9 and $b$ and $c$ from 10 to 99. Each step samples 8 questions and 8 responses each, at temperature 1, stopping at `</answer>` or 160 tokens. The reward is your `answer_reward`, called with `close_tag="</reasoning>"`. The step is your `grpo_advantages` and `pg_loss`, with AdamW at learning rate $10^{-6}$. R1-Zero also used a KL penalty, and this run drops it, as DAPO and Dr. GRPO do.
 
-The run uses `<reasoning>` tags where R1-Zero used `<think>`, and the reason is a trap worth knowing. Qwen3's tokenizer maps `<think>` and `</think>` to two reserved tokens. The chat models learned them in post-training, but the base model almost never saw them in pretraining, so it never writes `</think>`. On 128 samples at temperatures 0.7 and 1.0, and even with a worked example in the prompt, it closed the tag zero times. Every reward was 0, every group advantage was 0, and nothing trained. With `<reasoning>`, which is ordinary text, the same model closes the tag and answers in the right format about 60% of the time, and it is right about 12% of the time at temperature 1. When a verifiable reward is 0 on every sample, check first that the model can produce the format at all.
+The run uses `<reasoning>` tags where R1-Zero used `<think>`, because of a trap. Qwen3's tokenizer maps `<think>` and `</think>` to reserved tokens that the chat models learned in post-training. The base model almost never saw them, and in 128 samples at temperatures 0.7 and 1.0 it closed the tag zero times. Every reward was 0, every advantage was 0, and nothing trained. With ordinary-text `<reasoning>`, the same model answers in the right format about 60% of the time and is right about 12% of the time at temperature 1. When every reward is 0, check that the model can produce the format.
 
-Every 10 steps it draws 16 samples for each of 16 held-out questions, and prints pass@1, pass@4, and pass@16 from your `pass_at_k`, with the mean reward and response length. Forty steps is a short run. Watch whether pass@16 moves as much as pass@1.
+Every 10 steps it draws 16 samples for each of 16 held-out questions and prints pass@1, pass@4, and pass@16 from your `pass_at_k`, with the mean reward and response length. Watch whether pass@16 moves as much as pass@1.
 
 > [!KEY]
-> After RLVR the model is right more often on the first try, and the toy shows the cost: entropy falls, the rare correct paths are sampled less, and pass@k at large k can fall. A higher pass@1 alone does not show the model learned anything it could not already do.
+> After RLVR the model is right more often on the first try, and the toy shows the cost: entropy falls, the rare correct paths are sampled less, and pass@$k$ at large $k$ can fall. A higher pass@1 alone does not show it learned anything new.
 
 > [!RECAP]
 > - `answer_reward` pays 1 only for a closed reasoning tag, then a closed `<answer>` block holding exactly the right integer.
-> - pass@$k$ is $1 - \binom{n-c}{k}/\binom{n}{k}$, computed as $1 - \prod_{j=n-c+1}^{n}(1 - k/j)$, and 1 when $n - c < k$.
+> - pass@$k$ is $1 - \prod_{j=n-c+1}^{n}(1 - k/j)$, and 1 when $n - c < k$.
 > - $\Delta H \approx -\operatorname{Cov}_\pi(\log \pi, \Delta z)$, so rewarding likely answers drains entropy.
-> - On the toy, RLVR with SGD raises pass@1 and lowers pass@64.
+> - $p^G + (1-p)^G$ is the chance that a group has all-equal rewards and adds no gradient, so `zero_signal_probability(p, group_size)` prices too easy or too hard prompts.
+- On the toy, RLVR with SGD raises pass@1 and lowers pass@64.
 
 ## Build it step by step
 
 The checks test the functions in this order. The function `grpo_advantages` is given in full, because you built it in the previous chapter.
 
-1. **`pass_at_k(n, c, k)`.** Use the product form. Common mistake: calling `math.comb` and dividing floats, which overflows at $n = 5000$.
-2. **`answer_reward(text, target)`.** Search for the block after `</think>`, strip it, and `fullmatch` an integer. Common mistake: `re.search(r"\d+")` inside the block, which accepts `42 or 43`.
-3. **`pg_loss(token_logps, mask, advantages)`.** Zero the padding with `torch.where`, multiply by `advantages[:, None]`, sum, and divide by `mask.sum()`. Common mistake: multiplying `-inf` padding by a zero mask, which gives `nan`.
-4. **`token_entropy(logits, mask)`.** `log_softmax`, then `torch.where(p > 0, p * logp, 0)`, summed over the vocabulary and averaged over the mask.
-5. **`entropy_change_estimate(logits, delta_logits)`.** Center both quantities under `p` along the last axis, multiply, weight by `p`, sum, and negate.
-6. **`train_rlvr_toy(...)`.** Build the batch with `torch.arange(16).repeat_interleave(group_size)`, so groups are contiguous. Record the entropy of the batch's logits, and each pass@$k$ row from `model.success_probs()`. Common mistake: forgetting `opt.zero_grad()`, so gradients pile up across steps.
+1. **`pass_at_k(n, c, k)`.** Use the product form. Common mistake: `math.comb` and float division, which overflows at $n = 5000$.
+2. **`zero_signal_probability(p, group_size)`.** Add `p**group_size` and `(1 - p)**group_size` on `np.asarray(p)`. Common mistake: `1 - p**group_size`, which is the chance that some sample is wrong.
+3. **`answer_reward(text, target)`.** Search for the block after `</think>`, strip it, and `fullmatch` an integer. Common mistake: `re.search(r"\d+")` inside the block, which accepts `42 or 43`.
+4. **`pg_loss(token_logps, mask, advantages)`.** Zero the padding with `torch.where`, multiply by `advantages[:, None]`, sum, and divide by `mask.sum()`. Common mistake: multiplying `-inf` padding by a zero mask, which gives `nan`.
+5. **`token_entropy(logits, mask)`.** `log_softmax`, then `torch.where(p > 0, p * logp, 0)`, summed over the vocabulary and averaged over the mask.
+6. **`entropy_change_estimate(logits, delta_logits)`.** Center both quantities under `p` along the last axis, multiply, weight by `p`, sum, and negate.
+7. **`train_rlvr_toy(...)`.** Build the batch with `torch.arange(16).repeat_interleave(group_size)`, so groups are contiguous. Record the entropy of the batch's logits, and each pass@$k$ row from `model.success_probs()`. Common mistake: forgetting `opt.zero_grad()`, so gradients pile up.
 
 ## Where this breaks
 
-**Verifier loopholes.** The model finds what the check does not check: answers in the wrong place, tests it can edit, or formats the parser misreads. Test the verifier, keep it out of the model's reach, and read samples.
+**Verifier loopholes.** The model finds what the check does not check, such as tests it can edit or formats the parser misreads. [Verifiable rewards](/lessons/056-verifiable-rewards) shows how to test a verifier for them. Keep it out of the model's reach, and read samples.
 
-**Truncation.** A response cut off at the length limit gets reward 0, the same as a wrong answer, which punishes long, correct reasoning. DAPO masks or softly penalizes overlong responses instead.
+**Truncation.** A response cut off at the length limit gets reward 0, which punishes long, correct reasoning. DAPO masks or softly penalizes overlong responses instead.
 
-**Contaminated baselines.** A base model's accuracy depends heavily on the prompt template. Compare base and trained models with the same template and sampling settings.
+**Contaminated baselines.** Base-model accuracy depends heavily on the prompt template, so compare models with the same template and sampling settings.
 
 ## Further reading
 
 The following sources cover the recipe and the debates in this chapter:
 
+- [Stanford CS336, Spring 2026, Lecture 16, "Post-training - RLVR"](https://cs336.stanford.edu/): a university lecture on training language models against verifiable rewards.
+- [Stanford CS 224R, Spring 2026, "RL for LLMs: Reasoning" (guest lecture by Noam Brown)](https://cs224r.stanford.edu/): RL for reasoning models.
 - [DeepSeek-AI, "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning" (2025)](https://arxiv.org/abs/2501.12948): R1-Zero's template, rule-based rewards, and length growth.
 - [Lambert et al., "Tülu 3: Pushing Frontiers in Open Language Model Post-Training" (2024)](https://arxiv.org/abs/2411.15124): names RLVR and uses it alongside preference tuning.
 - [Chen et al., "Evaluating Large Language Models Trained on Code" (2021)](https://arxiv.org/abs/2107.03374): the unbiased pass@k estimator and its stable form.
@@ -253,6 +268,6 @@ Open questions that researchers are working on:
 
 ## The exercise
 
-You build the evaluation and training pieces of an RLVR run. Write `pass_at_k` and `answer_reward`, then `pg_loss`, `token_entropy`, and `entropy_change_estimate`. Last, write `train_rlvr_toy`, which trains `ToyArithmeticLM` with GRPO advantages and records exact pass@$k$ and batch entropy.
+Write `pass_at_k`, `zero_signal_probability`, and `answer_reward`, then `pg_loss`, `token_entropy`, and `entropy_change_estimate`. Last, write `train_rlvr_toy`, which trains `ToyArithmeticLM` with GRPO advantages and records exact pass@$k$ and batch entropy.
 
-The checks verify `pass_at_k` against exact fractions and a case whose binomial coefficients overflow a float. They run `answer_reward` on nine well-formed and malformed responses, check `pg_loss`'s gradient in closed form, and compare the entropy estimate with the exact change. Then they train the toy twice. With SGD, pass@1 must rise above $0.45$, entropy must fall below 60% of its start, and pass@64 must fall below the base model's. With Adam, pass@1 must pass $0.9$ and pass@64 must not fall.
+The checks verify `pass_at_k` against exact fractions and an $n = 5000$ case. They check `zero_signal_probability` against hand values, a seeded Monte Carlo estimate, and the endpoints $p = 0$ and $p = 1$, which a `p**G`-only version fails. They run `answer_reward` on nine responses, check `pg_loss`'s gradient in closed form, and compare the entropy estimate with the exact change. Then they train the toy twice. With SGD, pass@1 must rise above $0.45$, entropy must fall below 60% of its start, and pass@64 must fall below the base model's. With Adam, pass@1 must pass $0.9$ and pass@64 must not fall.

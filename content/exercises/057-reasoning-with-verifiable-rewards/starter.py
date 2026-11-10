@@ -110,6 +110,22 @@ def pass_at_k(n, c, k):
     raise NotImplementedError("pass_at_k")
 
 
+def zero_signal_probability(p, group_size):
+    """The chance that a group of group_size samples has all-equal rewards.
+
+    A prompt with pass rate p gives GRPO no gradient signal when every sample
+    is right or every sample is wrong, because the group advantage is then 0.
+
+    Args:
+        p: the prompt's pass rate, a float or an array of them, in [0, 1].
+        group_size: samples per group, an int.
+
+    Returns:
+        A float when p is a float, or an array shaped like p.
+    """
+    raise NotImplementedError("zero_signal_probability")
+
+
 def answer_reward(text, target, close_tag="</think>"):
     """The verifiable reward for the R1-Zero template.
 
