@@ -117,6 +117,38 @@ def test_aggregate(sub):
            label="sequence_mean and token_mean at equal lengths")
 
 
+@check("gspo_ratio is the geometric mean of the token ratios, over response tokens only")
+def test_gspo_ratio(sub):
+    gspo = has(sub, "gspo_ratio")
+    # Wrong implementation 1, "summed_log_ratio": exp of the SUM of the masked log-ratios,
+    #   which is the whole-sequence likelihood ratio and is not divided by length.
+    # Wrong implementation 2, "padded_mean": divides by T, so padding counts as a token.
+    torch.manual_seed(0)
+    old = -torch.rand(3, 4, dtype=D) * 3
+    # Token ratios: row 0 is (4, 1) with 2 padded slots, row 1 is (8, 1, 1, 1), row 2 is (3,).
+    ratios = [[4.0, 1.0, 5.0, 5.0], [8.0, 1.0, 1.0, 1.0], [3.0, 5.0, 5.0, 5.0]]
+    mask = _t([[1, 1, 0, 0], [1, 1, 1, 1], [1, 0, 0, 0]])
+    new = (old + torch.log(_t(ratios))).requires_grad_(True)
+    got = gspo(new, old, mask)
+    shape(got.detach(), (3,), label="gspo_ratio output")
+    # Row 0: sqrt(4 * 1) = 2. Row 1: 8 ** (1 / 4) = 1.681793. Row 2: 3.
+    close(got.detach(), [2.0, 8.0 ** 0.25, 3.0], atol=1e-12, label="unequal lengths with padding")
+
+    # A response whose tokens all have ratio 1.2 has sequence ratio 1.2 at any length.
+    for n in (1, 3, 7):
+        lo = -torch.rand(1, 7, dtype=D)
+        m = torch.zeros(1, 7, dtype=D)
+        m[0, :n] = 1.0
+        almost(float(gspo(lo + math.log(1.2), lo, m)[0]), 1.2, tol=1e-12,
+               label=f"equal token ratios 1.2, length {n}")
+
+    # Each valid token moves s_i by s_i / |o_i|, and padding does not move it at all.
+    (g,) = torch.autograd.grad(got.sum(), new)
+    want = torch.tensor([[1.0, 1.0, 0, 0], [8.0 ** 0.25 / 4] * 4,
+                         [3.0, 0, 0, 0]], dtype=D)
+    close(g.numpy(), want.numpy(), atol=1e-12, label="gradient of the sequence ratios")
+
+
 @check("grpo_loss on-policy has gradient -(A - beta (1 - pi_ref/pi)) / (B |o_i|) per token")
 def test_grpo_loss_gradient(sub):
     loss_fn = has(sub, "grpo_loss")

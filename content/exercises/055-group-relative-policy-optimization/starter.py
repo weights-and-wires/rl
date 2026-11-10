@@ -133,6 +133,27 @@ def grpo_loss(logp_new, logp_old, advantages, mask, ref_logp=None, beta=0.0,
     raise NotImplementedError("grpo_loss")
 
 
+def gspo_ratio(logp_new, logp_old, mask):
+    """GSPO's sequence ratio: one length-normalized ratio per response.
+
+    s_i = exp( (1 / |o_i|) * sum_t log rho_{i,t} ), where rho_{i,t} is the
+    token ratio pi_new / pi_old and the sum runs over the response tokens only.
+    It is the geometric mean of the token ratios.
+
+    Args:
+        logp_new: per-token log-probabilities under the policy being trained,
+            shape (B, T).
+        logp_old: per-token log-probabilities under the policy that sampled,
+            shape (B, T).
+        mask: 1 on response tokens and 0 on padding, shape (B, T). Padded
+            log-probabilities can hold anything.
+
+    Returns:
+        The sequence ratios, shape (B,).
+    """
+    raise NotImplementedError("gspo_ratio")
+
+
 def length_bias_toy(mode, steps=300, lr=0.5):
     """Measure how an aggregation mode moves response length, with exact gradients.
 
