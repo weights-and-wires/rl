@@ -1,0 +1,19 @@
+{
+  "id": "051-advantage-weighted-policy-improvement",
+  "title": "Advantage-weighted improvement: AWR weights, MPO's temperature, and AWAC",
+  "brief": "Build the exp(A / beta) improvement step, pick its temperature from MPO's dual, fit a policy by weighted likelihood, and run AWAC on a fixed log to beat behavior cloning.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy", "scipy"],
+  "hints": [
+    "awr_weights is exp(adv / beta) with a cap. Cap the exponent first, np.minimum(adv / beta, np.log(clip)), and then exponentiate, so a large advantage cannot overflow.",
+    "kl_improved_policy is a softmax of np.log(pi_old) + adv / beta. Subtract the maximum before exp. The result must not change when you add 1000 to adv.",
+    "improvement_objective is np.sum(pi * adv) minus beta times the KL. Sum the KL only over the entries where pi > 0.",
+    "mpo_weights is a softmax of q / eta over the batch, so the weights sum to one. Without that normalization the KL to uniform is meaningless.",
+    "mpo_dual is eta * eps + eta * log(mean(exp(q / eta))). Compute the log-mean-exp as max/eta + log(mean(exp((q - max)/eta))). Its derivative in eta is eps minus the KL of the weights from uniform.",
+    "For mpo_temperature, the KL of mpo_weights falls as eta grows. Bisect on log eta between 1e-8 and 1e8 times the spread of q until that KL equals eps.",
+    "awr_loss_grad is weights[:, None] * (softmax(logits) - onehot(actions)) / N. A sample with weight zero contributes a zero row.",
+    "weighted_gaussian_mle normalizes the weights first, then returns the weighted mean and the square root of the weighted mean squared deviation from that mean.",
+    "In awac_tabular, the critic's target averages over the policy: v = (pi * Q).sum(axis=1), then y = r + gamma * (1 - done) * v[s2]. The actor sums weights per (s, a) with np.add.at and normalizes each row."
+  ]
+}

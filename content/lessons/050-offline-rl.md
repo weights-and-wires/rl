@@ -269,7 +269,7 @@ Read it aloud: credit the policy's action by Q, then charge the squared distance
 
 Drop the Q term and this loss is $0.18$. Use $\alpha$ as $\lambda$, without dividing by $20$, and the loss is $-1.82$. With $\lambda$ fixed and $Q = 4\pi$, each derivative is $2(\pi - a)/3 - 4\lambda/3$, here $1/6$, $-0.3$, and $1/6$.
 
-The authors' code detaches this average at $\pi(s)$. This exercise uses the logged actions. This lesson does not run off-policy evaluation or take new environment steps after the offline run, and it does not build advantage-weighted regression (AWR), advantage-weighted actor-critic (AWAC), or maximum a posteriori policy optimization (MPO).
+The authors' code detaches this average at $\pi(s)$. This exercise uses the logged actions. This lesson does not run off-policy evaluation or take new environment steps after the offline run, and it does not build advantage-weighted regression (AWR), advantage-weighted actor-critic (AWAC), or maximum a posteriori policy optimization (MPO). The next chapter, [Advantage-weighted policy improvement](/lessons/051-advantage-weighted-policy-improvement), builds all three and the weighted extraction that IQL uses.
 
 ## Further reading
 
