@@ -1,6 +1,6 @@
 # Curriculum
 
-Seventy chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy-one chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -105,7 +105,7 @@ chapters that cover it, and the app carries your completed work across.
 | Slug | Title | Exercise delivers |
 |---|---|---|
 | `051-reward-design-and-shaping` | Reward design and shaping | Potential-based shaping that keeps the optimal policy, and a bonus that breaks it |
-| `052-preferences-over-trajectories` | Preferences over trajectories | A draft chapter with a placeholder exercise. |
+| `052-preferences-over-trajectories` | Preferences over trajectories | Segment returns as sums, preference probabilities, the Bradley-Terry segment loss with a finite-difference gradient, a Boltzmann labeler, a reward fit whose greedy policy matches the true one on a grid, invariance to a constant per step, and ensemble-disagreement queries |
 | `053-evaluating-rl` | Evaluating RL honestly | The interquartile mean, performance profiles, stratified bootstrap intervals, and their coverage |
 | `054-debugging-rl-runs` | Debugging RL runs | Explained variance, value-target correlation, relative entropy, and gradient norm; a reward-scale invariance check on an advantage-normalized policy gradient; an overfit-one-batch test; and `diagnose`, which classifies training logs |
 | `055-multi-agent-and-self-play` | Many agents and self-play | Regret matching, exploitability, fictitious play on zero-sum and general-sum games, and Nim self-play |

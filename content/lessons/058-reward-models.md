@@ -18,7 +18,7 @@ exercise: 058-reward-models
 
 # Reward models from preferences
 
-The previous chapter assumed a reward $r(x, y)$ for every response. For helpfulness or tone, nobody can write that function down. People can do something easier: read two answers and say which one is better. A *reward model* turns thousands of such comparisons into a function that scores any answer, so reinforcement learning has something to maximize.
+The previous chapter assumed a reward $r(x, y)$ for every response. For helpfulness or tone, nobody can write that function down. People can do something easier: read two answers and say which one is better. A *reward model* turns thousands of such comparisons into a function that scores any answer, so reinforcement learning has something to maximize. The same idea started in control, with comparisons of short trajectory segments: see [Preferences over trajectories](/lessons/052-preferences-over-trajectories).
 
 A learned reward is only a guess, and the policy you train against it searches for the answers it overrates. This chapter shows how to fit a reward from comparisons, why one fitted reward is dangerous, and how to push back by training several and trusting only what they agree on. It ends by asking whether to score a whole answer or each reasoning step.
 
