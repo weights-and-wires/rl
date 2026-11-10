@@ -244,7 +244,7 @@ The checks call the functions in this order. Population variance divides by the 
 
 **A diagonal Gaussian ignores dependence across action dimensions.** Huang et al. (2022) leave a full covariance, or an autoregressive head, as an open alternative.
 
-**Scoring a torque after clipping it into $[-2, 2]$ biases the density.** Score the unclipped sample, and let the environment clip what it applies. The tanh correction for a squashed Gaussian is in [Soft actor-critic](/lessons/039-soft-actor-critic).
+**Scoring a torque after clipping it into $[-2, 2]$ biases the density.** Score the unclipped sample, and let the environment clip what it applies. The tanh correction for a squashed Gaussian is in [Soft actor-critic](/lessons/040-soft-actor-critic).
 
 **The ratio clip still does not bound the KL.** [Spinning Up's PPO](https://spinningup.openai.com/en/latest/algorithms/ppo.html) stops an epoch when the mean KL passes a target such as $0.01$. Compare that target with the closed-form KL from this chapter.
 

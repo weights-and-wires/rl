@@ -1,7 +1,7 @@
 # Reinforcement learning
 
 A hands-on course that teaches reinforcement learning by having you build it.
-Sixty-four short chapters, each teaching one idea, run from a two-armed bandit to the methods that post-train
+Sixty-five short chapters, each teaching one idea, run from a two-armed bandit to the methods that post-train
 language, image, speech, and robot models. Each one explains an idea in plain
 words, works a small example by hand, and then walks you through implementing
 it, in an editor beside the text, against checks that verify the mathematics
@@ -27,7 +27,7 @@ The repository is laid out as follows:
 
 | Path | Contents |
 |---|---|
-| `content/lessons/` | Sixty-four chapters, in Markdown with YAML front matter. |
+| `content/lessons/` | Sixty-five chapters, in Markdown with YAML front matter. |
 | `content/exercises/` | One directory per exercise: a starter file, checks, and a worked solution. |
 | `backend/` | FastAPI: auth, content, progress, drafts, and the run stream. |
 | `backend/app/runner/` | The harness, the `rlcheck` assertion library the checks use, the `rlenvs` environments every exercise shares, and the execution backends. |
@@ -54,29 +54,30 @@ Monte Carlo tree search.
 triad, deep Q-networks, double and dueling DQN, prioritized replay, and
 distributional reinforcement learning.
 
-**Part 5 — Policy gradients (029–036).** REINFORCE, the policy gradient
+**Part 5 — Policy gradients (029–037).** REINFORCE, the policy gradient
 theorem, baselines and actor-critic, generalized advantage estimation, TRPO,
-PPO, continuous PPO in practice, and why policy optimization works.
+PPO, continuous PPO in practice, IMPALA and V-trace, and why policy
+optimization works.
 
-**Part 6 — Continuous control and maximum entropy (037–039).** DDPG and TD3,
+**Part 6 — Continuous control and maximum entropy (038–040).** DDPG and TD3,
 maximum-entropy reinforcement learning, and soft actor-critic.
 
-**Part 7 — Models, exploration, and fixed data (040–045).** Model-based
+**Part 7 — Models, exploration, and fixed data (041–046).** Model-based
 reinforcement learning, world models and MuZero, exploration bonuses, imitation
 learning, inverse reinforcement learning and GAIL, and offline reinforcement
 learning.
 
-**Part 8 — Rewards, evaluation, and many agents (046–048).** Reward design and
+**Part 8 — Rewards, evaluation, and many agents (047–049).** Reward design and
 shaping, evaluating agents honestly, and multi-agent learning and self-play.
 
-**Part 9 — RL for language models (049–061).** Supervised fine-tuning and the
+**Part 9 — RL for language models (050–062).** Supervised fine-tuning and the
 post-training pipeline, language models as policies, reward models, reward-model
 and judge evaluation, RLHF with PPO, DPO, GRPO and its successors, verifiable
 rewards, reasoning with verifiable rewards, process rewards and test-time
 search, AI feedback and self-improvement, multi-turn agents, and stale
 samples and importance weights.
 
-**Part 10 — Beyond text, and what can go wrong (062–064).** Diffusion and flow
+**Part 10 — Beyond text, and what can go wrong (063–065).** Diffusion and flow
 models as policies, vision, speech, and robot learning, and reward hacking,
 safe reinforcement learning, and the frontier.
 

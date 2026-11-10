@@ -1,0 +1,17 @@
+{
+  "id": "040-soft-actor-critic",
+  "title": "The tanh-Gaussian policy, the reparameterized actor, and the temperature",
+  "brief": "Compute a squashed Gaussian's log-probability with its change-of-variables term, check it against a numerical density, build SAC's reparameterized actor loss and soft critic target, and tune the temperature toward a target entropy.",
+  "needs_gpu": false,
+  "timeout": 60,
+  "packages": [
+    "numpy",
+    "scipy",
+    "torch"
+  ],
+  "hints": [
+    "log(1 - tanh(u)**2) equals 2 * (log(2) - u - softplus(-2 * u)). Use torch.nn.functional.softplus, and sum over the last dimension.",
+    "In sample_action, subtract tanh_log_det(u) and D * log(max_action) from the Gaussian log-probability of u. Compute the log-probability from u, never from atanh of the action.",
+    "temperature_loss detaches (log_prob + target_entropy), so its gradient in log_alpha is alpha times (entropy - target). When the entropy is below target, a descent step raises alpha."
+  ]
+}
