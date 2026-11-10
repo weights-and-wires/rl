@@ -281,7 +281,7 @@ The checks test the functions in this order. The network, `VecCartPole`, `collec
 - [Schulman (2020), Approximating KL divergence](http://joschu.net/blog/kl-approx.html) compares the k1, k2, and k3 estimators.
 - [UC Berkeley CS285, Deep Reinforcement Learning](https://rail.eecs.berkeley.edu/deeprlcourse/) has Lecture 9, "Advanced Policy Gradients Part 1", and Lecture 10, "Advanced Policy Gradients Part 2", on the surrogate and the step-size limits that PPO approximates.
 
-[Why policy optimization works](/lessons/036-why-policy-optimization-works) proves the identity behind these surrogates.
+[Why policy optimization works](/lessons/037-why-policy-optimization-works) proves the identity behind these surrogates.
 
 ## The exercise
 
