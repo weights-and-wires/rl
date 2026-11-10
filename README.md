@@ -207,7 +207,7 @@ To set up the endpoint, complete the following steps:
    restart:
 
    ```bash
-   ssh ifkash@vm.ifkash.dev "cd ~/docs/rl && docker compose up -d"
+   ssh ifkash@vm.ifkash.dev "cd ~/docs/courses/rl && docker compose up -d"
    ```
 
 `/api/compute` reports what the endpoint has: whether it is reachable, how many
