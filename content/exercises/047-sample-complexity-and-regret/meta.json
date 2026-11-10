@@ -1,0 +1,11 @@
+{
+  "id": "047-sample-complexity-and-regret",
+  "title": "Sample complexity and regret",
+  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [],
+  "hints": [
+    "draft_answer returns the integer it receives."
+  ]
+}
