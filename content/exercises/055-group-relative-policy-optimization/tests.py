@@ -117,37 +117,6 @@ def test_aggregate(sub):
            label="sequence_mean and token_mean at equal lengths")
 
 
-@check("grpo_loss on-policy has gradient -(A - beta (1 - pi_ref/pi)) / (B |o_i|) per token")
-def test_grpo_loss_gradient(sub):
-    loss_fn = has(sub, "grpo_loss")
-    torch.manual_seed(0)
-    B, T, beta = 4, 5, 0.04
-    logp = (-torch.rand(B, T, dtype=D) * 3).requires_grad_(True)
-    ref = -torch.rand(B, T, dtype=D) * 3
-    mask = _t([[1, 1, 1, 1, 1], [1, 1, 1, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0]])
-    adv = _t([1.2, -0.4, 0.3, -1.1])
-    loss = loss_fn(logp, logp.detach(), adv, mask, ref_logp=ref, beta=beta, mode="sequence_mean")
-    (g,) = torch.autograd.grad(loss, logp)
-    lengths = mask.sum(dim=1, keepdim=True)
-    k3_grad = 1.0 - torch.exp(ref - logp.detach())
-    want = -(adv[:, None] - beta * k3_grad) / (B * lengths) * mask
-    close(g.numpy(), want.numpy(), atol=1e-12, label="gradient with respect to logp_new")
-    # On-policy the ratio is 1, so without the KL the loss is minus the mean advantage.
-    plain = loss_fn(logp.detach(), logp.detach(), adv, mask, mode="sequence_mean")
-    almost(float(plain), -float(adv.mean()), tol=1e-12, label="on-policy loss value without KL")
-
-
-@check("length_bias_toy: GRPO makes wrong answers longer and right ones shorter; Dr. GRPO leaves both at 4.5")
-def test_length_bias(sub):
-    toy = has(sub, "length_bias_toy")
-    wrong, right = toy("sequence_mean", steps=300, lr=0.5)
-    almost(wrong, 5.3868, tol=2e-3, label="GRPO: mean length when wrong")
-    almost(right, 2.3607, tol=2e-3, label="GRPO: mean length when right")
-    wrong, right = toy("constant", steps=300, lr=0.5)
-    almost(wrong, 4.5, tol=1e-6, label="Dr. GRPO: mean length when wrong")
-    almost(right, 4.5, tol=1e-6, label="Dr. GRPO: mean length when right")
-
-
 @check("gspo_ratio is the geometric mean of the token ratios, over response tokens only")
 def test_gspo_ratio(sub):
     gspo = has(sub, "gspo_ratio")
@@ -178,3 +147,34 @@ def test_gspo_ratio(sub):
     want = torch.tensor([[1.0, 1.0, 0, 0], [8.0 ** 0.25 / 4] * 4,
                          [3.0, 0, 0, 0]], dtype=D)
     close(g.numpy(), want.numpy(), atol=1e-12, label="gradient of the sequence ratios")
+
+
+@check("grpo_loss on-policy has gradient -(A - beta (1 - pi_ref/pi)) / (B |o_i|) per token")
+def test_grpo_loss_gradient(sub):
+    loss_fn = has(sub, "grpo_loss")
+    torch.manual_seed(0)
+    B, T, beta = 4, 5, 0.04
+    logp = (-torch.rand(B, T, dtype=D) * 3).requires_grad_(True)
+    ref = -torch.rand(B, T, dtype=D) * 3
+    mask = _t([[1, 1, 1, 1, 1], [1, 1, 1, 0, 0], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0]])
+    adv = _t([1.2, -0.4, 0.3, -1.1])
+    loss = loss_fn(logp, logp.detach(), adv, mask, ref_logp=ref, beta=beta, mode="sequence_mean")
+    (g,) = torch.autograd.grad(loss, logp)
+    lengths = mask.sum(dim=1, keepdim=True)
+    k3_grad = 1.0 - torch.exp(ref - logp.detach())
+    want = -(adv[:, None] - beta * k3_grad) / (B * lengths) * mask
+    close(g.numpy(), want.numpy(), atol=1e-12, label="gradient with respect to logp_new")
+    # On-policy the ratio is 1, so without the KL the loss is minus the mean advantage.
+    plain = loss_fn(logp.detach(), logp.detach(), adv, mask, mode="sequence_mean")
+    almost(float(plain), -float(adv.mean()), tol=1e-12, label="on-policy loss value without KL")
+
+
+@check("length_bias_toy: GRPO makes wrong answers longer and right ones shorter; Dr. GRPO leaves both at 4.5")
+def test_length_bias(sub):
+    toy = has(sub, "length_bias_toy")
+    wrong, right = toy("sequence_mean", steps=300, lr=0.5)
+    almost(wrong, 5.3868, tol=2e-3, label="GRPO: mean length when wrong")
+    almost(right, 2.3607, tol=2e-3, label="GRPO: mean length when right")
+    wrong, right = toy("constant", steps=300, lr=0.5)
+    almost(wrong, 4.5, tol=1e-6, label="Dr. GRPO: mean length when wrong")
+    almost(right, 4.5, tol=1e-6, label="Dr. GRPO: mean length when right")
