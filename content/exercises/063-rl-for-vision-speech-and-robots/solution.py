@@ -10,6 +10,8 @@ Speech: score a transcript with word error rate, then train on it with the
 minimum word error rate (MWER) loss.
 Robots: add a bounded correction to a fixed controller, and estimate its
 gradient with REINFORCE and a leave-one-out baseline.
+Vision-language-action models: write a continuous action as one token per
+dimension and decode it back, so a token-level policy gradient applies.
 """
 
 import numpy as np
@@ -103,6 +105,21 @@ def reinforce_gradient(rewards, features, eps, sigma):
     return np.sum((to_go - baseline)[:, :, None] * score, axis=(0, 1)) / n
 
 
+def action_to_tokens(action, low, high, n_bins):
+    a = np.clip(np.asarray(action, dtype=float), low, high)
+    width = (np.asarray(high, dtype=float) - low) / n_bins
+    # floor, not round: each of the n_bins equal-width bins owns its left edge up to
+    # (not including) its right edge. The top endpoint lands on n_bins, so clip to n_bins - 1.
+    tokens = np.floor((a - low) / width).astype(int)
+    return np.clip(tokens, 0, n_bins - 1)
+
+
+def tokens_to_action(tokens, low, high, n_bins):
+    width = (np.asarray(high, dtype=float) - low) / n_bins
+    # Decode to the bin centre, so the round-trip error is at most half a bin width.
+    return low + (np.asarray(tokens, dtype=float) + 0.5) * width
+
+
 if __name__ == "__main__":
     print("IoU of (0,0,2,2) and (1,1,3,3):", round(float(iou([0, 0, 2, 2], [1, 1, 3, 3])), 4))
     target = np.array([[0.1, 0.1, 0.4, 0.4]])
@@ -121,3 +138,5 @@ if __name__ == "__main__":
     rewards = -((0.8 + sigma * eps[:, 0] - 1.0) ** 2)[:, None]
     grad = reinforce_gradient(rewards, np.ones((n, 1, 1)), eps, sigma)
     print("REINFORCE gradient at w = 0 (exact value 0.4):", np.round(grad, 3))
+    print("action 0.30 in [-1, 1] with 8 bins -> token / decoded:",
+          action_to_tokens(0.30, -1.0, 1.0, 8), tokens_to_action(action_to_tokens(0.30, -1.0, 1.0, 8), -1.0, 1.0, 8))
