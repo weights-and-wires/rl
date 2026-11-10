@@ -1,0 +1,14 @@
+{
+  "id": "032-where-the-gradient-comes-from",
+  "title": "The policy gradient theorem, computed exactly",
+  "brief": "Compute the discounted visitation of a policy, then assemble the exact gradient of a softmax policy's return as visitation times probability times advantage, and confirm it against finite differences.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "The visitation d solves (I - gamma P_pi)^T d = mu0, with P_pi = np.einsum('sa,sat->st', pi, mdp.P). Do not divide by anything: with no terminal states d sums to 1 / (1 - gamma).",
+    "The advantage table is rlenvs.q_from_v(mdp, v) - v[:, None], with v from rlenvs.policy_evaluation.",
+    "For a tabular softmax, dJ/dtheta[s, a] = d[s] * pi[s, a] * adv[s, a]. Multiply the three (S, A) arrays elementwise, with d[:, None].",
+    "score_form_gradient adds d[s] * pi[s, a] * Q[s, a] * log_policy_grad(theta, s, a) over every state and action. It must agree with exact_gradient, because the score averages to zero."
+  ]
+}

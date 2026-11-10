@@ -1,0 +1,15 @@
+{
+  "id": "045-exploration-bonuses",
+  "title": "Count bonuses, posterior sampling, and RND on RiverSwim",
+  "brief": "Run three model-based agents on RiverSwim that differ only in how they explore, watch epsilon-greedy miss the far reward that optimism and posterior sampling find, then build a random network distillation bonus.",
+  "needs_gpu": false,
+  "timeout": 40,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "empirical_model divides counts by N = counts.sum(axis=2) only where N > 0. For each unvisited (s, a), set P[s, a, s] = 1 so the row is still a probability vector.",
+    "plan is Q = R + gamma * P @ Q.max(axis=1), repeated from zeros. With P of shape (S, A, S) and a value vector of shape (S,), the matmul gives shape (S, A).",
+    "sample_posterior_mdp draws g = rng.standard_gamma(counts + prior) and normalizes along the last axis, then draws R = reward_sums / (N + 1) + rng.standard_normal((S, A)) / sqrt(N + 1).",
+    "In explore, only the Q you act on changes between methods. The policy you return always comes from plan on the final empirical model with no bonus.",
+    "For RND, freeze the target with requires_grad_(False) and give Adam only predictor.parameters(). The loss is the mean over states of the squared distance summed over outputs."
+  ]
+}

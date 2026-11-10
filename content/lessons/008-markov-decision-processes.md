@@ -226,7 +226,7 @@ The starter gives you `hallway_mdp`, which builds the MDP above. The checks test
 
 **State that is not Markov.** If the observation leaves out something that matters, such as a moving object's velocity, the true process is not an MDP in those states. People stack recent observations, or give the agent memory.
 
-**An unknown model.** This chapter reads `P` and `R` directly. Most agents never get them. Later chapters estimate values from sampled experience, and [Learning a model and planning with it](/lessons/042-model-based-rl) learns the model itself.
+**An unknown model.** This chapter reads `P` and `R` directly. Most agents never get them. Later chapters estimate values from sampled experience, and [Learning a model and planning with it](/lessons/043-model-based-rl) learns the model itself.
 
 **Huge state spaces.** `P` holds $S^2 A$ numbers. A grid of 1000 cells with 4 actions needs 4 million, which is fine. A board game with $10^{20}$ states needs more memory than exists.
 

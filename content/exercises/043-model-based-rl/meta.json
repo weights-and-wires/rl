@@ -1,0 +1,17 @@
+{
+  "id": "043-model-based-rl",
+  "title": "A learned model, its compounding error, and CEM model-predictive control",
+  "brief": "Fit a linear dynamics model to CartPole, measure how its error grows over an open-loop rollout, then plan through it with the cross-entropy method and balance the pole.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "Each row of X is [state, action, 1], so W = solve(X.T @ X + ridge * I, X.T @ next_states). The bias is the last row of W.",
+    "rollout must feed step_fn its own previous output. Start a list with s0, append step_fn(list[-1], actions[:, t]) for each t, and stack along axis 1.",
+    "k_step_errors is np.linalg.norm(imagined[:, 1:] - real[:, 1:], axis=-1).mean(axis=0), where both come from rollout with the same s0 and actions.",
+    "cem_update keeps samples[np.argsort(-scores)[:n_elite]], because higher scores are better, and returns their mean and std along axis 0.",
+    "In mpc_action, turn each plan u of shape (H,) into actions (u > 0) of shape (H, 1), start every rollout from the real state, and score the states after the start."
+  ]
+}
