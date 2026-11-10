@@ -24,6 +24,26 @@ from .runner import runpod as runpod_backend
 
 app = FastAPI(title="Weights and Wires — RL", docs_url=None, redoc_url=None)
 
+# The hub reads the progress summary from the browser, across origins.
+HUB_ORIGIN = "https://courses.ifkash.dev"
+HUB_CORS_PATH = "/api/progress/summary"
+
+
+@app.middleware("http")
+async def hub_cors(request: Request, call_next: Any) -> Any:
+    """Add CORS headers for the hub on the summary path only.
+
+    A middleware, rather than `CORSMiddleware`, so that the 401 from
+    `current_user` carries the headers too and the hub can read it.
+    """
+    response = await call_next(request)
+    if request.url.path == HUB_CORS_PATH:
+        response.headers.append("Vary", "Origin")
+        if request.headers.get("origin") == HUB_ORIGIN:
+            response.headers["Access-Control-Allow-Origin"] = HUB_ORIGIN
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
+
 
 @app.on_event("startup")
 def startup() -> None:
@@ -172,6 +192,25 @@ def put_draft(
 def drop_draft(exercise_id: str, user: str = Depends(current_user)) -> dict[str, Any]:
     db.delete_draft(user, exercise_id)
     return {"saved": False}
+
+
+@app.get("/api/progress/summary")
+def progress_summary(user: str = Depends(current_user)) -> dict[str, Any]:
+    """Completed count, lesson total, and the most recently touched lesson.
+
+    Only lessons in the current list count, so rows for removed or draft
+    lessons are ignored.
+    """
+    lessons = {lesson["slug"]: lesson for lesson in curriculum.lesson_list()}
+    rows = {
+        slug: row for slug, row in db.get_progress(user).items() if slug in lessons
+    }
+    done = sum(1 for row in rows.values() if row["status"] == "solved")
+    last = None
+    if rows:
+        slug = max(rows, key=lambda key: rows[key]["updated_at"])
+        last = {"slug": slug, "title": lessons[slug]["title"]}
+    return {"done": done, "total": len(lessons), "last": last}
 
 
 @app.put("/api/progress/{slug}")
