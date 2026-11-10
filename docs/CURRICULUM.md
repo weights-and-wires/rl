@@ -1,6 +1,6 @@
 # Curriculum
 
-Sixty-nine chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -106,7 +106,7 @@ chapters that cover it, and the app carries your completed work across.
 |---|---|---|
 | `051-reward-design-and-shaping` | Reward design and shaping | Potential-based shaping that keeps the optimal policy, and a bonus that breaks it |
 | `052-evaluating-rl` | Evaluating RL honestly | The interquartile mean, performance profiles, stratified bootstrap intervals, and their coverage |
-| `053-debugging-rl-runs` | Debugging rl runs | A draft chapter with a placeholder exercise. |
+| `053-debugging-rl-runs` | Debugging RL runs | Explained variance, value-target correlation, relative entropy, and gradient norm; a reward-scale invariance check on an advantage-normalized policy gradient; an overfit-one-batch test; and `diagnose`, which classifies training logs |
 | `054-multi-agent-and-self-play` | Many agents and self-play | Regret matching, exploitability, fictitious play on zero-sum and general-sum games, and Nim self-play |
 
 ## Part 9 — RL for language models

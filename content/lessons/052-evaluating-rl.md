@@ -281,6 +281,8 @@ The checks test the functions in this order.
 
 **Different protocols.** Scores measured after different numbers of steps or with different episode limits are not comparable, whatever the statistics say.
 
+**Debugging a run in progress.** Statistics report a finished experiment. To find out why a run is failing, read its entropy, KL, and explained variance, which [Debugging RL runs](/lessons/053-debugging-rl-runs) builds.
+
 **Other summaries.** `rliable` also defines the optimality gap and the probability of improvement. Both are worth reporting next to the IQM.
 
 **Language-model evaluation.** Reasoning benchmarks move by several points with the seed, the sampling temperature, and the prompt format (Hochlehnert and colleagues, 2025). [Reasoning with verifiable rewards](/lessons/063-reasoning-with-verifiable-rewards) builds the unbiased pass@k estimator for this setting.
