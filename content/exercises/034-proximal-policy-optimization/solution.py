@@ -174,27 +174,39 @@ def ppo_loss(model, batch, clip_eps=0.2, vf_coef=0.5, ent_coef=0.01):
     return policy_loss + vf_coef * value_loss - ent_coef * entropy
 
 
-def train_ppo(seed=0, iterations=20, n_envs=8, n_steps=128, epochs=4, minibatches=4, lr=2.5e-3):
+def ppo_epochs(model, optimizer, batch, epochs=4, minibatches=4, clip_eps=0.2, target_kl=None):
+    n = batch["obs"].shape[0]
+    mb_size = n // minibatches
+    kls = []
+    for _ in range(epochs):
+        order = torch.randperm(n)
+        for start in range(0, n, mb_size):
+            idx = order[start:start + mb_size]
+            loss = ppo_loss(model, {k: v[idx] for k, v in batch.items()}, clip_eps=clip_eps)
+            optimizer.zero_grad()
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 0.5)
+            optimizer.step()
+        with torch.no_grad():
+            logits, _ = model(batch["obs"])
+            logp = torch.log_softmax(logits, dim=-1).gather(-1, batch["actions"][:, None]).squeeze(-1)
+            kls.append(float(approx_kl(logp, batch["logp"])))
+        if target_kl is not None and kls[-1] > target_kl:
+            break
+    return kls, len(kls)
+
+
+def train_ppo(seed=0, iterations=20, n_envs=8, n_steps=128, epochs=4, minibatches=4, lr=2.5e-3, target_kl=None):
     torch.manual_seed(seed)
     env = VecCartPole(n_envs, seed=seed)
     model = ActorCritic()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, eps=1e-5)
-    batch_size = n_envs * n_steps
-    mb_size = batch_size // minibatches
     history = []
     for it in range(iterations):
         for group in optimizer.param_groups:
             group["lr"] = lr * (1.0 - it / iterations)
         batch = collect_rollout(env, model, n_steps)
-        for _ in range(epochs):
-            order = torch.randperm(batch_size)
-            for start in range(0, batch_size, mb_size):
-                idx = order[start:start + mb_size]
-                loss = ppo_loss(model, {k: v[idx] for k, v in batch.items()})
-                optimizer.zero_grad()
-                loss.backward()
-                nn.utils.clip_grad_norm_(model.parameters(), 0.5)
-                optimizer.step()
+        ppo_epochs(model, optimizer, batch, epochs, minibatches, target_kl=target_kl)
         recent = env.finished[-10:]
         history.append(float(np.mean(recent)) if recent else 0.0)
     return model, history

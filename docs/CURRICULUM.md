@@ -72,7 +72,7 @@ chapters that cover it, and the app carries your completed work across.
 | `031-baselines-and-actor-critic` | Baselines and actor-critic | Baseline variance, the optimal baseline, expected TD errors, and a one-step actor-critic |
 | `032-generalized-advantage-estimation` | Generalized advantage estimation | TD errors, next-state values that respect termination and truncation, and GAE on single and batched episodes |
 | `033-trust-regions-and-trpo` | Natural gradients and trust regions | Mean KL, Fisher-vector products, conjugate gradient, the natural step, a KL line search, and a TRPO update |
-| `034-proximal-policy-optimization` | Proximal policy optimization | The clipped surrogate, entropy, approximate KL, clip fraction, the PPO loss, and a PPO agent on CartPole |
+| `034-proximal-policy-optimization` | Proximal policy optimization | The clipped surrogate, entropy, approximate KL, clip fraction, the PPO loss, KL early stopping, and a PPO agent on CartPole |
 | `035-ppo-in-practice` | PPO in practice | A diagonal Gaussian log-probability, entropy, and KL; a parallel running mean and variance; reward scaling; advantage normalization; a linear learning-rate schedule; a clipped value loss; a vectorized Pendulum rollout; and one continuous PPO step |
 | `036-why-policy-optimization-works` | Why policy optimization works | The performance difference identity, softmax policy gradient rates on a bandit, and natural policy gradient as mirror descent |
 
