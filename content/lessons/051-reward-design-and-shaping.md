@@ -214,7 +214,7 @@ The checks test the functions in this order. The helpers `full_rewards` and `wit
 
 **Truncated episodes.** If you treat a time limit as a real ending, the leftover $\gamma^T \Phi(s_T)$ at the cut changes the return. Bootstrap from the cut state instead, and shaping stays consistent.
 
-**The underlying reward is still a proxy.** Shaping preserves whatever the original reward rewards. If that reward is gameable, a perfectly shaped version is exactly as gameable.
+**The underlying reward is still a proxy.** Shaping preserves whatever the original reward rewards. If that reward is gameable, a perfectly shaped version is exactly as gameable. The next chapter, [Preferences over trajectories](/lessons/052-preferences-over-trajectories), learns the reward from comparisons instead of writing it.
 
 ## Further reading
 

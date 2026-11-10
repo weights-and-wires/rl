@@ -1,0 +1,18 @@
+{
+  "id": "058-reward-models",
+  "title": "Bradley-Terry reward models, ensembles, and process rewards",
+  "brief": "Fit a Bradley-Terry reward model that recovers a hidden reward up to a constant, see why a conservative ensemble overrates its favorite response less, and turn an outcome reward into exact per-step process rewards.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy",
+    "torch"
+  ],
+  "hints": [
+    "-log sigmoid(z) is softplus(-z). torch.nn.functional.softplus is stable for any z, where torch.log(torch.sigmoid(z)) returns -inf for large negative z.",
+    "In fit_reward_model, build phi = torch.zeros(D, dtype=torch.float64, requires_grad=True) and an Adam optimiser over [phi]. Each step: zero the gradient, compute the loss on x_chosen @ phi and x_rejected @ phi, add weight_decay * (phi ** 2).sum(), call backward, and step.",
+    "ensemble_reward reduces over axis 0. numpy's var uses ddof=0 by default, which is the variance over K the UWO formula wants.",
+    "prefix_values walks t from T - 1 down to 0 with values[t] = sum over the last axis of exp(cond_logps[t]) * values[t + 1].",
+    "process_rewards gathers values[t][tuple(tokens[:, :t].T)] for t = 0 .. T, stacks them into (B, T + 1), and takes np.diff along axis 1. values[0] is 0-d, so broadcast it to (B,)."
+  ]
+}
