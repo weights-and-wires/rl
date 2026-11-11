@@ -1,6 +1,6 @@
 # Curriculum
 
-Seventy-five chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy-six chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -101,7 +101,7 @@ chapters that cover it, and the app carries your completed work across.
 | `050-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, IQL's expectile, and the TD3+BC actor loss |
 | `051-advantage-weighted-policy-improvement` | Advantage-weighted policy improvement | The AWR weights `exp(A / beta)` with a clip, the KL-optimal improved policy and its objective, MPO's weights, dual, and temperature, the weighted-likelihood loss and Gaussian fit, and a tabular AWAC loop that beats behavior cloning |
 | `052-off-policy-evaluation` | Evaluating a policy from logs | Effective sample size, IPS and self-normalized IPS, the doubly robust estimate, per-decision importance sampling and the recursive doubly robust estimate on trajectories, and fitted Q evaluation checked against exact policy evaluation |
-| `053-decision-transformer` | Decision transformer | A draft chapter with a placeholder exercise. |
+| `053-decision-transformer` | Decision transformer: RL as sequence modeling | Return-to-go values, the (return, state, action) token layout, a causal mask checked by changing future tokens, a target-return rollout, an exact luck example, offline Q-iteration that stitches what return conditioning cannot, and a tiny decision transformer whose return rises with its target |
 
 ## Part 8 — Rewards, evaluation, and many agents
 

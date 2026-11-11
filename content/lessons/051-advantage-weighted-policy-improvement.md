@@ -277,6 +277,8 @@ The checks test the functions in this order. The helpers `make_dataset`, `action
 
 **Few samples carry the update.** As $\beta$ falls, a handful of actions hold nearly all the weight. MPO's budget $\epsilon$ controls this directly.
 
+**A value-free alternative.** A [decision transformer](/lessons/053-decision-transformer) conditions a sequence model on the return you want and needs no critic. It cannot stitch trajectories the way a critic can.
+
 **The fit is forward KL.** A Gaussian fitted to a two-peaked target lands between the peaks.
 
 ## Further reading
