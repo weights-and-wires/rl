@@ -82,8 +82,8 @@ post-training pipeline, language models as policies, reward models, reward-model
 and judge evaluation, RLHF with PPO, DPO, GRPO and its successors, verifiable
 rewards, reasoning with verifiable rewards, process rewards and test-time
 search, credit assignment for language models, AI feedback and self-improvement, on-policy
-distillation, multi-turn agents, and stale
-samples and importance weights.
+distillation, multi-turn agents, and asynchronous
+RL for language models with staleness caps, importance weights, and packing.
 
 **Part 10 — Beyond text, and what can go wrong (080–084).** Diffusion and flow
 models as policies, vision, speech, and robot learning, sim-to-real

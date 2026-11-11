@@ -1,7 +1,7 @@
 {
   "id": "079-rl-infrastructure-for-llms",
-  "title": "Importance weights, truncation, and stale rollouts",
-  "brief": "Compute the exact bias and variance of importance sampling, truncated and masked variants, and no correction, then correct a toy policy gradient for stale samples.",
+  "title": "Async queues, mismatch, importance weights, and packing",
+  "brief": "Simulate an async trainer and sampler with a staleness cap, correct stale and bf16-mismatched samples with truncated importance weights, and pack rollouts without changing the loss.",
   "needs_gpu": false,
   "timeout": 30,
   "packages": [
@@ -11,6 +11,9 @@
     "tis_weights is torch.clamp(ratio, max=cap). mis_weights keeps the ratio where low <= ratio <= high and puts 0 elsewhere, with torch.where.",
     "estimator_bias_variance: let x = weights * f. The mean is sum(mu * x), the bias is that minus sum(pi * f), and the variance is sum(mu * x**2) - mean**2. Sampling happens under mu, so mu weights every sum.",
     "sequence_ratio is exp of the masked sum of logp_target - logp_behavior over the token axis. Summing log-ratios avoids overflow in the product.",
-    "In is_pg_loss, compute the ratios from logp.detach(), so the weights are constants. For level='sequence', sum the masked log-ratios over dim 1 with keepdim=True before exp and clamp, then expand to (B, T). The loss sums over tokens and averages over sequences."
+    "In is_pg_loss, compute the ratios from logp.detach(), so the weights are constants. For level='sequence', sum the masked log-ratios over dim 1 with keepdim=True before exp and clamp, then expand to (B, T). The loss sums over tokens and averages over sequences.",
+    "async_schedule: for batch j, start = the sampler's free time, or finish[j - K - 1] if that is later. The version is the number of finishes at or before start. Update j starts at max(batch ready, previous update finished). Staleness is j minus the version.",
+    "logprob_mismatch: log_softmax both sets of logits. The per-position KL is sum(exp(log_mu) * (log_mu - log_pi)) over the vocabulary, and the second return value is the largest absolute difference of the two log-probabilities.",
+    "pack_rollouts: restart position ids with arange for each rollout and fill a causal block per rollout in a zero matrix. targets[i] is tokens[i + 1] inside a rollout, and the weight is advantage * response[i + 1] / (number of response tokens in that rollout), 0 at the last position."
   ]
 }
