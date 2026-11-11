@@ -1,0 +1,11 @@
+{
+  "id": "075-on-policy-distillation",
+  "title": "On policy distillation",
+  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [],
+  "hints": [
+    "draft_answer returns the integer it receives."
+  ]
+}

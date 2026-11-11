@@ -1,5 +1,5 @@
 {
-  "id": "076-rl-infrastructure-for-llms",
+  "id": "077-rl-infrastructure-for-llms",
   "title": "Importance weights, truncation, and stale rollouts",
   "brief": "Compute the exact bias and variance of importance sampling, truncated and masked variants, and no correction, then correct a toy policy gradient for stale samples.",
   "needs_gpu": false,

@@ -1,6 +1,6 @@
 ---
 title: RL for vision, speech, and robots
-slug: 078-rl-for-vision-speech-and-robots
+slug: 079-rl-for-vision-speech-and-robots
 part: "Part 10 — Beyond text, and what can go wrong"
 summary: Turn a task metric you cannot differentiate, such as box overlap, word error rate, or task cost, into a reward, and see the policy gradient each one produces.
 minutes: 45
@@ -15,7 +15,7 @@ prereqs:
   - 033-baselines-and-actor-critic
   - 051-imitation-learning
   - 070-group-relative-policy-optimization
-exercise: 078-rl-for-vision-speech-and-robots
+exercise: 079-rl-for-vision-speech-and-robots
 ---
 
 # RL for vision, speech, and robots
@@ -231,7 +231,7 @@ The checks test these in order.
 
 ## Where this breaks
 
-**Every metric is a proxy.** The box spray and the slow speech are the same failure: the policy finds what the metric rewards, not what you meant. [Reward hacking, safety, and the frontier](/lessons/079-reward-hacking-and-safe-rl) measures how fast it happens.
+**Every metric is a proxy.** The box spray and the slow speech are the same failure: the policy finds what the metric rewards, not what you meant. [Reward hacking, safety, and the frontier](/lessons/080-reward-hacking-and-safe-rl) measures how fast it happens.
 
 **Zero-variance groups.** If every sample in a group scores 0, every advantage is 0 and nothing learns.
 
