@@ -255,7 +255,7 @@ The checks test the functions in this order. The helpers `make_dataset`, `action
 
 **Coverage limits everything.** No method can learn that an action is good if no data shows it. If the demonstrator never goes near the goal, offline RL will not find the goal.
 
-**Tuning needs evaluation that you do not have.** Picking $\alpha$ or $\tau$ by running the policy in the real environment defeats the purpose, and offline policy evaluation is its own hard problem.
+**Tuning needs evaluation that you do not have.** Picking $\alpha$ or $\tau$ by running the policy in the real environment defeats the purpose, and [offline policy evaluation](/lessons/052-off-policy-evaluation) is its own hard problem.
 
 **Keep the actor on actions the log contains.** TD3's actor steps to increase $Q(s, \pi(s))$ and can leave every logged action (see [Deterministic policy gradients](/lessons/040-deterministic-policy-gradients)). Fujimoto and Gu (2021) add a squared penalty. Their $\alpha$ in this example is $2.5$, and it is not CQL's $\alpha$.
 
