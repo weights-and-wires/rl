@@ -1,11 +1,17 @@
 {
   "id": "074-credit-assignment-for-llms",
-  "title": "Credit assignment for llms",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Monte Carlo step values, Math-Shepherd labels, and implicit process rewards",
+  "brief": "Estimate step values by rollouts on a toy reasoning task with exact values, turn them into per-step advantages and automatic step labels, and read process rewards off a log ratio.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": [
+    "numpy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "exact_value is 0 if prefix.all() is False. Otherwise it is np.prod(step_p[len(prefix):]), and the product of an empty slice is 1.",
+    "In mc_value, draw rest = rng.random((K, T - k)) < step_p[k:], then a rollout succeeds when rest.all(axis=1) and the prefix is all correct. The standard error is success.std(ddof=1) / sqrt(K).",
+    "vine_advantages estimates v_hat[k] for k < T with mc_value, sets v_hat[T] to the real reward, and returns np.diff(v_hat). The order is next minus current. Reversing it flips every sign.",
+    "math_shepherd_labels is rollout_correct.max(axis=1) for hard and rollout_correct.mean(axis=1) for soft. Don't round the soft label.",
+    "implicit_prm_rewards is np.bincount(step_ids, weights=beta * (logp - logp_ref), minlength=n_steps)."
   ]
 }
