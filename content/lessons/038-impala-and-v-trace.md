@@ -89,7 +89,7 @@ Figure 1 comes from an exact tick-by-tick count, in `scripts/figures/038-impala-
 
 ## Why not ignore the lag
 
-A 10-update lag means the actor's policy $\mu$ and the learner's policy $\pi$ differ. If you treat the trajectory as on-policy, you push the policy toward actions that $\mu$ liked, which $\pi$ may no longer prefer. In [Stale samples and importance weights](/lessons/075-rl-infrastructure-for-llms), the gradient from stale samples points partly backward at a lag of 8.
+A 10-update lag means the actor's policy $\mu$ and the learner's policy $\pi$ differ. If you treat the trajectory as on-policy, you push the policy toward actions that $\mu$ liked, which $\pi$ may no longer prefer. In [Stale samples and importance weights](/lessons/076-rl-infrastructure-for-llms), the gradient from stale samples points partly backward at a lag of 8.
 
 The obvious correction is importance sampling. Weight each term of the $n$-step return by the product of ratios along the trajectory. That is unbiased, and its variance grows with the length of the product. A ratio of 2 at five steps in a row multiplies the weight by 32, and a single ratio near 0 erases everything after it.
 
