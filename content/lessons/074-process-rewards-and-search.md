@@ -50,7 +50,7 @@ F_prev = np.concatenate([[0.0], F[:-1]])
 expected = np.sum(rewards[order] * (F**n - F_prev**n))
 ```
 
-With a 0/1 reward the formula collapses to $1 - (1 - p)^n$, because best-of-n fails only when every draw fails. On this chapter's toy, the policy succeeds 8.6% of the time, and a perfect verifier lifts that to 30.3% at $n = 4$, 76.4% at $n = 16$, and 99.7% at $n = 64$. The price is $n$ full generations. A learned scorer is not perfect, and as $n$ grows best-of-n finds what it overrates, which [Reward hacking, safety, and the frontier](/lessons/082-reward-hacking-and-safe-rl) measures.
+With a 0/1 reward the formula collapses to $1 - (1 - p)^n$, because best-of-n fails only when every draw fails. On this chapter's toy, the policy succeeds 8.6% of the time, and a perfect verifier lifts that to 30.3% at $n = 4$, 76.4% at $n = 16$, and 99.7% at $n = 64$. The price is $n$ full generations. A learned scorer is not perfect, and as $n$ grows best-of-n finds what it overrates, which [Reward hacking, safety, and the frontier](/lessons/083-reward-hacking-and-safe-rl) measures.
 
 ## Vote on the final answer
 

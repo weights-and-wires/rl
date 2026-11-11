@@ -217,7 +217,7 @@ The checks test these functions in order.
 
 ## Where this breaks
 
-**Reward hacking.** The policy finds whatever the reward rewards. DDPO's authors report that optimizing for incompressibility eventually removes all recognizable content from the images, and that a vision-language reward was fooled by images that write the prompt's words as text. People stop early, add a KL penalty to the pretrained model, and evaluate with a reward that was not used in training. [Reward hacking, safety, and the frontier](/lessons/082-reward-hacking-and-safe-rl) returns to this.
+**Reward hacking.** The policy finds whatever the reward rewards. DDPO's authors report that optimizing for incompressibility eventually removes all recognizable content from the images, and that a vision-language reward was fooled by images that write the prompt's words as text. People stop early, add a KL penalty to the pretrained model, and evaluate with a reward that was not used in training. [Reward hacking, safety, and the frontier](/lessons/083-reward-hacking-and-safe-rl) returns to this.
 
 ## Further reading
 

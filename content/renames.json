@@ -160,16 +160,16 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "49-reward-hacking-and-overoptimization": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "50-safe-and-constrained-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "51-scaling-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "52-the-frontier": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "048-language-models-as-policies": [
   "066-language-models-as-policies"
@@ -208,7 +208,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "060-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "035-why-policy-optimization-works": [
   "039-why-policy-optimization-works"
@@ -289,7 +289,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "061-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "055-reasoning-with-verifiable-rewards": [
   "073-reasoning-with-verifiable-rewards"
@@ -313,7 +313,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "062-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "052-rlhf-with-ppo": [
   "069-rlhf-with-ppo"
@@ -349,7 +349,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "063-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "036-why-policy-optimization-works": [
   "039-why-policy-optimization-works"
@@ -436,7 +436,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "064-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "024-the-deadly-triad": [
   "025-the-deadly-triad"
@@ -562,7 +562,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "065-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "030-the-policy-gradient": [
   "031-the-policy-gradient"
@@ -673,7 +673,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "066-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "045-exploration-bonuses": [
   "046-exploration-bonuses"
@@ -742,7 +742,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "067-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "047-imitation-learning": [
   "051-imitation-learning"
@@ -808,7 +808,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "068-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "053-multi-agent-and-self-play": [
   "061-multi-agent-and-self-play"
@@ -859,7 +859,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "069-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "052-evaluating-rl": [
   "059-evaluating-rl"
@@ -916,7 +916,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "070-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "051-reward-design-and-shaping": [
   "057-reward-design-and-shaping"
@@ -979,7 +979,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "071-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "057-sft-and-the-post-training-pipeline": [
   "065-sft-and-the-post-training-pipeline"
@@ -1027,7 +1027,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "072-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "058-sft-and-the-post-training-pipeline": [
   "065-sft-and-the-post-training-pipeline"
@@ -1075,7 +1075,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "073-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "052-reward-design-and-shaping": [
   "057-reward-design-and-shaping"
@@ -1144,7 +1144,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "074-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "053-reward-design-and-shaping": [
   "057-reward-design-and-shaping"
@@ -1213,7 +1213,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "075-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "048-imitation-learning": [
   "051-imitation-learning"
@@ -1300,7 +1300,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "076-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "049-imitation-learning": [
   "051-imitation-learning"
@@ -1387,7 +1387,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "077-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "050-imitation-learning": [
   "051-imitation-learning"
@@ -1474,7 +1474,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "078-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "075-agents-and-multi-turn-rl": [
   "078-agents-and-multi-turn-rl"
@@ -1489,7 +1489,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "079-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "074-ai-feedback-and-self-improvement": [
   "076-ai-feedback-and-self-improvement"
@@ -1510,7 +1510,7 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "080-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
  ],
  "064-sft-and-the-post-training-pipeline": [
   "065-sft-and-the-post-training-pipeline"
@@ -1564,6 +1564,9 @@
   "081-rl-for-vision-speech-and-robots"
  ],
  "081-reward-hacking-and-safe-rl": [
-  "082-reward-hacking-and-safe-rl"
+  "083-reward-hacking-and-safe-rl"
+ ],
+ "082-reward-hacking-and-safe-rl": [
+  "083-reward-hacking-and-safe-rl"
  ]
 }
