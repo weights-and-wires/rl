@@ -1,6 +1,6 @@
 ---
 title: Agents and multi-turn RL
-slug: 076-agents-and-multi-turn-rl
+slug: 077-agents-and-multi-turn-rl
 part: "Part 9 — RL for language models"
 summary: Train a model that calls tools by masking tool output out of the loss and giving each turn, not each token, its share of the reward.
 minutes: 40
@@ -14,7 +14,7 @@ prereqs:
   - 033-baselines-and-actor-critic
   - 034-generalized-advantage-estimation
   - 070-group-relative-policy-optimization
-exercise: 076-agents-and-multi-turn-rl
+exercise: 077-agents-and-multi-turn-rl
 ---
 
 # Agents and multi-turn RL
@@ -191,7 +191,7 @@ The checks test the functions in this order. The environment, `rollout`, `token_
 
 **Tool spam and tool avoidance.** Reward the tool call itself and the agent calls tools it does not need. Charge too much and it never calls them. The exercise's break-even cost is 0.775, and real tasks have no such clean number.
 
-**Slow tools.** One slow test run stalls every episode in a synchronous batch. Systems overlap generation and training, which makes rollouts come from slightly older policies. [Stale samples and importance weights](/lessons/077-rl-infrastructure-for-llms) covers the correction.
+**Slow tools.** One slow test run stalls every episode in a synchronous batch. Systems overlap generation and training, which makes rollouts come from slightly older policies. [Stale samples and importance weights](/lessons/078-rl-infrastructure-for-llms) covers the correction.
 
 ## Further reading
 

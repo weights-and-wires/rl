@@ -1,6 +1,6 @@
 ---
 title: On-policy distillation
-slug: 075-on-policy-distillation
+slug: 076-on-policy-distillation
 part: "Part 9 — RL for language models"
 summary: Train a small student on tokens it samples itself, graded by a teacher, and see why this is RL with a dense per-token reward and a reverse KL.
 minutes: 35
@@ -15,7 +15,7 @@ prereqs:
   - 051-imitation-learning
   - 065-language-models-as-policies
   - 068-rlhf-with-ppo
-exercise: 075-on-policy-distillation
+exercise: 076-on-policy-distillation
 ---
 
 # On-policy distillation
@@ -234,7 +234,7 @@ The exercise defines a toy sequence task: three tokens from a vocabulary of four
 
 ## Where this breaks
 
-- **Mode collapse.** Reverse KL is mode-seeking, so a student can lose the teacher's diversity, as in the collapse of [AI feedback and self-improvement](/lessons/074-ai-feedback-and-self-improvement). If you need coverage, use a divergence closer to forward KL, or mix in teacher-written data.
+- **Mode collapse.** Reverse KL is mode-seeking, so a student can lose the teacher's diversity, as in the collapse of [AI feedback and self-improvement](/lessons/075-ai-feedback-and-self-improvement). If you need coverage, use a divergence closer to forward KL, or mix in teacher-written data.
 - **A weak start.** A student that rarely produces anything the teacher likes gets uninformative rewards. Common practice starts with offline distillation, then switches to on-policy.
 - **Noisy per-token estimates.** One sample per position has high variance when the two distributions disagree sharply. Averaging over many tokens, as the loss does, helps; computing the exact per-token KL from both full distributions removes the sampling noise at the cost of a larger vocabulary sum.
 

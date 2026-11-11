@@ -1,6 +1,6 @@
 ---
 title: Reward hacking, safety, and the frontier
-slug: 080-reward-hacking-and-safe-rl
+slug: 081-reward-hacking-and-safe-rl
 part: "Part 10 — Beyond text, and what can go wrong"
 summary: Measure how a proxy reward diverges from the goal under best-of-n, delay the fall with ensembles, and enforce a cost budget with a Lagrange multiplier.
 minutes: 45
@@ -14,7 +14,7 @@ prereqs:
   - 065-language-models-as-policies
   - 066-reward-models
   - 073-process-rewards-and-search
-exercise: 080-reward-hacking-and-safe-rl
+exercise: 081-reward-hacking-and-safe-rl
 ---
 
 # Reward hacking, safety, and the frontier

@@ -248,7 +248,7 @@ Figure 3. AWAC's value at the start of the cliff world against its temperature, 
 
 ## Four names for one step
 
-The language-model chapter says a real model cannot compute $Z$ in $\pi^* \propto \pi_{\text{ref}}\, e^{r/\beta}$. AWR is the way around it: sample from the reference, weight by $e^{r/\beta}$, and fit by weighted maximum likelihood. Reward-weighted regression (Peters and Schaal, 2007) is that fit with a weight that is any function of the reward, and expert iteration is the case of a 0/1 pass indicator (see [AI feedback and self-improvement](/lessons/074-ai-feedback-and-self-improvement)). The Boltzmann policy is the case where $\pi_{\text{old}}$ is uniform.
+The language-model chapter says a real model cannot compute $Z$ in $\pi^* \propto \pi_{\text{ref}}\, e^{r/\beta}$. AWR is the way around it: sample from the reference, weight by $e^{r/\beta}$, and fit by weighted maximum likelihood. Reward-weighted regression (Peters and Schaal, 2007) is that fit with a weight that is any function of the reward, and expert iteration is the case of a 0/1 pass indicator (see [AI feedback and self-improvement](/lessons/075-ai-feedback-and-self-improvement)). The Boltzmann policy is the case where $\pi_{\text{old}}$ is uniform.
 
 > [!RECAP]
 > - The best policy within a KL leash of $\pi_{\text{old}}$ is $\pi_{\text{old}}\, e^{A/\beta} / Z$, and its score is $\beta \log Z$.

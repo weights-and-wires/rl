@@ -1,6 +1,6 @@
 ---
 title: Diffusion and flow models as policies
-slug: 078-diffusion-and-flow-policies
+slug: 079-diffusion-and-flow-policies
 part: "Part 10 — Beyond text, and what can go wrong"
 summary: See a denoising chain as an MDP whose steps are Gaussian actions, then fine-tune a diffusion model with a policy gradient (DDPO) or with preference pairs.
 minutes: 45
@@ -15,7 +15,7 @@ prereqs:
   - 036-proximal-policy-optimization
   - 065-language-models-as-policies
   - 069-direct-preference-optimization
-exercise: 078-diffusion-and-flow-policies
+exercise: 079-diffusion-and-flow-policies
 ---
 
 # Diffusion and flow models as policies
@@ -217,7 +217,7 @@ The checks test these functions in order.
 
 ## Where this breaks
 
-**Reward hacking.** The policy finds whatever the reward rewards. DDPO's authors report that optimizing for incompressibility eventually removes all recognizable content from the images, and that a vision-language reward was fooled by images that write the prompt's words as text. People stop early, add a KL penalty to the pretrained model, and evaluate with a reward that was not used in training. [Reward hacking, safety, and the frontier](/lessons/080-reward-hacking-and-safe-rl) returns to this.
+**Reward hacking.** The policy finds whatever the reward rewards. DDPO's authors report that optimizing for incompressibility eventually removes all recognizable content from the images, and that a vision-language reward was fooled by images that write the prompt's words as text. People stop early, add a KL penalty to the pretrained model, and evaluate with a reward that was not used in training. [Reward hacking, safety, and the frontier](/lessons/081-reward-hacking-and-safe-rl) returns to this.
 
 ## Further reading
 

@@ -1,6 +1,6 @@
 ---
 title: Stale samples and importance weights
-slug: 077-rl-infrastructure-for-llms
+slug: 078-rl-infrastructure-for-llms
 part: "Part 9 — RL for language models"
 summary: Correct a policy gradient for samples that came from a stale or slightly different policy, and see what truncating the importance weights buys.
 minutes: 40
@@ -14,7 +14,7 @@ prereqs:
   - 015-off-policy-importance-sampling
   - 036-proximal-policy-optimization
   - 070-group-relative-policy-optimization
-exercise: 077-rl-infrastructure-for-llms
+exercise: 078-rl-infrastructure-for-llms
 ---
 
 # Stale samples and importance weights
