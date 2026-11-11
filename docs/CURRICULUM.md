@@ -1,6 +1,6 @@
 # Curriculum
 
-Eighty-one chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Eighty-two chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -117,7 +117,7 @@ chapters that cover it, and the app carries your completed work across.
 | `061-multi-agent-and-self-play` | Many agents and self-play | Regret matching, exploitability, fictitious play on zero-sum and general-sum games, and Nim self-play |
 | `062-alphazero-self-play` | AlphaZero: learning from self-play | Visit-count policy targets with a temperature, Dirichlet root noise, the policy-value loss checked against finite differences, the eight board symmetries, self-play games, and a tic-tac-toe network that never loses to random play and holds minimax to a draw |
 | `063-counterfactual-regret-minimization` | Counterfactual regret minimization | Kuhn poker's 12 information sets, exact best-response values, exploitability as the sum of both gains, and CFR with regret matching per information set, checked against the game value of -1/18 |
-| `064-cooperative-multi-agent-rl` | Cooperative multi agent rl | A draft chapter with a placeholder exercise. |
+| `064-cooperative-multi-agent-rl` | Cooperative multi-agent RL | VDN's sum and the IGM check, QMIX's monotonic mixer checked by finite differences, exact and trained fits of AND and XOR payoff tables, and independent against joint learners on the climbing game |
 
 ## Part 9 — RL for language models
 

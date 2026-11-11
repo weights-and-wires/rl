@@ -21,7 +21,7 @@ exercise: 061-multi-agent-and-self-play
 
 Two players play rock-paper-scissors, and each one learns by answering the other's last move. You played rock, so I play paper. I played paper, so you play scissors. Where does this end?
 
-It does not end. A single learner faces a world that holds still. A second learner changes the world the first one faces. Self-play, as in AlphaZero, gives an agent an opponent as strong as the agent is. [AlphaZero: learning from self-play](/lessons/062-alphazero-self-play) builds that loop with a network and search.
+It does not end. A single learner faces a world that holds still. A second learner changes the world the first one faces. Self-play, as in AlphaZero, gives an agent an opponent as strong as the agent is. [AlphaZero: learning from self-play](/lessons/062-alphazero-self-play) builds that loop with a network and search. For teams that share one reward, see [Cooperative multi-agent RL](/lessons/064-cooperative-multi-agent-rl).
 
 Chasing the last move fails. The fix is to let the average settle while that move keeps changing, including when both players can gain from one cell. Exploitability measures the gap, and one Q table then learns Nim by playing itself.
 

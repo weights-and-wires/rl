@@ -1,11 +1,20 @@
 {
   "id": "064-cooperative-multi-agent-rl",
-  "title": "Cooperative multi agent rl",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "VDN, QMIX, and the climbing game",
+  "brief": "Sum agent utilities the VDN way and check the greedy joint action, build QMIX's monotonic mixer, measure what each can fit on a payoff table, and watch independent learners fall for the safe action on the climbing game.",
   "needs_gpu": false,
-  "timeout": 30,
-  "packages": [],
+  "timeout": 40,
+  "packages": [
+    "numpy",
+    "torch"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "vdn_q_tot is qs[np.arange(n_agents), actions].sum(). Averaging with .mean() keeps IGM true but returns half of the right value for two agents.",
+    "best_joint_action loops over itertools.product(range(n_actions), repeat=n_agents) and keeps the joint action with the largest vdn_q_tot. For VDN it always equals the tuple of per-agent argmaxes.",
+    "In qmix_mixer, take np.abs of the hypernetwork output for w1 and w2, never for b1 or b2. Without abs a weight can go negative and dQ_tot/dQ_i drops below zero.",
+    "w1 comes from state @ w1_A + w1_c with shape (B, N*H). Reshape it to (B, N, H) and contract with qs using np.einsum('bn,bnh->bh', qs, w1).",
+    "vdn_fit has a closed form. The fitted cell is row mean + column mean - grand mean, so q1 = row mean - grand/2 and q2 = column mean - grand/2.",
+    "fit_qmix feeds torch.stack of q1 and q2 for each cell through abs(w1), then elu, then abs(w2). Calling .abs() on w1 and w2 is what keeps the mixer monotone.",
+    "In independent_learners each agent updates Q_i[a_i] with the same team reward r. Never index by the partner's action."
   ]
 }
