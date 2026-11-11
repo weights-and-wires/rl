@@ -1,6 +1,6 @@
 # Curriculum
 
-Seventy-two chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy-three chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -110,7 +110,7 @@ chapters that cover it, and the app carries your completed work across.
 | `054-evaluating-rl` | Evaluating RL honestly | The interquartile mean, performance profiles, stratified bootstrap intervals, and their coverage |
 | `055-debugging-rl-runs` | Debugging RL runs | Explained variance, value-target correlation, relative entropy, and gradient norm; a reward-scale invariance check on an advantage-normalized policy gradient; an overfit-one-batch test; and `diagnose`, which classifies training logs |
 | `056-multi-agent-and-self-play` | Many agents and self-play | Regret matching, exploitability, fictitious play on zero-sum and general-sum games, and Nim self-play |
-| `057-alphazero-self-play` | Alphazero self play | A draft chapter with a placeholder exercise. |
+| `057-alphazero-self-play` | AlphaZero: learning from self-play | Visit-count policy targets with a temperature, Dirichlet root noise, the policy-value loss checked against finite differences, the eight board symmetries, self-play games, and a tic-tac-toe network that never loses to random play and holds minimax to a draw |
 
 ## Part 9 — RL for language models
 

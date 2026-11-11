@@ -239,7 +239,7 @@ MCTS never builds a table of the whole world. Its cost depends on the search bud
 
 ## Where this breaks
 
-**Weak rollouts.** A uniformly random rollout is a poor estimate in games where random play is far from good play. AlphaGo mixed rollouts with a learned value function, and AlphaZero dropped rollouts and used a learned value function and policy to guide the search. [World models and MuZero](/lessons/044-world-models-and-muzero) builds that version.
+**Weak rollouts.** A uniformly random rollout is a poor estimate in games where random play is far from good play. AlphaGo mixed rollouts with a learned value function, and AlphaZero dropped rollouts and used a learned value function and policy to guide the search. [AlphaZero: learning from self-play](/lessons/057-alphazero-self-play) trains that network from search results, and [World models and MuZero](/lessons/044-world-models-and-muzero) searches over a learned model.
 
 **Tuning $c$.** UCT's constant depends on the scale of the returns. The textbook $c = \sqrt 2$ assumes results in $[0, 1]$. With other scales, tune $c$ or rescale the values.
 
