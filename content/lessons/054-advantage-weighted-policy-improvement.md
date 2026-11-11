@@ -30,7 +30,7 @@ The same step appears under several names: advantage-weighted regression (AWR), 
 
 - The advantage $A(s, a) = Q(s, a) - V(s)$ is how much better an action is than the policy's average (see [Baselines and actor-critic](/lessons/033-baselines-and-actor-critic)).
 - Maximum-entropy RL has the Boltzmann policy $\pi(a \mid s) \propto \exp(Q(s, a) / \alpha)$ (see [Maximum-entropy reinforcement learning](/lessons/041-maximum-entropy-rl) and [Soft actor-critic](/lessons/042-soft-actor-critic)).
-- A language model's KL-regularized optimum is $\pi_{\text{ref}}\, e^{r/\beta} / Z$ (see [Language models as policies](/lessons/065-language-models-as-policies)).
+- A language model's KL-regularized optimum is $\pi_{\text{ref}}\, e^{r/\beta} / Z$ (see [Language models as policies](/lessons/066-language-models-as-policies)).
 - IQL extracts its policy by weighting the log-likelihood of dataset actions with advantages (see [Offline reinforcement learning](/lessons/053-offline-rl)). That chapter builds the critic, not the extraction.
 - Behavior cloning fits logged actions by maximum likelihood (see [Imitation learning](/lessons/051-imitation-learning)).
 
@@ -248,7 +248,7 @@ Figure 3. AWAC's value at the start of the cliff world against its temperature, 
 
 ## Four names for one step
 
-The language-model chapter says a real model cannot compute $Z$ in $\pi^* \propto \pi_{\text{ref}}\, e^{r/\beta}$. AWR is the way around it: sample from the reference, weight by $e^{r/\beta}$, and fit by weighted maximum likelihood. Reward-weighted regression (Peters and Schaal, 2007) is that fit with a weight that is any function of the reward, and expert iteration is the case of a 0/1 pass indicator (see [AI feedback and self-improvement](/lessons/075-ai-feedback-and-self-improvement)). The Boltzmann policy is the case where $\pi_{\text{old}}$ is uniform.
+The language-model chapter says a real model cannot compute $Z$ in $\pi^* \propto \pi_{\text{ref}}\, e^{r/\beta}$. AWR is the way around it: sample from the reference, weight by $e^{r/\beta}$, and fit by weighted maximum likelihood. Reward-weighted regression (Peters and Schaal, 2007) is that fit with a weight that is any function of the reward, and expert iteration is the case of a 0/1 pass indicator (see [AI feedback and self-improvement](/lessons/076-ai-feedback-and-self-improvement)). The Boltzmann policy is the case where $\pi_{\text{old}}$ is uniform.
 
 > [!RECAP]
 > - The best policy within a KL leash of $\pi_{\text{old}}$ is $\pi_{\text{old}}\, e^{A/\beta} / Z$, and its score is $\beta \log Z$.

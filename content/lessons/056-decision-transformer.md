@@ -31,7 +31,7 @@ The method is the decision transformer (Chen and others, 2021). It needs no valu
 - [Behavior cloning](/lessons/051-imitation-learning) fits $\pi(a \mid s)$ to logged actions by supervised learning.
 - [Offline Q-iteration](/lessons/053-offline-rl) backs values up through transitions that appear in a fixed dataset.
 - [Weighted regression](/lessons/054-advantage-weighted-policy-improvement) can favor the better actions in a log without a new rollout.
-- Language models minimize a [masked next-token loss](/lessons/064-sft-and-the-post-training-pipeline), and a causal mask hides the future from each position.
+- Language models minimize a [masked next-token loss](/lessons/065-sft-and-the-post-training-pipeline), and a causal mask hides the future from each position.
 
 ## Tag every step with its future
 
@@ -251,7 +251,7 @@ Then `train_dt` and `mean_return` run your functions on a real model: the `__mai
 
 **Long contexts.** Attention over $3T$ tokens costs time and memory that grow with $T^2$. Real systems cut the sequence to the last $K$ steps.
 
-**Return as the only goal.** A single number says little about what the agent should do. Later work conditions on goals or on other outcomes, and language-model policies condition on a prompt, as in [Language models as policies](/lessons/065-language-models-as-policies).
+**Return as the only goal.** A single number says little about what the agent should do. Later work conditions on goals or on other outcomes, and language-model policies condition on a prompt, as in [Language models as policies](/lessons/066-language-models-as-policies).
 
 ## Further reading
 
