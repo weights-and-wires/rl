@@ -380,9 +380,9 @@ Rules for checks:
 
 ### Chapters with a GPU run
 
-Three chapters set `gpu: true` in their front matter and `"needs_gpu": true` in
+Four chapters set `gpu: true` in their front matter and `"needs_gpu": true` in
 `meta.json`: the chapters on RLHF with PPO, on group-relative policy
-optimization, and on reasoning with verifiable rewards. Find them with
+optimization, on reasoning with verifiable rewards, and the capstone. Find them with
 `grep -l 'gpu: true' content/lessons/*.md`. The flag sends both **Run** and
 **Check** to a RunPod worker with a CUDA GPU, when one is configured, and to the
 local CPU runner otherwise. So in these chapters:
