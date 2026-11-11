@@ -1,0 +1,21 @@
+{
+  "id": "070-reasoning-with-verifiable-rewards",
+  "title": "pass@k, entropy collapse, and RLVR on a toy arithmetic task",
+  "brief": "Build the unbiased pass@k estimator, a verifiable answer reward, and the entropy covariance law, then train a toy arithmetic model with RLVR and watch pass@1 rise while pass@64 falls. The GPU run trains Qwen3-0.6B-Base R1-Zero style.",
+  "needs_gpu": true,
+  "timeout": 900,
+  "packages": [
+    "numpy",
+    "torch",
+    "transformers"
+  ],
+  "hints": [
+    "C(n - c, k) / C(n, k) equals the product over j from n - c + 1 to n of (1 - k / j). np.prod(1 - k / np.arange(n - c + 1, n + 1)) computes it. When n - c < k, every size-k subset holds a correct sample, so pass@k is 1.",
+    "In answer_reward, re.search(r'</think>\\s*<answer>(.*?)</answer>', text, re.DOTALL) finds the first answer block after the thinking. Then re.fullmatch(r'-?\\d+', content.strip()) accepts integers only.",
+    "zero_signal_probability: a group has all-equal rewards when every sample is right (probability p ** G) or every sample is wrong ((1 - p) ** G). Add both, and use np.asarray(p) so an array of pass rates works.",
+    "pg_loss: zero the padding with torch.where before multiplying, since -inf times 0 is nan. Divide by mask.sum(), the total token count, not by the batch size.",
+    "token_entropy: p * log p is nan where the logit is -inf. torch.where(p > 0, p * logp, 0) fixes it.",
+    "entropy_change_estimate: center both log pi and delta_logits by their means under pi, multiply, weight by pi, sum over the last axis, and negate.",
+    "In train_rlvr_toy, the batch is torch.arange(16).repeat_interleave(group_size), so each question's group is contiguous. Get per-token log-probs with torch.log_softmax(model.logits(problems, tokens), -1).gather(-1, tokens[..., None]).squeeze(-1)."
+  ]
+}

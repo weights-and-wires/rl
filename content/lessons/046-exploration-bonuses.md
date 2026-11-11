@@ -250,6 +250,8 @@ The checks test the functions in this order.
 
 **Novelty is not usefulness.** A bonus rewards every novel state, including ones that do not matter. RND works best with its bonus normalized by a running estimate of its spread.
 
+**Goals can replace bonuses.** When many goals share one environment, relabeling failed episodes with the goals they reached gives the learner rewards without any bonus. [Goals and hindsight](/lessons/048-goal-conditioned-rl-and-her) builds this.
+
 ## Further reading
 
 - [Strehl and Littman (2008), An analysis of model-based interval estimation for Markov decision processes](https://doi.org/10.1016/j.jcss.2007.08.009). MBIE-EB, the count bonus used here, tested on RiverSwim.

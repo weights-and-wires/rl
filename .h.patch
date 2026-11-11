@@ -1,0 +1,13 @@
+diff --git a/content/lessons/055-reward-design-and-shaping.md b/content/lessons/055-reward-design-and-shaping.md
+index 6672c54..e8071d9 100644
+--- a/content/lessons/055-reward-design-and-shaping.md
++++ b/content/lessons/055-reward-design-and-shaping.md
+@@ -214,6 +214,8 @@ The checks test the functions in this order. The helpers `full_rewards` and `wit
+ 
+ **Truncated episodes.** If you treat a time limit as a real ending, the leftover $\gamma^T \Phi(s_T)$ at the cut changes the return. Bootstrap from the cut state instead, and shaping stays consistent.
+ 
++**Shaping is not the only answer to a sparse reward.** When the task is to reach any of many goals, you can leave the reward alone and relabel the data instead, as [Goals and hindsight](/lessons/048-goal-conditioned-rl-and-her) shows.
++
+ **The underlying reward is still a proxy.** Shaping preserves whatever the original reward rewards. If that reward is gameable, a perfectly shaped version is exactly as gameable.
+ 
+ ## Further reading
