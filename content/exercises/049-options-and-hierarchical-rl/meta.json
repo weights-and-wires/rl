@@ -1,11 +1,18 @@
 {
   "id": "049-options-and-hierarchical-rl",
-  "title": "Options and hierarchical rl",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Option models, SMDP planning, and intra-option learning on four rooms",
+  "brief": "Solve option models as linear systems and check them against rollouts, plan over primitives and hallway options with SMDP value iteration, and write the SMDP and intra-option Q-learning updates.",
   "needs_gpu": false,
-  "timeout": 30,
-  "packages": [],
+  "timeout": 40,
+  "packages": [
+    "numpy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "discounted_return is the sum of gamma ** np.arange(len(rewards)) * rewards. Dropping the powers sums the rewards undiscounted.",
+    "option_model solves (I - gamma * P_pi * (1 - beta)[None, :]) X = Y twice: once with Y = r_pi for R_o, and once with Y = gamma * P_pi * beta[None, :] for P_o. P_pi = env.P[np.arange(S), option.pi].",
+    "In smdp_value_iteration, build q[i] = np.where(option.init, R_o + P_o @ V, -np.inf) for every option, take q.max(axis=0), and reset V[env.goal] to 0 after each sweep. P_o already holds gamma^k, so add no extra gamma.",
+    "smdp_q_update bootstraps with gamma ** k * max over avail[s2] of Q[s2], and with 0 when terminated.",
+    "intra_option_q_update loops over the options with options[i].init[s] and options[i].pi[s] == a. Its target is r + gamma * ((1 - beta[s2]) * Q[s2, i] + beta[s2] * best), where best is the max of Q[s2] over options that can start in s2.",
+    "interrupted_beta is np.where(best > Q[:, o], 1.0, options[o].beta), where best is the max of Q over the options that can start in each state."
   ]
 }
