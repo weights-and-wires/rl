@@ -265,7 +265,7 @@ The checks test the functions in this order. The network, `VecCartPole`, `collec
 
 ## Where this breaks
 
-**The clip does not bound the KL.** Ratios can drift well past $1 \pm \epsilon$ over several epochs, because other samples' gradients move shared parameters. Monitor `approx_kl` and stop the epochs early when it passes a target such as 0.015, as `ppo_epochs` does with `target_kl`. [Debugging RL runs](/lessons/059-debugging-rl-runs) adds the other instruments, such as entropy and explained variance, and a rule for reading them together.
+**The clip does not bound the KL.** Ratios can drift well past $1 \pm \epsilon$ over several epochs, because other samples' gradients move shared parameters. Monitor `approx_kl` and stop the epochs early when it passes a target such as 0.015, as `ppo_epochs` does with `target_kl`. [Debugging RL runs](/lessons/060-debugging-rl-runs) adds the other instruments, such as entropy and explained variance, and a rule for reading them together.
 
 **Implementation details carry much of the performance.** Engstrom et al. (2020) found that code-level choices, such as reward scaling, orthogonal initialization, and learning-rate annealing, explain much of PPO's advantage over TRPO. OpenAI's reference code also clips the critic's update, which the exercise leaves out, and Andrychowicz et al. (2021) found that it can hurt. [PPO in practice](/lessons/037-ppo-in-practice) carries this clip to a diagonal Gaussian and builds those details. Compare implementations with their details listed, and run several seeds.
 

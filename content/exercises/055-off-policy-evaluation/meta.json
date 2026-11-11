@@ -1,0 +1,14 @@
+{
+  "id": "055-off-policy-evaluation",
+  "title": "IPS, doubly robust, and FQE from logs",
+  "brief": "Estimate a target policy's value from logged bandit data with IPS, self-normalized IPS, and doubly robust estimators, extend them to trajectories with per-decision importance sampling and a backward doubly robust recursion, fit Q values with fitted Q evaluation, and measure the effective sample size.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "The weights are w = pi[x, a] / b[x, a], with the target on top. IPS averages w * r. Dividing by sum(w) instead of N is SNIPS, which is biased for small samples.",
+    "Doubly robust is mean(v_hat[x] + w * (r - q_hat[x, a])) with v_hat = (pi * q_hat).sum(axis=1). With q_hat = 0 it must give the IPS answer.",
+    "In the trajectory recursion, loop t from H-1 down to 0 and use only step t's ratio: est = v_hat[t, s] + ratio[:, t] * (r[:, t] + gamma * est - q[t, s, a]). Per-decision IS is the cumulative product along time, not the product through the last step.",
+    "For FQE, y = r + gamma * (pi[s2] * Q[s2]).sum(axis=1). Average y per (s, a) pair with bincount, and leave pairs that never appear at 0."
+  ]
+}

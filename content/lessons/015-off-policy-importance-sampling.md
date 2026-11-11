@@ -214,7 +214,7 @@ Every estimate costs $O(T)$ per episode and stores one weight and one return per
 
 ## Where this breaks
 
-**Exploding weights.** One rare long episode can carry a weight in the thousands and dominate an OIS average. People use weighted importance sampling, cap the weights, or use *per-decision* methods that weight each reward only by the ratios up to the step that earned it (see [Evaluating a policy from logs](/lessons/054-off-policy-evaluation)).
+**Exploding weights.** One rare long episode can carry a weight in the thousands and dominate an OIS average. People use weighted importance sampling, cap the weights, or use *per-decision* methods that weight each reward only by the ratios up to the step that earned it (see [Evaluating a policy from logs](/lessons/055-off-policy-evaluation)).
 
 **Missing coverage.** If the target policy takes an action that the behavior policy never takes, no amount of data reveals its value. Make the behavior policy $\varepsilon$-soft, as in [Monte Carlo control](/lessons/014-monte-carlo-control), so that every action has a chance.
 

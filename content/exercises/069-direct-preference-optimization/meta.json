@@ -1,0 +1,16 @@
+{
+  "id": "069-direct-preference-optimization",
+  "title": "The DPO loss, IPO, and likelihood displacement",
+  "brief": "Build the DPO loss and its gradient from log-probabilities, compare it with IPO's finite margin target, and watch DPO lower both the chosen and the rejected response.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "Every pairwise loss starts from the log-ratio margin h = (policy_chosen - ref_chosen) - (policy_rejected - ref_rejected). log_sigmoid is given, so -log_sigmoid(beta * h) never overflows.",
+    "d/du of -log sigmoid(u) is -sigmoid(-u). With u = beta * h, the gradient for the chosen log-prob is -beta * sigmoid(-beta * h) * w, and the rejected one gets the same value with the opposite sign.",
+    "IPO's target margin is 1 / (2 * tau), not 1 / tau. The derivative of the mean of (h - target)^2 is 2 * (h - target) / B.",
+    "In train_dpo_linear, d log pi(y) / d theta is E[y] - sum over y' of pi(y') E[y']. Keep the reference log-probs fixed at their starting values."
+  ]
+}

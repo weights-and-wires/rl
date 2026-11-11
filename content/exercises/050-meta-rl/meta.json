@@ -1,0 +1,14 @@
+{
+  "id": "050-meta-rl",
+  "title": "Meta-RL: RL^2 inputs, Bayes-optimal adaptation, and MAML",
+  "brief": "Build the inputs of a recurrent meta-policy, compute the exact value of Bayes-optimal adaptation on a bandit family, and differentiate through one adaptation step with MAML.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "A recurrent meta-policy sees the previous step, not the current one: row t of the trial holds actions[t - 1], rewards[t - 1], and dones[t - 1]. Row 0 has no previous step.",
+    "The posterior is prior times likelihood, then normalized. The likelihood of a win on arm a under task k is thetas[k, a], and of a loss is 1 - thetas[k, a]. Skipping the prior makes every task equally likely before the first pull.",
+    "bayes_optimal_value is a recursion on the posterior: for each arm, the expected reward m now, plus m times the value after a win and (1 - m) times the value after a loss, with H - 1 pulls left. Take the max over arms. Thompson sampling uses the same recursion but averages over arms with weights equal to the posterior mass of the tasks whose best arm that is.",
+    "The adapted parameters are theta + alpha * grad J(theta), so d(adapted)/d(theta) is I + alpha * Hessian J(theta). The chain rule gives (I + alpha * H) @ grad J(adapted) for each task. Dropping the first factor is first-order MAML."
+  ]
+}
