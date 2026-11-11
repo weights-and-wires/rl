@@ -233,6 +233,10 @@ async function main() {
     executablePath: findChrome(),
     headless: true,
     args: ["--no-sandbox", "--font-render-hinting=none"],
+    // Printing the whole course is one long protocol call. Puppeteer's
+    // default limit of 180 s is shorter than an 84-chapter book takes on a
+    // shared CI runner, so allow up to 15 minutes.
+    protocolTimeout: 900_000,
   });
 
   const started = Date.now();
