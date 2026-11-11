@@ -1,5 +1,5 @@
 {
-  "id": "078-diffusion-and-flow-policies",
+  "id": "079-diffusion-and-flow-policies",
   "title": "The denoising MDP, DDPO, and the Diffusion-DPO loss",
   "brief": "Treat each step of a tiny diffusion sampler as a Gaussian action, train it toward a reward with DDPO's clipped surrogate, and write the Diffusion-DPO loss for preference pairs.",
   "needs_gpu": false,

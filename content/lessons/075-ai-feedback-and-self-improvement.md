@@ -1,6 +1,6 @@
 ---
 title: AI feedback and self-improvement
-slug: 074-ai-feedback-and-self-improvement
+slug: 075-ai-feedback-and-self-improvement
 part: "Part 9 — RL for language models"
 summary: Train a model on its own filtered samples, see that this is reward-weighted regression, and see why it collapses, then play it against its past self with SPIN.
 minutes: 40
@@ -15,7 +15,7 @@ prereqs:
   - 069-direct-preference-optimization
   - 072-reasoning-with-verifiable-rewards
   - 073-process-rewards-and-search
-exercise: 074-ai-feedback-and-self-improvement
+exercise: 075-ai-feedback-and-self-improvement
 ---
 
 # AI feedback and self-improvement
@@ -144,7 +144,7 @@ Figure 1. Success rate and entropy over eight expectation-maximization steps. No
 
 Each round keeps only answers that already work, so probability piles onto a few solutions. People restart from the base model each round, as STaR and ReST-EM do, stop after two or three rounds, and sample at a higher temperature.
 
-For a loop where a stronger model, not a check, grades the student's own samples, see [On-policy distillation](/lessons/075-on-policy-distillation).
+For a loop where a stronger model, not a check, grades the student's own samples, see [On-policy distillation](/lessons/076-on-policy-distillation).
 
 ## SPIN: play against your past self
 

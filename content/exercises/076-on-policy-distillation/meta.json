@@ -1,5 +1,5 @@
 {
-  "id": "075-on-policy-distillation",
+  "id": "076-on-policy-distillation",
   "title": "Forward and reverse KL, and on-policy distillation of a toy language model",
   "brief": "Write the two token-level KLs with a padding mask, turn the reverse KL into a per-token reward, check that its policy-gradient surrogate follows the exact KL gradient, and distill a teacher into a student that samples its own tokens.",
   "needs_gpu": false,
