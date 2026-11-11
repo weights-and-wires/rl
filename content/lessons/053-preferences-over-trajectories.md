@@ -267,7 +267,7 @@ The checks test the functions in this order. The world, the segment sampler, and
 - [Ibarz, Leike, Pohlen, Irving, Legg, and Amodei (2018), Reward learning from human preferences and demonstrations in Atari](https://arxiv.org/abs/1811.06521). Adds expert demonstrations to the preferences and studies the noise and the reward hacking that appear.
 - [Lee, Smith, and Abbeel (2021), PEBBLE](https://arxiv.org/abs/2106.05091). An off-policy method that relabels experience when the reward model changes and pretrains with unsupervised exploration.
 - [Stanford CS224R, Deep Reinforcement Learning, Spring 2026, Lecture 8, Reward Learning](https://cs224r.stanford.edu/). The course's lecture on this topic, with Christiano and colleagues (2017) as its reading. Lecture 9 is "RL for LLMs: Preference Optimization."
-- [Lambert, Reward Modeling](https://rlhfbook.com/c/05-reward-models), in *Reinforcement Learning from Human Feedback*. The Bradley-Terry reward model for language models, the setting of [Reward models from preferences](/lessons/060-reward-models).
+- [Lambert, Reward Modeling](https://rlhfbook.com/c/05-reward-models), in *Reinforcement Learning from Human Feedback*. The Bradley-Terry reward model for language models, the setting of [Reward models from preferences](/lessons/061-reward-models).
 
 ## The exercise
 

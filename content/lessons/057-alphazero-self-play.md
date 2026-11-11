@@ -290,7 +290,7 @@ The game, the network, and the search are written for you. You write six functio
 
 **Self-play can chase its own tail.** A network that only plays its most recent self can forget how to beat old strategies, as in [rock-paper-scissors](/lessons/056-multi-agent-and-self-play). AlphaGo Zero kept the best network and promoted a challenger only after it won 55 percent of evaluation games. AlphaZero dropped that gate and kept one continuously updated network.
 
-**The rules must be known.** Search needs to play moves forward, so the game must come with a simulator. [MuZero](/lessons/044-world-models-and-muzero) learns that model too. For language models, the same idea of using search to improve a policy and then distilling the result appears in [process rewards and search](/lessons/067-process-rewards-and-search).
+**The rules must be known.** Search needs to play moves forward, so the game must come with a simulator. [MuZero](/lessons/044-world-models-and-muzero) learns that model too. For language models, the same idea of using search to improve a policy and then distilling the result appears in [process rewards and search](/lessons/068-process-rewards-and-search).
 
 ## Further reading
 
