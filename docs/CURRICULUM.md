@@ -1,6 +1,6 @@
 # Curriculum
 
-Seventy-eight chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy-nine chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -98,7 +98,7 @@ chapters that cover it, and the app carries your completed work across.
 | `047-sample-complexity-and-regret` | Sample complexity and regret | The simulation lemma checked on 200 random MDP pairs, UCB-VI with a Hoeffding bonus kept above Q*, regret against epsilon-greedy on RiverSwim, and the Robbins-Monro step-size sums |
 | `048-goal-conditioned-rl-and-her` | Goals and hindsight | Sparse goal rewards, the final, future, and episode relabeling strategies with exact checks, a goal-conditioned DQN that fails on 12-bit bit-flipping without relabeling and succeeds with it, and GCSL targets |
 | `049-options-and-hierarchical-rl` | Options and hierarchical RL | A four-rooms world with option models solved as linear systems and checked against Monte Carlo, SMDP value iteration that matches primitive values in 25 sweeps instead of 41, an SMDP Q-update that discounts by gamma^k, and an intra-option Q-update that changes every consistent option |
-| `050-meta-rl` | Meta rl | A draft chapter with a placeholder exercise. |
+| `050-meta-rl` | Meta-RL and multi-task RL | RL^2 inputs with trial-boundary resets, the exact task posterior on a bandit family, Bayes-optimal, Thompson, fixed, and oracle values by dynamic programming over beliefs, and the MAML gradient with its second-order term checked against finite differences |
 | `051-imitation-learning` | Imitation learning | Behavior cloning, the compounding-error gap measured on a tightrope, and DAgger closing it |
 | `052-inverse-rl-and-gail` | Inverse RL and GAIL | Soft value iteration, state visitation, MaxEnt IRL feature matching, and the GAIL discriminator and reward |
 | `053-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, IQL's expectile, and the TD3+BC actor loss |
