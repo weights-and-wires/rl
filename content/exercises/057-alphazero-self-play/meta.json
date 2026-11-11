@@ -1,0 +1,15 @@
+{
+  "id": "057-alphazero-self-play",
+  "title": "AlphaZero-style self-play on tic-tac-toe",
+  "brief": "Turn search visit counts into policy targets with a temperature, add root noise, write the policy-value loss, augment with board symmetries, and train a tiny network by self-play until it never loses to random play and holds minimax to a draw.",
+  "needs_gpu": false,
+  "timeout": 60,
+  "packages": ["numpy", "torch"],
+  "hints": [
+    "visit_count_policy: divide the counts by their maximum before raising to 1 / tau, so large counts at a small tau do not overflow. At tau = 0, mark the counts equal to the maximum and divide by how many there are.",
+    "add_root_noise draws one Dirichlet sample over only the legal moves, so it has legal.sum() entries. Put it in a zero vector at the legal positions, then mix with 1 - eps and eps.",
+    "az_loss takes batch means: ((z - v) ** 2).mean() plus -(pi * log_softmax(logits)).sum(dim=1).mean() plus c times the sum of squared parameters. The gradient of the middle term in the logits is (softmax - pi) / B.",
+    "dihedral_augment reshapes the board and pi to 3 by 3 and applies np.rot90 for k in 0 to 3, each with and without np.fliplr, to both.",
+    "self_play_game stores visit_count_policy(N, 1.0) as the target, samples the move from tau = 1 for the first tau_moves moves and from tau = 0 after, and labels positions backward from the end: the last mover gets +1 for a win, and the sign flips each ply."
+  ]
+}

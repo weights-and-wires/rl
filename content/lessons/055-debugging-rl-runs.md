@@ -225,7 +225,7 @@ The checks test the functions in this order.
 
 ## Where this breaks
 
-**Healthy numbers do not prove a healthy run.** A policy that exploits a flaw in the reward can look fine on every instrument. Watch the agent too, and read [Reward hacking and safe RL](/lessons/072-reward-hacking-and-safe-rl).
+**Healthy numbers do not prove a healthy run.** A policy that exploits a flaw in the reward can look fine on every instrument. Watch the agent too, and read [Reward hacking and safe RL](/lessons/073-reward-hacking-and-safe-rl).
 
 **Thresholds depend on the algorithm.** A KL of 0.05 is high for PPO with early stopping. Compute thresholds from healthy runs of the same code.
 

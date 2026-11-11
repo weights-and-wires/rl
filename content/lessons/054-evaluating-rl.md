@@ -285,7 +285,7 @@ The checks test the functions in this order.
 
 **Other summaries.** `rliable` also defines the optimality gap and the probability of improvement. Both are worth reporting next to the IQM.
 
-**Language-model evaluation.** Reasoning benchmarks move by several points with the seed, the sampling temperature, and the prompt format (Hochlehnert and colleagues, 2025). [Reasoning with verifiable rewards](/lessons/065-reasoning-with-verifiable-rewards) builds the unbiased pass@k estimator for this setting.
+**Language-model evaluation.** Reasoning benchmarks move by several points with the seed, the sampling temperature, and the prompt format (Hochlehnert and colleagues, 2025). [Reasoning with verifiable rewards](/lessons/066-reasoning-with-verifiable-rewards) builds the unbiased pass@k estimator for this setting.
 
 ## Further reading
 
