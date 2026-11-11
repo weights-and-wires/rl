@@ -433,6 +433,8 @@ The checks test the functions in this order. `P` has shape `(S, A, S)` and `R` h
 
 **The setting is simplified.** The exercise is tabular, with known rewards and a fixed horizon. The paper also learns the rewards, and the book's version lets the transitions change with the step.
 
+Exploration also gets cheaper when one decision lasts many steps, which is the subject of [Options and hierarchical RL](/lessons/049-options-and-hierarchical-rl).
+
 ## Further reading
 
 - [Agarwal, Jiang, Kakade, and Sun, Reinforcement Learning: Theory and Algorithms](https://rltheorybook.github.io/). Chapter 2, "Sample Complexity", states the simulation lemma and the minimax model-based rate, and chapter 6, "Strategic Exploration in Tabular MDPs", gives UCB-VI. Chapter numbers are from the December 2020 working draft.
