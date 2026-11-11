@@ -1,6 +1,6 @@
 # Curriculum
 
-Eighty-two chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Eighty-three chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -145,4 +145,5 @@ chapters that cover it, and the app carries your completed work across.
 |---|---|---|
 | `080-diffusion-and-flow-policies` | Diffusion and flow models as policies | Gaussian log-probabilities, the DDPM mean, a denoising rollout, DDPO, the Diffusion-DPO loss, and a toy DDPO training run |
 | `081-rl-for-vision-speech-and-robots` | RL for vision, speech, and robots | IoU and detection rewards, word error rate, minimum-WER training, residual action with a REINFORCE gradient, and action-to-token encoding and decoding for vision-language-action models |
-| `082-reward-hacking-and-safe-rl` | Reward hacking, safety, and the frontier | Best-of-n KL, the Goodhart curve with ensembles, and the Lagrangian dual value and primal-dual update |
+| `082-sim-to-real` | Sim to real | Log-uniform randomized physics, mass and friction recovered by least squares on the acceleration, a windowed estimate that tracks a mass change, and nominal, randomized, and adaptive controllers compared on held-out robots |
+| `083-reward-hacking-and-safe-rl` | Reward hacking, safety, and the frontier | Best-of-n KL, the Goodhart curve with ensembles, and the Lagrangian dual value and primal-dual update |

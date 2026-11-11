@@ -1,0 +1,17 @@
+{
+  "id": "082-sim-to-real",
+  "title": "Randomize, identify, and adapt a point mass",
+  "brief": "Draw randomized physics, recover mass and friction by least squares, track a mass change from recent history, and compare nominal, randomized, and adaptive controllers on held-out robots.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy"
+  ],
+  "hints": [
+    "randomized_params: draw from the rng you are given. np.exp(lo + (hi - lo) * rng.random((n, 2))) with lo and hi the logs of the ranges. A new default_rng(0) per call repeats one physics.",
+    "sysid_fit: accel = (S2[:, 1] - S[:, 1]) / DT, A = np.stack([U, S[:, 1]], 1), then lstsq gives (1/mass, -friction/mass).",
+    "history_estimate: slice S[-window:], U[-window:], S2[-window:], return the prior when fewer than 3 rows or the design matrix has rank below 2, else sysid_fit.",
+    "adaptive_action: m_hat * (-kx * x - kv * v) + b_hat * v, written with ellipsis indexing so it works on batches.",
+    "tune_gain: each CEM iteration samples np.abs(mu + sd * rng.standard_normal((pop, 2))), scores batch_cost(gains, params).mean(axis=1), and refits mu and sd to the lowest-cost elite."
+  ]
+}

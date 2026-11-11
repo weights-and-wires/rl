@@ -231,11 +231,11 @@ The checks test these in order.
 
 ## Where this breaks
 
-**Every metric is a proxy.** The box spray and the slow speech are the same failure: the policy finds what the metric rewards, not what you meant. [Reward hacking, safety, and the frontier](/lessons/082-reward-hacking-and-safe-rl) measures how fast it happens.
+**Every metric is a proxy.** The box spray and the slow speech are the same failure: the policy finds what the metric rewards, not what you meant. [Reward hacking, safety, and the frontier](/lessons/083-reward-hacking-and-safe-rl) measures how fast it happens.
 
 **Zero-variance groups.** If every sample in a group scores 0, every advantage is 0 and nothing learns.
 
-**Simulated practice does not transfer for free.** SimpleVLA-RL trains in simulators, and a policy tuned to one simulator's physics can fail on a real robot, a *reality gap*. Domain randomization narrows it by training across randomized masses and frictions, so reality looks like one more variation.
+**Simulated practice does not transfer for free.** SimpleVLA-RL trains in simulators, and a policy tuned to one simulator's physics can fail on a real robot, a *reality gap*. Domain randomization narrows it by training across randomized masses and frictions, so reality looks like one more variation. [Sim to real](/lessons/082-sim-to-real) works through randomization, system identification, and adaptation.
 
 **Learned rewards can be fooled.** VLM-RM (Rocamonde and colleagues, 2023) rewards closeness to a goal prompt in CLIP space, which a policy can exploit.
 
