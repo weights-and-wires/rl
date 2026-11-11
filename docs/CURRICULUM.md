@@ -137,7 +137,7 @@ chapters that cover it, and the app carries your completed work across.
 | `076-ai-feedback-and-self-improvement` | AI feedback and self-improvement | Filtered SFT loss, expert iteration as reward-weighted regression, an EM step, and the SPIN loss |
 | `077-on-policy-distillation` | On-policy distillation | Forward and reverse token KL with a padding mask, the sampled reverse-KL estimator, the per-token reward log pi_T - log pi_S, its score-function loss checked against the exact KL gradient, a bimodal-teacher fit, and on-policy distillation of a toy sequence model |
 | `078-agents-and-multi-turn-rl` | Agents and multi-turn RL | Loss masks over tool output, a masked policy-gradient loss, turn-level returns, and a toy tool-using agent |
-| `079-rl-infrastructure-for-llms` | Stale samples and importance weights | Truncated and masked importance weights, their bias and variance, sequence ratios, and stale-rollout drift |
+| `079-rl-infrastructure-for-llms` | Asynchronous RL for language models | A trainer and sampler queue with a maximum-staleness cap and exact utilization, the bf16 sampler-trainer log-probability gap corrected with truncated importance weights, packing rollouts with an unchanged loss, and colocated versus disaggregated layouts |
 
 ## Part 10 — Beyond text, and what can go wrong
 
