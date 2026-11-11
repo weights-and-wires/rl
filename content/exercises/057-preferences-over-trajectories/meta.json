@@ -1,0 +1,14 @@
+{
+  "id": "057-preferences-over-trajectories",
+  "title": "Learn a reward from segment preferences",
+  "brief": "Score trajectory segments with a learned reward, fit it with the Bradley-Terry loss on simulated preferences, check that the policy it induces matches the true one, and pick the next query by ensemble disagreement.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": ["numpy"],
+  "hints": [
+    "segment_return sums the rewards. A mean makes a long segment of small rewards look worse than a short one, and a shift of every reward then changes which segment wins.",
+    "With z = (X[segs_a].sum(axis=1) - X[segs_b].sum(axis=1)) @ w, the loss for one pair is log(1 + exp(z)) - label * z, and its gradient is (sigmoid(z) - label) * (the feature-sum difference). Use np.logaddexp for the loss.",
+    "label 1 means A was preferred. If your fitted reward points the wrong way, check the sign of the label term first.",
+    "disagreement_query: probs = sigmoid(ws @ d.T) has shape (K, N), where d is the feature-sum difference per pair. Take the variance over axis 0 and argmax over the pairs."
+  ]
+}

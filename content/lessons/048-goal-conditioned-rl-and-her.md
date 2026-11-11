@@ -29,7 +29,7 @@ This chapter fixes both problems with one idea. Give the policy the goal as an i
 - A Q-function $Q(s, a)$ estimates the return of taking $a$ in $s$ and acting well afterward, and DQN fits it from a replay buffer with a target network (see [Deep Q-networks](/lessons/026-deep-q-networks)).
 - Q-learning is off-policy: its update is valid for any transition $(s, a, r, s')$, whatever policy collected it.
 - A policy gradient needs actions sampled from the policy being improved (see [The policy gradient](/lessons/031-the-policy-gradient)).
-- A sparse reward gives almost no signal until the agent stumbles on the goal by luck (see [Exploration beyond epsilon](/lessons/046-exploration-bonuses)). [Reward design and shaping](/lessons/055-reward-design-and-shaping) fixes this by redesigning the reward, and this chapter fixes it by relabeling the data.
+- A sparse reward gives almost no signal until the agent stumbles on the goal by luck (see [Exploration beyond epsilon](/lessons/046-exploration-bonuses)). [Reward design and shaping](/lessons/056-reward-design-and-shaping) fixes this by redesigning the reward, and this chapter fixes it by relabeling the data.
 
 ## A goal as part of the state
 
@@ -192,7 +192,7 @@ The value function does the heavy lifting in HER, and it is the part that is har
 2. For each step $t$, pick a later state $s_j$ with $j > t$ and treat $(s_t, s_j)$ as an input and $a_t$ as the label. The episode really did get from $s_t$ to $s_j$ by taking $a_t$ first.
 3. Maximize $\log \pi(a_t \mid s_t, s_j)$ on those labels, and repeat.
 
-This is behavior cloning on the agent's own relabeled successes (see [Imitation learning](/lessons/049-imitation-learning)). There is no reward and no bootstrapping. Ghosh and others show that the procedure optimizes a bound on the reinforcement learning objective. The cost is that the label is *an* action that led there, not the best one, so GCSL improves only as fast as the data does, and a noisy environment makes the labels noisier.
+This is behavior cloning on the agent's own relabeled successes (see [Imitation learning](/lessons/050-imitation-learning)). There is no reward and no bootstrapping. Ghosh and others show that the procedure optimizes a bound on the reinforcement learning objective. The cost is that the label is *an* action that led there, not the best one, so GCSL improves only as fast as the data does, and a noisy environment makes the labels noisier.
 
 > [!RECAP]
 > - The goal-conditioned reward is `goal_reward(achieved, goal)`: 0 where all bits match, -1 elsewhere.
