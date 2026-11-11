@@ -1,0 +1,16 @@
+{
+  "id": "077-on-policy-distillation",
+  "title": "Forward and reverse KL, and on-policy distillation of a toy language model",
+  "brief": "Write the two token-level KLs with a padding mask, turn the reverse KL into a per-token reward, check that its policy-gradient surrogate follows the exact KL gradient, and distill a teacher into a student that samples its own tokens.",
+  "needs_gpu": false,
+  "timeout": 30,
+  "packages": [
+    "numpy",
+    "torch"
+  ],
+  "hints": [
+    "token_kl_losses: forward is sum_v pT * (log pT - log pS), reverse is sum_v pS * (log pS - log pT). Sum over the vocabulary first, then divide the masked sum by mask.sum(), not by B * T.",
+    "distill_reward is log pi_T(token) - log pi_S(token). on_policy_distill_loss is -(mask * reward.detach() * logp_student(token)).sum() / mask.sum(). Forgetting detach() adds a second gradient term and breaks the expected-gradient check.",
+    "fit_unimodal_student: build logits -(grid - mu)**2 / (2 * sigma**2), call token_kl_losses with shapes (1, 1, V) and a mask of ones, and keep the pair with the lowest forward or reverse value."
+  ]
+}

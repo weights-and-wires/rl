@@ -1,7 +1,7 @@
 # Reinforcement learning
 
 A hands-on course that teaches reinforcement learning by having you build it.
-Eighty-one short chapters, each teaching one idea, run from a two-armed bandit to the methods that post-train
+Eighty-two short chapters, each teaching one idea, run from a two-armed bandit to the methods that post-train
 language, image, speech, and robot models. Each one explains an idea in plain
 words, works a small example by hand, and then walks you through implementing
 it, in an editor beside the text, against checks that verify the mathematics
@@ -27,7 +27,7 @@ The repository is laid out as follows:
 
 | Path | Contents |
 |---|---|
-| `content/lessons/` | Eighty-one chapters, in Markdown with YAML front matter. |
+| `content/lessons/` | Eighty-two chapters, in Markdown with YAML front matter. |
 | `content/exercises/` | One directory per exercise: a starter file, checks, and a worked solution. |
 | `backend/` | FastAPI: auth, content, progress, drafts, and the run stream. |
 | `backend/app/runner/` | The harness, the `rlcheck` assertion library the checks use, the `rlenvs` environments every exercise shares, and the execution backends. |
@@ -70,13 +70,14 @@ reinforcement learning, meta-reinforcement learning, imitation learning, inverse
 learning, advantage-weighted policy improvement, off-policy evaluation from
 logs, and the decision transformer.
 
-**Part 8 — Rewards, evaluation, and many agents (057–063).** Reward design and
+**Part 8 — Rewards, evaluation, and many agents (057–064).** Reward design and
 shaping, learning a reward from preferences over trajectories, evaluating agents
 honestly, debugging and diagnosing runs, multi-agent learning
-and self-play, AlphaZero-style training from self-play, and counterfactual
-regret minimization on Kuhn poker.
+and self-play, AlphaZero-style training from self-play, counterfactual regret
+minimization on Kuhn poker, and cooperative multi-agent learning with VDN and
+QMIX.
 
-**Part 9 — RL for language models (064–078).** Supervised fine-tuning and the
+**Part 9 — RL for language models (065–079).** Supervised fine-tuning and the
 post-training pipeline, language models as policies, reward models, reward-model
 and judge evaluation, RLHF with PPO, DPO, GRPO and its successors, verifiable
 rewards, reasoning with verifiable rewards, process rewards and test-time
@@ -84,7 +85,7 @@ search, credit assignment for language models, AI feedback and self-improvement,
 distillation, multi-turn agents, and stale
 samples and importance weights.
 
-**Part 10 — Beyond text, and what can go wrong (079–081).** Diffusion and flow
+**Part 10 — Beyond text, and what can go wrong (080–082).** Diffusion and flow
 models as policies, vision, speech, and robot learning, and reward hacking,
 safe reinforcement learning, and the frontier.
 
@@ -181,8 +182,8 @@ Sign out using the shared Authelia portal.
 
 ## The GPU backend
 
-Three lessons—`068-rlhf-with-ppo`, `070-group-relative-policy-optimization`,
-and `072-reasoning-with-verifiable-rewards`—are marked `gpu: true`. Their checks
+Three lessons—`069-rlhf-with-ppo`, `071-group-relative-policy-optimization`,
+and `073-reasoning-with-verifiable-rewards`—are marked `gpu: true`. Their checks
 run on toy policies like every other exercise, and the GPU is there for the
 **Run** block, which post-trains `Qwen/Qwen3-0.6B` with the reader's own loss
 functions.
