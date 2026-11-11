@@ -1,11 +1,16 @@
 {
   "id": "048-goal-conditioned-rl-and-her",
-  "title": "Goal conditioned rl and her",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Hindsight relabeling on bit-flipping",
+  "brief": "Write the sparse goal reward and the hindsight relabeling strategies, then train a goal-conditioned DQN on 12-bit bit-flipping with and without relabeling and watch only the relabeled agent learn. Finish with the targets for goal-conditioned supervised learning.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": ["numpy", "torch"],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "goal_reward compares along the last axis: np.all(achieved == goal, axis=-1) is True where every bit matches. Turn that into 0.0 and -1.0 with np.where.",
+    "In relabel, the goal that step t achieved is states[t + 1], not states[t]. For \"future\", draw j with rng.integers(t + 1, T + 1, size=k). The upper bound is exclusive.",
+    "After you change the goal, recompute the reward with goal_reward(s2, g) and set done to r == 0. Copying the original reward leaves a relabeled success marked as a failure.",
+    "In dqn_loss, compute the target inside torch.no_grad(), and multiply the bootstrap term by (1 - done) so a transition that reached its goal has target r.",
+    "In train_gcdqn, call relabel with the same strategy every episode and extend one list. Strategy \"none\" gives you plain goal-conditioned DQN.",
+    "gcsl_targets is relabel's \"future\" rule with k = 1, returned as arrays: for each t, one goal states[j] with j in t + 1 .. T."
   ]
 }

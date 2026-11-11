@@ -1,6 +1,6 @@
 # Curriculum
 
-Seventy-six chapters, in ten parts. Each chapter teaches one idea. Each row is one
+Seventy-seven chapters, in ten parts. Each chapter teaches one idea. Each row is one
 Markdown file under `content/lessons/` and one directory under
 `content/exercises/`. Every check runs on the CPU in the app container. Three
 chapters, marked **GPU** in the following tables, also post-train a real small
@@ -96,7 +96,7 @@ chapters that cover it, and the app carries your completed work across.
 | `045-partial-observability-and-memory` | Partial observability and memory | Tiger-problem belief updates, the exact best memoryless value on a T-maze, hidden-state resets with a masked sequence loss, and a GRU policy trained by policy gradient |
 | `046-exploration-bonuses` | Exploration beyond epsilon | Count bonuses, an empirical model, posterior sampling, and random network distillation on RiverSwim |
 | `047-sample-complexity-and-regret` | Sample complexity and regret | The simulation lemma checked on 200 random MDP pairs, UCB-VI with a Hoeffding bonus kept above Q*, regret against epsilon-greedy on RiverSwim, and the Robbins-Monro step-size sums |
-| `048-goal-conditioned-rl-and-her` | Goal conditioned rl and her | A draft chapter with a placeholder exercise. |
+| `048-goal-conditioned-rl-and-her` | Goals and hindsight | Sparse goal rewards, the final, future, and episode relabeling strategies with exact checks, a goal-conditioned DQN that fails on 12-bit bit-flipping without relabeling and succeeds with it, and GCSL targets |
 | `049-imitation-learning` | Imitation learning | Behavior cloning, the compounding-error gap measured on a tightrope, and DAgger closing it |
 | `050-inverse-rl-and-gail` | Inverse RL and GAIL | Soft value iteration, state visitation, MaxEnt IRL feature matching, and the GAIL discriminator and reward |
 | `051-offline-rl` | Offline reinforcement learning | Offline Q-iteration, the CQL penalty, IQL's expectile, and the TD3+BC actor loss |
