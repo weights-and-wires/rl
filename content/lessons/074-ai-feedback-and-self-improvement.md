@@ -144,6 +144,8 @@ Figure 1. Success rate and entropy over eight expectation-maximization steps. No
 
 Each round keeps only answers that already work, so probability piles onto a few solutions. People restart from the base model each round, as STaR and ReST-EM do, stop after two or three rounds, and sample at a higher temperature.
 
+For a loop where a stronger model, not a check, grades the student's own samples, see [On-policy distillation](/lessons/075-on-policy-distillation).
+
 ## SPIN: play against your past self
 
 Expert iteration needs a check. Self-play fine-tuning (SPIN, Chen and colleagues, 2024) needs only a supervised dataset of human answers. At iteration $t$, the model $p_{\theta_t}$ generates its own answer $y'$ to each prompt. The next model is trained to tell the human answer $y$ from $y'$, using its log-probability ratio against $p_{\theta_t}$ as the score. The paper writes the loss as

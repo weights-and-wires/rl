@@ -1,5 +1,5 @@
 {
-  "id": "078-rl-for-vision-speech-and-robots",
+  "id": "079-rl-for-vision-speech-and-robots",
   "title": "IoU rewards, MWER as REINFORCE, and a residual policy",
   "brief": "Score boxes with IoU and stop a box-spraying hack, show that the minimum word error rate gradient is REINFORCE over an N-best list, and estimate a residual policy's gradient.",
   "needs_gpu": false,
