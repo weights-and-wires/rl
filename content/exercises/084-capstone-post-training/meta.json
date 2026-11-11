@@ -1,11 +1,21 @@
 {
   "id": "084-capstone-post-training",
-  "title": "Capstone post training",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
-  "needs_gpu": false,
-  "timeout": 30,
-  "packages": [],
+  "title": "LoRA, a two-stage post-training pipeline, and a written evaluation",
+  "brief": "Write a LoRA layer and its initialization, count its parameters, check its gradients, and train only the adapter. Then run SFT followed by DPO on a toy language model, and compute the evaluation numbers: KL, pass@k, and a win rate with swap consistency. On the GPU worker, the same functions post-train Qwen3-0.6B.",
+  "needs_gpu": true,
+  "timeout": 900,
+  "packages": [
+    "numpy",
+    "torch",
+    "transformers"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "lora_linear is x @ W.T plus the scaled adapter path. Compute the adapter path as (x @ A.T) @ B.T, and multiply it by alpha / r. Forgetting the scale passes the check at alpha = r and fails it at alpha = 8, r = 2.",
+    "init_lora returns B as exact zeros, so the adapted layer starts equal to the base layer. If B were random and A zero, or both random, the start would differ from the base or the adapter would not train.",
+    "A rank-r adapter on a layer with shape (out, in) has r * in + out * r parameters. Sum that over the layers.",
+    "In lora_grads, detach W, make copies of A and B with requires_grad_(True), and call torch.autograd.grad(loss, [A, B]). At B = 0 the gradient dA is exactly zero, because A only reaches the output through B.",
+    "In train_adapter, take the gradient with respect to the two copies only, and update them inside torch.no_grad(). Rebuild the logit table from the copies on every step.",
+    "pass_at_k is 1 - C(n - c, k) / C(n, k). Estimating it as 1 - (1 - c / n) ** k is biased: for n = 5, c = 2, k = 2 it gives 0.64, and the right value is 0.7.",
+    "In judge_win_rate, a verdict of -1 for the pair with B shown first is a win for A. Average the two orders, and count a tie as half."
   ]
 }
