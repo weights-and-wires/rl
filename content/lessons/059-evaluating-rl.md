@@ -262,6 +262,29 @@ A second check needs no arithmetic. If every run agrees within each task, every 
 > - A performance profile is the fraction of runs strictly above each $\tau$.
 > - The stratified bootstrap redraws runs within each task, and the percentile interval reads the replicates' tails.
 > - Three runs cannot separate two algorithms, and an interval from few runs is still too narrow.
+- Compare fairly: equal tuning budget and size, fresh seeds for the final run, and one ablation per component with its own interval.
+
+## Compare fairly and ablate
+
+A tight interval does not make a comparison fair. Henderson and colleagues (2018) showed that hyperparameters, codebases, and seeds can change a result as much as the algorithm does. Three habits remove most of that.
+
+**Give the baseline the same budget.** If you tune your method over 50 configurations and the baseline over 3, the gap measures effort. Give both the same number of tuning runs, the same search ranges, and the same parameter count. A method with twice the network width has an advantage that has nothing to do with its idea.
+
+**Rerun on fresh seeds.** You chose settings by looking at some seeds, so those seeds favor you. Freeze the settings, then run the final experiment on seeds you have never used, and report what comes out, even when it is worse. Run the baseline on the same fresh seeds.
+
+**Ablate one component at a time.** If your method adds a target network and reward scaling, train a version without each one, changing only that. A component earns its place only when its removal costs score by more than noise.
+
+The bootstrap that you built gives that noise. A component's *contribution* is the full method's mean score minus the ablation's. The full runs and the ablation runs are different runs, so each replicate redraws the two groups independently, and the percentile interval comes from the differences.
+
+Take six seeds of the full method, and six of each ablation:
+
+| | Mean score | Contribution | 95% interval |
+|---|---|---|---|
+| Full method | 0.855 | | |
+| No target network | 0.748 | 0.107 | [0.040, 0.173] |
+| No reward scaling | 0.847 | 0.008 | [-0.053, 0.072] |
+
+The target network's interval stays above zero, so it helps. The reward scaling's interval contains zero, so six seeds cannot tell whether it does anything. Do not claim it as part of your method. With few seeds, treat even a positive interval as evidence and not as proof.
 
 ## Build it step by step
 
@@ -272,12 +295,13 @@ The checks test the functions in this order.
 3. **`stratified_resample(scores, rng)`.** One call to `rng.integers`, then fancy indexing with a column index. The common mistake is `rng.choice(scores.ravel())`, which mixes tasks. The check confirms that each column holds only its own task's scores.
 4. **`bootstrap_replicates(scores, statistic, n_boot, seed)`.** Make one generator and reuse it for every resample. The common mistake is reseeding inside the loop, which makes every replicate identical.
 5. **`percentile_ci(replicates, confidence)`.** Convert the confidence to two percentiles between 0 and 100, and call `np.percentile`.
+6. **`ablation_contributions(full, ablations, n_boot, alpha, seed)`.** Return `{name: (estimate, low, high)}`, where `estimate` is `mean(full) - mean(ablation)`. For each component, draw separate index arrays for `full` and for that ablation. The common mistake is one shared index array, which treats seed $i$ of each group as the same run, or resampling only `full`. Both give intervals that are too narrow.
 
 ## Where this breaks
 
 **Few runs.** With three runs per task, no statistic rescues you. Report the interval anyway, and say plainly that it is wide and probably too narrow.
 
-**Tuning on the evaluation seeds.** If you pick hyperparameters, checkpoints, or the best run by the numbers you report, those numbers are biased upward. Tune on separate seeds.
+**Tuning on the evaluation seeds.** If you pick hyperparameters, checkpoints, or the best run by the numbers you report, those numbers are biased upward. Tune on separate seeds, as the previous section describes.
 
 **Different protocols.** Scores measured after different numbers of steps or with different episode limits are not comparable, whatever the statistics say.
 
@@ -301,6 +325,8 @@ Open questions a researcher might work on:
 
 ## The exercise
 
-You build a small `rliable`. Write `iqm` and `performance_profile` for the point estimates, then `stratified_resample`, `bootstrap_replicates`, and `percentile_ci` for the intervals.
+You build a small `rliable`. Write `iqm` and `performance_profile` for the point estimates, then `stratified_resample`, `bootstrap_replicates`, and `percentile_ci` for the intervals. Then write `ablation_contributions(full, ablations, n_boot, alpha, seed)`, which takes the full method's per-seed scores and a dict that maps each component's name to its ablation's per-seed scores.
 
 The checks confirm the worked example's IQM of 0.65, with and without a huge outlier, and the profile at hand-picked thresholds. The resampler must keep each task's runs in its own column. The bootstrap's variance must match the exact value 0.2225, its interval must collapse when runs agree within tasks, and a 95% interval must cover the true mean in at least 166 of 200 simulated experiments.
+
+`ablation_contributions` must return, for each component, a tuple of the estimate and the interval's low and high ends. The estimate must equal the difference of means. The interval must match a large reference bootstrap, contain the estimate, and widen with noisier scores. A check feeds it groups where pairing indices gives a zero-width interval, and another where bootstrapping only the full method gives one that is too narrow.

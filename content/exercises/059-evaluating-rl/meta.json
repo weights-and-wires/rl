@@ -1,7 +1,7 @@
 {
   "id": "059-evaluating-rl",
-  "title": "A small rliable: IQM, performance profiles, and bootstrap intervals",
-  "brief": "Build a robust aggregate, a performance profile, and a stratified bootstrap interval, and see why three seeds and a mean cannot tell two algorithms apart.",
+  "title": "A small rliable: IQM, performance profiles, bootstrap intervals, and ablations",
+  "brief": "Build a robust aggregate, a performance profile, and a stratified bootstrap interval, then use the bootstrap to put an interval on each component's contribution in an ablation.",
   "needs_gpu": false,
   "timeout": 30,
   "packages": [
@@ -11,6 +11,7 @@
     "iqm pools everything first: np.sort(scores.ravel()), then cut = int(0.25 * n), then the mean of x[cut : n - cut].",
     "performance_profile compares every score with every tau at once: (x[None, :] > taus[:, None]).mean(axis=1). The inequality is strict.",
     "stratified_resample indexes with two arrays: scores[idx, np.arange(n_tasks)[None, :]], where idx has shape (n_runs, n_tasks). Each column then only reads its own task.",
-    "percentile_ci with confidence 0.95 asks np.percentile for 2.5 and 97.5, not 0.025 and 0.975."
+    "percentile_ci with confidence 0.95 asks np.percentile for 2.5 and 97.5, not 0.025 and 0.975.",
+    "ablation_contributions returns {name: (estimate, low, high)}. For each name, draw full[rng.integers(0, full.size, (n_boot, full.size))].mean(axis=1), do the same for the ablation with its own indices, subtract, and pass the differences to percentile_ci(confidence=1 - alpha)."
   ]
 }

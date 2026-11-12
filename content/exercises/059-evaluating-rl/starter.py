@@ -70,6 +70,27 @@ def percentile_ci(replicates: np.ndarray, confidence: float = 0.95) -> tuple[flo
     raise NotImplementedError("percentile_ci")
 
 
+def ablation_contributions(full, ablations, n_boot: int = 2000, alpha: float = 0.05, seed: int = 0) -> dict:
+    """How much each component adds, with a bootstrap interval.
+
+    Args:
+        full: per-seed scores of the full method, shape (n_full,).
+        ablations: maps a component name to the per-seed scores of the method
+            without that component, shape (n_ablated,). The sizes can differ.
+        n_boot: bootstrap replicates per component.
+        alpha: the interval has confidence 1 - alpha.
+        seed: make one generator, np.random.default_rng(seed), and reuse it.
+
+    Returns:
+        A dict with the same keys as `ablations`. Each value is the tuple
+        (estimate, low, high), where estimate = mean(full) - mean(ablation)
+        and (low, high) is the percentile interval of the replicates.
+        In each replicate, redraw `full` and the ablation's scores separately,
+        with their own random indices: they are different runs.
+    """
+    raise NotImplementedError("ablation_contributions")
+
+
 if __name__ == "__main__":
     rng = np.random.default_rng(0)
     n_runs, n_tasks = 5, 8
