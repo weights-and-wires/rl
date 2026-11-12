@@ -29,6 +29,16 @@ def _lesson(slug: str, draft: bool) -> str:
         f"# {slug}\n"
         "\n"
         "Body.\n"
+        "\n"
+        "## First *section*\n"
+        "\n"
+        "```python\n"
+        "## not a heading\n"
+        "```\n"
+        "\n"
+        "### A `code` subsection with $x$\n"
+        "\n"
+        "## Second section\n"
     )
 
 
@@ -100,6 +110,18 @@ class DraftVisibilityTests(unittest.TestCase):
         exercises = self.curriculum.load_exercises()
         self.assertIn("001-alpha", exercises)
         self.assertNotIn("002-draft", exercises)
+
+    def test_lessons_list_plain_text_headings(self) -> None:
+        listed = {lesson["slug"]: lesson for lesson in self.curriculum.lesson_list()}
+        self.assertEqual(
+            listed["001-alpha"]["headings"],
+            [
+                {"text": "First section", "level": 2},
+                {"text": "A code subsection with x", "level": 3},
+                {"text": "Second section", "level": 2},
+            ],
+        )
+        self.assertNotIn("body", listed["001-alpha"])
 
 
 if __name__ == "__main__":
