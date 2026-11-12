@@ -93,6 +93,23 @@ def overfit_one_batch(net, x, y, steps: int = 300, lr: float = 1e-2):
     raise NotImplementedError("overfit_one_batch")
 
 
+def critic_td_loss(v, rewards, next_v, dones, gamma):
+    """Mean squared TD error of a critic: mean((v - (r + gamma * (1 - done) * next_v)) ** 2).
+
+    Args:
+        v: critic values, shape (N,) or (N, 1).
+        rewards, dones: shape (N,). dones is 1 where the episode ended.
+        next_v: critic values of the next states, shape (N,) or (N, 1).
+        gamma: the discount.
+
+    A value array of shape (N, 1) is reshaped to (N,). Any other shape that does
+    not match (N,) raises ValueError. Without this, (N, 1) - (N,) broadcasts to an
+    (N, N) grid and the loss silently trains the critic toward the mean target.
+    The target is data, so no gradient flows through next_v.
+    """
+    raise NotImplementedError("critic_td_loss")
+
+
 def diagnose(log: dict) -> str:
     """Name the most urgent problem in a training log, or "healthy".
 

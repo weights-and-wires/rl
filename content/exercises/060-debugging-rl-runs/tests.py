@@ -18,20 +18,16 @@ def almost(got, want, tol, label=None):
 Y = np.array([0.0, 2.0, 4.0, 6.0])
 
 
-@check("explained_variance reproduces the worked example: perfect 1, constant 0, [1, 2, 3, 4] 0.75")
+# Named wrong implementation: 1 - Var(y_pred) / Var(y). It scores a perfect
+# prediction 0 and a constant prediction 1, which is backwards.
+@check("explained_variance gives 1, 0, 0.75, and -3 on the worked table, nan for constant targets; correlation ignores scale")
 def test_explained_variance(sub):
     explained_variance = has(sub, "explained_variance")
+    corr = has(sub, "value_target_correlation")
     almost(explained_variance(Y.copy(), Y), 1.0, tol=1e-12, label="a perfect prediction")
     almost(explained_variance(np.full(4, 3.0), Y), 0.0, tol=1e-12, label="the constant 3 (the mean of y)")
     almost(explained_variance(np.array([1.0, 2.0, 3.0, 4.0]), Y), 0.75, tol=1e-12,
            label="y_pred = [1, 2, 3, 4] (residual variance 1.25 over target variance 5)")
-
-
-# Named wrong implementation: 1 - Var(y_pred) / Var(y). It scores a perfect
-# prediction 0 and a constant prediction 1, which is backwards.
-@check("explained_variance scores a constant prediction 0 and a perfect one 1, not the reverse")
-def test_explained_variance_constant(sub):
-    explained_variance = has(sub, "explained_variance")
     rng = np.random.default_rng(0)
     y = rng.normal(2.0, 3.0, size=50)
     for c in (0.0, 2.0, -7.0, 100.0):
@@ -39,27 +35,17 @@ def test_explained_variance_constant(sub):
                label=f"the constant prediction {c} (a constant never explains variance)")
     almost(explained_variance(y.copy(), y), 1.0, tol=1e-12, label="a perfect prediction of random targets")
     almost(explained_variance(y + 5.0, y), 1.0, tol=1e-12, label="a perfect prediction shifted by a constant")
-
-
-@check("explained_variance is negative for anti-correlated or over-scaled predictions, and nan for constant targets")
-def test_explained_variance_negative(sub):
-    explained_variance = has(sub, "explained_variance")
     almost(explained_variance(-Y, Y), -3.0, tol=1e-12, label="y_pred = -y (residual 2y has 4x the variance)")
     almost(explained_variance(3 * Y, Y), -3.0, tol=1e-12, label="y_pred = 3y (residual -2y has 4x the variance)")
     # The arguments are not symmetric: swapping them gives a different number.
     y_pred = np.array([1.0, 2.0, 3.0, 4.0])
-    y = np.array([1.0, 2.0, 3.0, 8.0])
-    want = 1.0 - np.var(y - y_pred) / np.var(y)
-    got = explained_variance(y_pred, y)
-    almost(got, want, tol=1e-12, label="explained_variance(y_pred, y) with y_pred first (not swapped)")
+    y2 = np.array([1.0, 2.0, 3.0, 8.0])
+    want = 1.0 - np.var(y2 - y_pred) / np.var(y2)
+    almost(explained_variance(y_pred, y2), want, tol=1e-12, label="explained_variance(y_pred, y) with y_pred first (not swapped)")
     out = explained_variance(np.array([1.0, 2.0, 3.0]), np.full(3, 4.0))
     if not np.isnan(out):
         fail(f"constant targets have zero variance, so the result is undefined: expected nan, got {out}")
-
-
-@check("value_target_correlation is 1 for 3y, which explained_variance scores -3, and nan for a constant")
-def test_correlation(sub):
-    corr = has(sub, "value_target_correlation")
+    # Correlation ignores scale: 3y + 1 correlates perfectly with y, which explained_variance scores -3.
     almost(corr(3 * Y + 1.0, Y), 1.0, tol=1e-12, label="correlation of 3y + 1 with y")
     almost(corr(-Y, Y), -1.0, tol=1e-12, label="correlation of -y with y")
     rng = np.random.default_rng(1)
@@ -160,6 +146,63 @@ def test_overfit(sub):
     if not last > 0.8 * floor:
         fail(f"a dead network cannot beat the variance of y: expected final loss near {floor:.4f} or above, "
              f"got {last:.4f}")
+
+
+def _td_batch(seed=0, n=8):
+    rng = np.random.default_rng(seed)
+    v = rng.normal(0.0, 2.0, size=n)
+    next_v = rng.normal(0.0, 2.0, size=n)
+    rewards = rng.normal(1.0, 1.0, size=n)
+    dones = (rng.random(n) < 0.25).astype(float)
+    return v, rewards, next_v, dones
+
+
+# Named wrong implementation: the broadcast loss. With v of shape (N, 1) and a
+# target of shape (N,), ((v - target) ** 2).mean() averages an (N, N) grid, so
+# every state is pulled toward the mean target instead of its own target.
+def _broadcast_loss(v, rewards, next_v, dones, gamma):
+    target = rewards + gamma * (1.0 - dones) * next_v
+    return float(((v.reshape(-1, 1) - target) ** 2).mean())
+
+
+_V = np.array([1.0, 2.0, 3.0])
+_R = np.array([2.0, 1.0, 5.0])
+_NV = np.array([9.0, 2.0, 1.0])
+_D = np.array([1.0, 0.0, 0.0])
+
+
+@check("critic_td_loss gives 7.25/3 on a hand-computed batch (targets [2, 2, 5.5])")
+def test_critic_td_loss_value(sub):
+    critic_td_loss = has(sub, "critic_td_loss")
+    # The targets are r + 0.5 * (1 - done) * next_v = [2, 2, 5.5], so the errors are [-1, 0, -2.5].
+    almost(critic_td_loss(_V, _R, _NV, _D, 0.5), 7.25 / 3.0, tol=1e-12,
+           label="mean squared TD error for v=[1, 2, 3], r=[2, 1, 5], next_v=[9, 2, 1], done=[1, 0, 0], gamma=0.5")
+
+
+@check("critic_td_loss reshapes an (N, 1) critic output and raises ValueError for any other shape mismatch")
+def test_critic_td_loss_shapes(sub):
+    critic_td_loss = has(sub, "critic_td_loss")
+    almost(critic_td_loss(_V.reshape(3, 1), _R, _NV.reshape(3, 1), _D, 0.5), 7.25 / 3.0, tol=1e-12,
+           label="the same batch with v and next_v of shape (3, 1)")
+    for bad in (np.ones((3, 2)), np.ones(4), np.ones((1, 3))):
+        try:
+            critic_td_loss(bad, _R, _NV, _D, 0.5)
+        except ValueError:
+            continue
+        fail(f"a value array of shape {bad.shape} cannot match 3 targets: expected ValueError, got a number")
+
+
+@check("critic_td_loss matches the correct loss on a seeded batch, where the broadcast loss is clearly different")
+def test_critic_td_loss_not_broadcast(sub):
+    critic_td_loss = has(sub, "critic_td_loss")
+    v, r, nv, d = _td_batch(0)
+    target = r + 0.9 * (1.0 - d) * nv
+    correct = float(np.mean((v - target) ** 2))
+    wrong = _broadcast_loss(v, r, nv, d, 0.9)
+    if not abs(wrong - correct) > 0.5:
+        fail(f"test setup: the broadcast loss {wrong:.4f} should differ clearly from the correct loss {correct:.4f}")
+    got = critic_td_loss(v.reshape(-1, 1), r, nv, d, 0.9)
+    almost(got, correct, tol=1e-12, label=f"seeded batch with (N, 1) input (the broadcast loss would give {wrong:.4f})")
 
 
 def make_log(kind, seed=0, T=100):
