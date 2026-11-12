@@ -248,6 +248,7 @@ The following sources define the methods in this chapter:
 - [Singh et al., "Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models" (2023)](https://arxiv.org/abs/2312.06585): ReST-EM and the expectation-maximization view.
 - [Yuan et al., "Self-Rewarding Language Models" (2024)](https://arxiv.org/abs/2401.10020): the model as its own judge, trained with DPO.
 - [Chen et al., "Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models" (2024)](https://arxiv.org/abs/2401.01335): SPIN and its fixed point.
+- [Zhao et al., "Absolute Zero: Reinforced Self-play Reasoning with Zero Data" (2025)](https://arxiv.org/abs/2505.03335): one model proposes its own tasks and solves them, with a learnability reward for the proposer. The [paper page](https://papers.ifkash.dev/absolute-zero/) builds the rewards in NumPy.
 
 Open questions that researchers are working on:
 
