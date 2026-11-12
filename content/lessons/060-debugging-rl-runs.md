@@ -248,7 +248,7 @@ The checks run in this order.
 - [Schulman (2017), Nuts and Bolts of Deep RL Experimentation](https://youtu.be/8EcdaCk9KaQ). Core Lecture 6 of the Deep RL Bootcamp, held in Berkeley in August 2017, on what to log and how to debug a policy-gradient run.
 - [OpenAI, Spinning Up as a Deep RL Researcher](https://spinningup.openai.com/en/latest/spinningup/spinningup.html). Assume a bug before tuning, start on toy tasks, and log returns, values, losses, and policy entropy.
 - [Jones (2021), Debugging RL, Without the Agonizing Pain](https://andyljones.com/posts/rl-debugging.html). The source of relative policy entropy, KL, and residual variance as instruments.
-- [Henderson, Islam, Bachman, Pineau, Precup, and Meger (2018), Deep Reinforcement Learning that Matters](https://arxiv.org/abs/1709.06560). Shows how seeds, hyperparameters, and implementations change results.
+- [Henderson, Islam, Bachman, Pineau, Precup, and Meger (2018), Deep Reinforcement Learning that Matters](https://arxiv.org/abs/1709.06560). Shows how seeds, hyperparameters, and implementations change results. [Paper page](https://papers.ifkash.dev/henderson/).
 - [UC Berkeley CS285, Deep Reinforcement Learning](https://rail.eecs.berkeley.edu/deeprlcourse/) has Lecture 5, "Policy Gradients", Lecture 6, "Actor Critic", and the homeworks "HW2: Policy Gradients" and "HW3: Q-Learning and Actor Critic", where you debug these algorithms.
 
 ## The exercise
