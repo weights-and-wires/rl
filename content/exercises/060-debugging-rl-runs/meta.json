@@ -1,7 +1,7 @@
 {
   "id": "060-debugging-rl-runs",
   "title": "A debugging toolkit: explained variance, scale invariance, and diagnose",
-  "brief": "Compute the instruments that tell RL failures apart, test that normalized advantages ignore reward scale, overfit one batch, and classify training logs with stated thresholds.",
+  "brief": "Compute the instruments that tell RL failures apart, test that normalized advantages ignore reward scale, overfit one batch, compute a TD loss that survives a shape mismatch, and classify training logs with stated thresholds.",
   "needs_gpu": false,
   "timeout": 60,
   "packages": [
@@ -12,6 +12,7 @@
     "explained_variance is 1 - np.var(y - y_pred) / np.var(y). A constant prediction must score 0 and a perfect one 1; if you get the reverse, you divided the wrong variance.",
     "relative_entropy needs np.where(p > 0, p, 1.0) inside the logarithm, so that 0 * log(0) contributes 0 and not nan.",
     "policy_loss_grad is -(A[:, None] * (onehot - softmax(logits))) / N. Normalize A first, then treat it as constant.",
+    "critic_td_loss: reshape a (N, 1) value array to (N,) first, and raise ValueError for any other shape that is not (N,). If you skip that, (v - target) ** 2 with v of shape (N, 1) quietly becomes an (N, N) grid.",
     "diagnose averages the last max(1, T // 4) entries of each series, then checks exploding_kl, entropy_collapse, reward_scale, and dead_critic in that order."
   ]
 }

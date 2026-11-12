@@ -19,25 +19,22 @@ exercise: 060-debugging-rl-runs
 
 # Debugging RL runs
 
-You train a PPO agent for two hours, and the return curve stays flat. What do you change? Each guess costs another two hours, and a flat curve fits a dozen different causes, so you cannot tell whether any guess could have helped.
+You train a PPO agent for two hours, and the return curve stays flat. What do you change? Each guess costs another two hours, and a flat curve fits a dozen causes.
 
-RL fails quietly, because the agent produces its own training data. A broken value function, a policy that stopped exploring, and a reward in the wrong units all look the same from the outside.
+RL fails quietly, because the agent produces its own training data. A broken value function, a policy that stopped exploring, and a reward in the wrong units look the same from the outside.
 
-This chapter teaches you to read the numbers that tell the causes apart. You compute four of them, run one test that separates "the code is broken" from "the problem is hard", and turn the readings into a diagnosis with thresholds you state before you look at a run.
+This chapter teaches you to read the numbers that tell the causes apart. You compute four of them, run a test that separates "the code is broken" from "the problem is hard", meet a bug that test misses, and turn the readings into a diagnosis with thresholds you state before you look at a run.
 
 ## What you already know
 
 - The policy gradient loss is $-\hat{\mathbb{E}}[A \log \pi(a \mid s)]$, and a softmax policy turns logits into action probabilities.
 - PPO monitors each update with an approximate KL and a clip fraction, from [Proximal policy optimization](/lessons/036-proximal-policy-optimization).
 - Advantages are normalized and rewards are scaled for different reasons, from [PPO in practice](/lessons/037-ppo-in-practice).
-- A critic is trained to predict value targets, which are the returns the agent collected.
-- [Evaluating RL honestly](/lessons/059-evaluating-rl) reports a finished run. This chapter fixes one that is still going.
+- [Evaluating RL honestly](/lessons/059-evaluating-rl) reports a finished run. This chapter fixes a live one.
 
 ## Suspect a bug before you tune
 
-Spinning Up advises new researchers to look for bugs first when an agent does not learn, because broken RL code often fails silently and hyperparameters are rarely the real problem. Schulman's talk on deep RL experimentation gives the same advice and adds the habit that makes it practical: watch the policy's entropy, the KL of each update, and the explained variance of the value function, so a failure points at a cause. This chapter turns that habit into code.
-
-The next four sections build those numbers, and the one after builds the test you run when they disagree with your intuition.
+Spinning Up advises new researchers to look for bugs first when an agent does not learn, because broken RL code often fails silently and hyperparameters are rarely the real problem. Schulman's talk on deep RL experimentation adds the habit that makes it practical: watch the policy's entropy, the KL of each update, and the explained variance of the value function, so a failure points at a cause. This chapter turns that habit into code.
 
 ## Entropy says whether the policy is still exploring
 
@@ -47,14 +44,14 @@ $$
 H_{\text{rel}} = \frac{-\sum_a \pi(a \mid s) \log \pi(a \mid s)}{\log A}
 $$
 
-Read it aloud: how much of the available randomness is left. For $\pi = [0.9, 0.1]$ the entropy is $-(0.9 \ln 0.9 + 0.1 \ln 0.1) = 0.325$ and $\log 2 = 0.693$, so the relative entropy is 0.469. In code, mask zero probabilities, because $0 \cdot \log 0$ is 0 and numpy computes it as NaN:
+Read it aloud: how much randomness is left. For $\pi = [0.9, 0.1]$ the entropy is $-(0.9 \ln 0.9 + 0.1 \ln 0.1) = 0.325$ and $\log 2 = 0.693$, so the relative entropy is 0.469. In code, mask zero probabilities, because $0 \cdot \log 0$ is 0 and numpy computes it as NaN:
 
 ```python
 safe = np.where(p > 0, p, 1.0)          # log(1) = 0, so a zero probability adds nothing
 rel = (-(p * np.log(safe)).sum(-1)).mean() / np.log(p.shape[-1])
 ```
 
-A healthy run starts near 1, falls as the policy commits, and levels off above 0. A policy whose relative entropy falls to nearly 0 early has stopped exploring, and it will keep repeating whatever it happened to try first. Figure 1 shows this on a four-armed bandit with payout probabilities 0.2, 0.4, 0.6, and 0.5. With a learning rate of 0.1 the relative entropy is still 0.57 after 300 updates, and the policy favors the best arm. With a learning rate of 3.0 it drops to 0.153 after 10 updates and below 0.05 at update 54, and it ends at 0.028 on arm 3, which pays 0.5 and not 0.6. The policy is confident and wrong, and it never samples the other arms to learn better.
+A healthy run starts near 1, falls as the policy commits, and levels off above 0. A policy whose relative entropy falls to nearly 0 early has stopped exploring. Figure 1 shows this on a four-armed bandit with payout probabilities 0.2, 0.4, 0.6, and 0.5. With a learning rate of 0.1 the relative entropy is still 0.57 after 300 updates, and the policy favors the best arm. With a learning rate of 3.0 it drops to 0.153 after 10 updates and below 0.05 at update 54, and it ends at 0.028 on arm 3, which pays 0.5 and not 0.6. The policy is confident and wrong, and it never samples the other arms.
 
 ```figure
 <svg viewBox="0 0 600 250" role="img" aria-label="Relative entropy of a bandit policy over 300 updates with a small and a large learning rate">
@@ -85,7 +82,7 @@ Figure 1. Relative entropy of a softmax policy on a four-armed bandit. Notice th
 
 ## KL says how far each update moved
 
-The KL between the policy that collected a batch and the policy after the update measures the step size in the only unit that matters, which is how much the behavior changed. [Proximal policy optimization](/lessons/036-proximal-policy-optimization) builds the k3 estimate and the clip fraction, so this chapter reuses `approx_kl` and does not rederive it.
+The KL between the policy that collected a batch and the policy after the update measures the step size in the unit that matters, which is how much the behavior changed. [Proximal policy optimization](/lessons/036-proximal-policy-optimization) builds the k3 estimate, so this chapter reuses `approx_kl`.
 
 Over a whole run, a small positive KL means gentle updates, and a KL that grows steadily means stale data or too large a step. A true KL is never negative, so a negative reading means a bug in your log-probabilities.
 
@@ -97,7 +94,7 @@ $$
 \text{EV} = 1 - \frac{\operatorname{Var}(y - \hat y)}{\operatorname{Var}(y)}
 $$
 
-Read it aloud: take the variance the targets had, subtract the variance left in the errors, and report the share removed. Work it by hand with targets $y = [0, 2, 4, 6]$, whose mean is 3 and whose variance is 5:
+Read it aloud: the share of the targets' variance that the errors no longer have. Work it by hand with targets $y = [0, 2, 4, 6]$, whose mean is 3 and whose variance is 5:
 
 | Prediction $\hat y$ | Residual $y - \hat y$ | Residual variance | EV |
 |---|---|---|---|
@@ -106,18 +103,18 @@ Read it aloud: take the variance the targets had, subtract the variance left in 
 | $[1, 2, 3, 4]$ | $[-1, 0, 1, 2]$ | 1.25 | 0.75 |
 | $[0, -2, -4, -6]$ (anti-correlated) | $[0, 4, 8, 12]$ | 20 | -3 |
 
-A perfect critic scores 1, and a critic that outputs the same number everywhere scores 0, whatever that number is, because subtracting a constant from the errors does not change their variance. A critic that is worse than a constant scores below 0. When all the targets are equal, $\operatorname{Var}(y) = 0$ and the ratio is undefined, so the function returns NaN, and a caller has to decide what that means.
+A perfect critic scores 1, and a critic that outputs the same number everywhere scores 0, whatever that number is, because subtracting a constant does not change a variance. A critic worse than a constant scores below 0. When all the targets are equal, $\operatorname{Var}(y) = 0$, the ratio is undefined, and the function returns NaN.
 
 > [!WARNING]
 > The formula $1 - \operatorname{Var}(\hat y)/\operatorname{Var}(y)$ scores a perfect critic 0 and a constant critic 1, which is backwards. Swapping the arguments divides by the wrong variance.
 
-Correlation is the number people reach for first, but it ignores scale and offset. The prediction $3y$ has a correlation of exactly 1 with $y$ and an explained variance of $-3$. The critic's absolute values feed the advantages, so scale matters, and explained variance sees it.
+Correlation ignores scale and offset: the prediction $3y$ has a correlation of exactly 1 with $y$ and an explained variance of $-3$. The critic's absolute values feed the advantages, so scale matters, and explained variance sees it.
 
 A healthy critic starts near 0 and rises. One that stays near 0 learns nothing.
 
 ## Gradient norm says whether the update is the right size
 
-The *global gradient norm* treats every parameter's gradient as one long vector and takes its length, $\sqrt{\sum_i \lVert g_i \rVert^2}$. A norm that sits at the clip limit means the clip decides every step. A spike to ten times the usual value points at a bad batch, and a norm near zero means the gradient is not reaching the parameters.
+The *global gradient norm* treats every parameter's gradient as one long vector and takes its length, $\sqrt{\sum_i \lVert g_i \rVert^2}$. A norm at the clip limit means the clip decides every step. A tenfold spike points at a bad batch, and a norm near zero means the gradient is not reaching the parameters.
 
 ```python
 total = np.sqrt(sum(np.sum(g ** 2) for g in grads))   # one number for the whole network
@@ -125,21 +122,34 @@ total = np.sqrt(sum(np.sum(g ** 2) for g in grads))   # one number for the whole
 
 ## Overfit one batch, then trust the rest
 
-Instruments show symptoms, and a test separates the two explanations for a flat curve: the code is broken, or the problem is hard. Take one small fixed batch of inputs and targets, and train the network on only that batch until the loss stops moving. A correct network, loss, and optimizer drive the loss close to zero, because a network with thousands of parameters can memorize sixteen examples. If the loss stalls, the bug is in the machinery, such as a detached tensor, a dead activation, a missing optimizer step, or a wrong sign, and no amount of data or tuning will fix it.
+Instruments show symptoms, and a test separates the two explanations for a flat curve: the code is broken, or the problem is hard. Train the network on one small fixed batch until the loss stops moving. A correct network, loss, and optimizer drive the loss close to zero, because a network with thousands of parameters can memorize sixteen examples. If the loss stalls, the bug is in the machinery, such as a detached tensor, a dead activation, a missing optimizer step, or a wrong sign.
 
-In the exercise, a 32-unit network drives the loss from 0.49 to about 0.000001 in 300 Adam steps. A network whose ReLUs are all off can only fit the mean of the targets, so its loss stays at their variance.
+In the exercise, a 32-unit network drives the loss from 0.49 to about 0.000001 in 300 Adam steps. A network whose ReLUs are all off can only fit the mean of the targets.
+
+## Silent bugs run, learn, and still fail
+
+Some bugs learn fine and learn the wrong thing. The classic one comes from a Spinning Up exercise. Your critic returns shape `(N, 1)`, and your target has shape `(N,)`. The expression `(v - target) ** 2` then broadcasts to an `(N, N)` grid that pairs every prediction with every target. Nothing raises an error, and the loss falls.
+
+Take $N = 3$ with predictions $v = [1, 2, 3]$ and targets $t = [2, 2, 5]$. The correct loss averages three squared errors, $(1 + 0 + 4)/3 = 1.667$. The broadcast loss averages all nine pairs and gets 3.667. The gradients differ more:
+
+| | Gradient with respect to $v_1, v_2, v_3$ | Moves each $v_i$ toward |
+|---|---|---|
+| Correct | $[-0.667, 0, -1.333]$ | its own target $t_i$ |
+| Broadcast | $[-1.333, -0.667, 0]$ | the mean target, 3 |
+
+The broadcast gradient on $v_i$ is $\tfrac{2}{3}(v_i - \bar t)$, so every state gets pulled to the same number. The critic ends near a constant, so its explained variance stays near 0. Overfit-one-batch does not catch this, because the loss still falls on a fixed batch. Assert the shape of everything that enters a loss.
+
+Some bugs hurt only some tasks, and a simple environment can hide a critic bug. Confirm a result on a second environment before you trust it, as [Henderson et al. (2018)](https://arxiv.org/abs/1709.06560) urge.
 
 ## Reward scale changes every number above
 
-Returns are in the environment's reward units. Multiply every reward by 1000 and the value targets grow 1000 times, and the policy gradient does too, though nothing about the task changed.
-
-Advantage normalization removes this dependence for the policy. Subtract the batch mean and divide by the batch standard deviation, and multiplying the advantages by $c > 0$ changes nothing, because $c$ cancels from the numerator and the denominator. The gradient of the loss $L = -\tfrac{1}{N} \sum_i A_i \log \pi(a_i \mid s_i)$ with respect to the logits $z_{ij}$ of a softmax policy is
+Multiply every reward by 1000 and the value targets grow 1000 times, and the policy gradient does too, though nothing about the task changed. Advantage normalization removes this dependence for the policy. Subtract the batch mean and divide by the batch standard deviation, and multiplying the advantages by $c > 0$ changes nothing, because $c$ cancels from the numerator and the denominator. The gradient of the loss $L = -\tfrac{1}{N} \sum_i A_i \log \pi(a_i \mid s_i)$ with respect to the logits $z_{ij}$ of a softmax policy is
 
 $$
 \frac{\partial L}{\partial z_{ij}} = -\frac{A_i}{N}\big(\mathbb{1}[j = a_i] - \pi_{ij}\big)
 $$
 
-Read it aloud: each sample pushes up its chosen action and pushes down the others, in proportion to its advantage. Treat $A_i$ as a number the optimizer cannot change, so the formula is linear in $A$. Without normalization, scaling $A$ by $c$ scales the gradient by $c$. Figure 2 shows both on one fixed batch of 64 samples. The unnormalized gradient norm goes from 0.0013 at scale 0.01 to 125.49 at scale 1000, a factor of $10^5$, and the normalized one stays at 0.1085 at every scale.
+Read it aloud: each sample pushes up its chosen action and pushes down the others, in proportion to its advantage. The formula is linear in $A$, so without normalization, scaling $A$ by $c$ scales the gradient by $c$. Figure 2 shows both on one fixed batch of 64 samples. The unnormalized gradient norm goes from 0.0013 at scale 0.01 to 125.49 at scale 1000, a factor of $10^5$, and the normalized one stays at 0.1085 at every scale.
 
 ```figure
 <svg viewBox="0 0 600 270" role="img" aria-label="Gradient norm against reward scale, with and without advantage normalization">
@@ -185,7 +195,7 @@ Read it aloud: each sample pushes up its chosen action and pushes down the other
 Figure 2. Gradient norm of the policy loss on one batch as the reward scale grows. Notice that the raw norm rises by a factor of 10^5 across the range while the normalized norm stays at 0.1085.
 ```
 
-This matters for clipping: with a gradient norm of 125 and a clip at 0.5, the clip rescales every update. A run whose value targets have a standard deviation of 5000 has a reward-scale problem, whatever its entropy and KL say.
+With a gradient norm of 125 and a clip at 0.5, the clip rescales every update. A run whose value targets have a standard deviation of 5000 has a reward-scale problem, whatever its entropy and KL say.
 
 > [!KEY]
 > Advantage normalization makes the policy gradient independent of the reward's units. The critic's targets are not normalized by it, so the target scale is its own instrument.
@@ -202,34 +212,34 @@ Four instruments become signatures. Each rule reads the mean of the last quarter
 | 4 | `dead_critic` | `ev` is below 0.05 | Critic learning rate, a bug in the targets, or a detached critic |
 | 5 | `healthy` | none of the above | Look at the return curve, then the next experiment |
 
-These thresholds are this chapter's rules of thumb for toy logs, and no paper sets them. Set yours from your own healthy runs, and decide them before you look at the curve, so you do not read a cause into noise.
+These thresholds are this chapter's rules of thumb for toy logs. Set yours from your own healthy runs, and decide them before you look at the curve, so you do not read a cause into noise.
 
 > [!RECAP]
 > - Relative entropy near 0 early means the policy stopped exploring, and the KL tells you the size of each step.
 > - Explained variance is $1 - \operatorname{Var}(y - \hat y)/\operatorname{Var}(y)$: 1 for perfect, 0 for any constant, negative for worse than a constant.
 > - Correlation ignores scale, so explained variance catches critics that correlation calls perfect.
 > - Overfit one fixed batch to separate a broken pipeline from a hard problem.
+- A critic of shape `(N, 1)` against targets of shape `(N,)` broadcasts to `(N, N)` and learns the mean target, and overfit-one-batch misses it.
 > - Normalized advantages make the policy gradient independent of reward scale, and unnormalized ones scale with it.
 
 ## Build it step by step
 
-The checks test the functions in this order.
+The checks run in this order.
 
-1. **`explained_variance(y_pred, y)`.** Return NaN when `np.var(y)` is 0. The common mistake is `1 - np.var(y_pred) / np.var(y)`, which the constant-prediction check catches.
+1. **`explained_variance(y_pred, y)`.** Return NaN when `np.var(y)` is 0. The common mistake is `1 - np.var(y_pred) / np.var(y)`.
 2. **`value_target_correlation(y_pred, y)`.** Use `np.corrcoef`, and return NaN for a constant input.
 3. **`relative_entropy(probs)`.** Mask zero probabilities before the logarithm, then divide by `np.log(A)`.
 4. **`grad_norm(grads)`.** Sum the squares of every array, then take one square root. The common mistake is the mean of per-array norms.
 5. **`policy_loss(...)` and `policy_loss_grad(...)`.** Use the formula above, and do not differentiate through the normalization.
-6. **`overfit_one_batch(net, x, y, steps, lr)`.** Run Adam on the one fixed batch and return the loss before and after. The common mistake is drawing a new batch each step.
-7. **`diagnose(log)`.** Average the last `max(1, T // 4)` entries of each series and apply the rules in the table's order.
+6. **`overfit_one_batch(net, x, y, steps, lr)`.** Run Adam on the one fixed batch and return the loss before and after. Use the same batch every step.
+7. **`critic_td_loss(v, rewards, next_v, dones, gamma)`.** Reshape `(N, 1)` inputs to `(N,)`, raise `ValueError` for any other shape mismatch, and average the squared TD error against `r + gamma * (1 - done) * next_v`. The common mistake is the `(N, 1) - (N,)` broadcast.
+8. **`diagnose(log)`.** Average the last `max(1, T // 4)` entries of each series and apply the rules in the table's order.
 
 ## Where this breaks
 
 **Healthy numbers do not prove a healthy run.** A policy that exploits a flaw in the reward can look fine on every instrument. Watch the agent too, and read [Reward hacking and safe RL](/lessons/083-reward-hacking-and-safe-rl).
 
-**Thresholds depend on the algorithm.** A KL of 0.05 is high for PPO with early stopping. Compute thresholds from healthy runs of the same code.
-
-**Normalization has a floor.** When the advantages' standard deviation falls to the `1e-8` in the denominator, the normalized gradient shrinks with them.
+**Thresholds depend on the algorithm.** A KL of 0.05 is high for PPO with early stopping.
 
 **One run is one sample.** Whether a fix helped needs several seeds and an interval, which [Evaluating RL honestly](/lessons/059-evaluating-rl) builds.
 
@@ -243,6 +253,6 @@ The checks test the functions in this order.
 
 ## The exercise
 
-You build a small debugging toolkit: `explained_variance`, `value_target_correlation`, `relative_entropy`, and `grad_norm` for the instruments, `policy_loss` and `policy_loss_grad` for the scale test, `overfit_one_batch` for the pipeline test, and `diagnose` to classify a log.
+You build a small debugging toolkit: `explained_variance`, `value_target_correlation`, `relative_entropy`, and `grad_norm` for the instruments, `policy_loss` and `policy_loss_grad` for the scale test, `overfit_one_batch` for the pipeline test, `critic_td_loss` for the silent shape bug, and `diagnose` to classify a log.
 
-The checks reproduce the worked table (1, 0, 0.75, and $-3$), and show that the $3y$ prediction has correlation 1 and explained variance $-3$. The gradient matches finite differences, the normalized gradient is unchanged from reward scale 0.01 to $10^4$, and the unnormalized norm grows in proportion. A healthy network overfits one batch to under 1% of its starting loss, and a dead one does not. Last, `diagnose` must name six injected failure logs on five seeds each, honor every threshold from just below to just above, and ignore a critic that was bad early and recovered.
+The checks reproduce the worked table (1, 0, 0.75, and $-3$) and the $3y$ correlation of 1. The gradient matches finite differences, the normalized gradient is unchanged from reward scale 0.01 to $10^4$, and the unnormalized norm grows in proportion. A healthy network overfits one batch to under 1% of its starting loss, and a dead one does not. `critic_td_loss` must match a hand-computed value, accept `(N, 1)` input, reject a mismatched shape, and differ from the broadcast loss on a seeded batch. Last, `diagnose` must name six injected failure logs on five seeds each, honor every threshold, and ignore a critic that was bad early and recovered.
