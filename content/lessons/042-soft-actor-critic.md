@@ -191,6 +191,25 @@ Figure 2 shows where the loop settles. Against $Q(a) = -a^2/2$ the best Gaussian
 Figure 2. The temperature tuned against the policy that best responds to Q(a) = -a²/2, with a target entropy of 1 nat. Notice that the entropy starts above the target, so α falls, overshoots a little, and settles at the value where the gradient α(H - target) is zero.
 ```
 
+## Why the log-std depends on the state
+
+The policy network you were given outputs `log_std` for every state, while a PPO policy for continuous actions often keeps one free log standard deviation per action dimension, shared by all states (see [PPO in practice](/lessons/037-ppo-in-practice)). SAC cannot copy that shortcut, and the reason is the entropy term.
+
+The entropy bonus rewards width, so it pulls $\sigma$ up at every state. The critic pulls the other way, but how hard depends on the state. Where $Q$ is flat, a wide Gaussian loses almost nothing. Where $Q$ is sharp, a wide Gaussian lands on bad actions often. Only a width that depends on the state can follow that balance. Spinning Up reports that SAC with a state-independent log-std did not work well.
+
+Model one state with $Q(a) = -\tfrac{c}{2}(a - a^*)^2$ and a Gaussian centered at $a^*$. The expected $Q$ is $-\tfrac{c}{2}\sigma^2$, and the entropy is $\log \sigma$ plus a constant. Maximize $-\tfrac{c}{2}\sigma^2 + \alpha \log \sigma$ by setting its derivative $-c\sigma + \alpha/\sigma$ to zero:
+
+$$
+\sigma^{*2} = \frac{\alpha}{c}, \qquad \log \sigma^* = \tfrac12 \log \frac{\alpha}{c}
+$$
+
+Read it as: the best variance is the temperature divided by the curvature, so a sharper $Q$ gets a narrower policy. With $c = 1$ this is the variance $\alpha$ that Figure 2 used.
+
+Now take two states and $\alpha = 0.2$. A flat state has $c = 0.5$, so $\log \sigma^* = -0.458$ and $\sigma^* = 0.632$. A sharp state has $c = 8$, so $\log \sigma^* = -1.844$ and $\sigma^* = 0.158$. The best single shared value is $\log \sigma = -1.528$, which is $\tfrac12 \log(2\alpha / (c_1 + c_2))$. It is too narrow for the flat state and too wide for the sharp one. The soft objective $\mathbb{E}[Q] + \alpha \mathcal{H}$, summed over the two states, is $-0.0929$ with per-state widths and $-0.2437$ with the shared one. The shared width gives up $0.1508$.
+
+> [!WARNING]
+> Do not carry PPO's shared log-std vector into a SAC policy. Training still runs without an error, but a single width fits no state well, as the two-state numbers show.
+
 > [!KEY]
 > A tanh-squashed Gaussian's log-probability is the Gaussian log-density of the pre-squash sample, minus $\sum_i \log(1 - \tanh^2 u_i)$ and $D \log a_{\max}$. The actor trains by reparameterization, so the critic's slope reaches the policy's parameters. And $\alpha$ rises when the policy is too certain and falls when it is too random. Together these answer the opening question: SAC's actor is a Gaussian whose log-probability, gradient, and price you can all compute exactly.
 
@@ -210,6 +229,7 @@ The exercise gives you `TanhGaussianPolicy` and `gaussian_log_prob`, which sums 
 3. `actor_loss(policy, critic1, critic2, s, eps, alpha)` calls `policy(s)`, samples with `policy.max_action`, and averages `alpha * log_prob - min(q1, q2)`. The common mistake is detaching the action before the critics, which throws away the reparameterized gradient.
 4. `critic_target(r, terminated, q1_next, q2_next, next_log_prob, gamma, alpha)` is one line. The common mistake is adding $\alpha \log \pi$ instead of subtracting it.
 5. `temperature_loss(log_alpha, log_prob, target_entropy)` is one line. The common mistake is forgetting `.detach()`, which lets the temperature step push on the policy.
+6. `best_log_std(q_curvature, alpha)` takes an array of curvatures `(N,)` and returns a numpy array `(N,)`. Derive $\sigma^{*2}$ from the derivative above. The common mistakes are returning the standard deviation instead of its log, and forgetting the $\tfrac12$, which returns the log variance.
 
 ## Where this breaks
 
@@ -229,6 +249,6 @@ The following papers introduce SAC and the ideas it relies on:
 
 ## The exercise
 
-You build SAC's mathematical core. Write `tanh_log_det`, `sample_action`, `actor_loss`, `critic_target`, and `temperature_loss`.
+You build SAC's mathematical core. Write `tanh_log_det`, `sample_action`, `actor_loss`, `critic_target`, and `temperature_loss`, plus the small helper `best_log_std`.
 
-The checks compare the stable squash term with the naive formula and at $u = \pm 20$ in float32. They compare `exp(log_prob)` with the density from a numerical change of variables, integrate it to 1, and check a 2-D case against PyTorch's `TanhTransform`. They confirm that gradients reach the mean and log standard deviation, that the actor loss uses the smaller critic, and that its gradient matches the exact expected loss. They check the critic target on hand-worked cases, the temperature loss's gradient $\alpha(\mathcal{H} - \bar{\mathcal{H}})$ and its detached log-probabilities, and that the temperature settles where the entropy meets its target.
+The checks compare the stable squash term with the naive formula and at $u = \pm 20$ in float32. They compare `exp(log_prob)` with the density from a numerical change of variables, integrate it to 1, and check a 2-D case against PyTorch's `TanhTransform`. They confirm that gradients reach the mean and log standard deviation, that the actor loss uses the smaller critic, and that its gradient matches the exact expected loss. They check the critic target on hand-worked cases, the temperature loss's gradient $\alpha(\mathcal{H} - \bar{\mathcal{H}})$ and its detached log-probabilities, and that the temperature settles where the entropy meets its target. Two last checks cover `best_log_std`. One compares it with a numerical maximum of the soft objective at three temperatures, which catches a returned standard deviation, a log variance, or a missing entropy term. The other confirms that on a two-state task with curvatures 0.5 and 8, per-state widths beat the best shared width by 0.1508.

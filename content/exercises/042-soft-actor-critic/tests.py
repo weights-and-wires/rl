@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 import torch
+from scipy.optimize import minimize_scalar
 from scipy.special import ndtr, ndtri
 
 from rlcheck import almost, check, close, fail, finite_difference, has, shape
@@ -208,3 +209,54 @@ def test_temperature_tuning(sub):
     alpha = float(log_alpha.detach().exp())
     if abs(alpha / alpha_star - 1) > 0.01:
         fail(f"alpha settled at {alpha:.5f}, but the entropy matches the target only at {alpha_star:.5f}")
+
+
+def _soft_objective(log_std, c, alpha):
+    """E[Q] + alpha * H for a Gaussian with this log std, against Q(a) = -c (a - a*)^2 / 2.
+
+    The mean sits at a*, so E[Q] = -c sigma^2 / 2, and H = log sigma + 0.5 log(2 pi e).
+    """
+    return -0.5 * c * np.exp(2.0 * log_std) + alpha * (log_std + 0.5 * math.log(2 * math.pi * math.e))
+
+
+def _argmax_log_std(c, alpha):
+    """The best log std for one state, found numerically rather than from a formula."""
+    res = minimize_scalar(lambda x: -_soft_objective(x, c, alpha), bounds=(-8.0, 4.0), method="bounded",
+                          options={"xatol": 1e-10})
+    return res.x
+
+
+# Wrong implementations this pair of checks catches:
+#   - return exp(0.5 * log(alpha / c)), the std rather than its log (fails the numerical argmax),
+#   - return log(alpha / c), the log variance (fails the numerical argmax),
+#   - ignore alpha, as if the entropy term were missing, so sigma^2 = 1 / c (fails once alpha != 1).
+@check("best_log_std is the entropy-regularised optimum: log sigma = 0.5 * log(alpha / c)")
+def test_best_log_std(sub):
+    best_log_std = has(sub, "best_log_std")
+    c = np.array([0.5, 1.0, 8.0, 40.0])
+    for alpha in (0.05, 0.2, 1.0):
+        got = np.asarray(best_log_std(c, alpha), dtype=float)
+        shape(got, (4,), label=f"best_log_std output at alpha = {alpha}")
+        want = np.array([_argmax_log_std(ci, alpha) for ci in c])
+        close(got, want, atol=1e-6, label=f"log sigma against a numerical maximum of E[Q] + alpha H at alpha = {alpha}")
+    # Against Q(a) = -a^2 / 2 (c = 1) the best variance is alpha, as in the temperature section.
+    close(np.asarray(best_log_std(np.array([1.0]), 0.4326), dtype=float), [0.5 * math.log(0.4326)], atol=1e-6,
+          label="c = 1, where the best variance equals alpha")
+
+
+@check("one shared log-std scores worse on the soft objective than best_log_std per state")
+def test_shared_log_std_loses(sub):
+    best_log_std = has(sub, "best_log_std")
+    c, alpha = np.array([0.5, 8.0]), 0.2
+    per_state = np.asarray(best_log_std(c, alpha), dtype=float)
+    # The two states want different widths, so the best single value sits between them.
+    shared = minimize_scalar(lambda x: -_soft_objective(np.full(2, x), c, alpha).sum(), bounds=(-8.0, 4.0),
+                             method="bounded", options={"xatol": 1e-10}).x
+    if not per_state[1] < shared < per_state[0]:
+        fail(f"the best shared log std {shared:.4f} should lie between the per-state values "
+             f"{per_state[1]:.4f} and {per_state[0]:.4f}; got per-state values {np.round(per_state, 4).tolist()}")
+    score_state = _soft_objective(per_state, c, alpha).sum()
+    score_shared = _soft_objective(np.full(2, shared), c, alpha).sum()
+    # The exact gap for c = [0.5, 8] and alpha = 0.2 is 0.1508: -0.0929 per state against -0.2437 shared.
+    almost(score_state - score_shared, 0.15075, tol=1e-3,
+           label="the soft objective gained by per-state log stds over the best shared one")

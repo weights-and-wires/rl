@@ -277,6 +277,8 @@ REINFORCE needs no model of the world, and its cost is the $O(NH)$ steps you sam
 
 **Truncated episodes.** The test samples 100 steps per episode, and the rest of the return is cut off. With $\gamma = 0.9$ the missing part is worth at most $0.9^{100} \approx 3 \times 10^{-5}$ of a reward, far below the noise, but a discount near 1 would need a longer horizon.
 
+**The loss value is not a score.** In a framework, you build `loss = -(weights * logp).mean()` and call `backward()`. That surrogate has the right gradient, but its value does not measure performance. It depends on the batch the policy itself sampled, so it moves when the policy moves and when the batch changes. Suppose every action pays 2 and the policy is uniform over three actions. The loss is $2 \log 3 = 2.197$. If the policy drifts to $[0.5, 0.3, 0.2]$, its expected loss falls to 2.059, yet the return is still exactly 2. So a falling loss can sit beside flat returns. Track the average episode return instead.
+
 **On-policy data only.** Once you update $\theta$, old episodes come from the wrong distribution, and reusing them needs importance weights.
 
 ## Further reading

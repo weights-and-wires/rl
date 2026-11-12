@@ -2,6 +2,7 @@
 
 import math
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 
@@ -70,6 +71,13 @@ def temperature_loss(log_alpha, log_prob, target_entropy):
     return -(log_alpha.exp() * (log_prob + target_entropy).detach()).mean()
 
 
+def best_log_std(q_curvature, alpha):
+    # E[Q] = -c * sigma**2 / 2 + const, and H = log sigma + const, so the derivative
+    # -c * sigma + alpha / sigma is zero at sigma**2 = alpha / c.
+    c = np.asarray(q_curvature, dtype=float)
+    return 0.5 * np.log(alpha / c)
+
+
 if __name__ == "__main__":
     torch.manual_seed(0)
     mean, log_std, max_action = torch.tensor([[0.3]]), torch.tensor([[math.log(0.8)]]), 2.0
@@ -99,3 +107,7 @@ if __name__ == "__main__":
         opt.zero_grad()
         loss.backward()
         opt.step()
+
+    print("\nBest log-std when the Q-function is sharp at one state and flat at another")
+    c = np.array([0.5, 8.0])
+    print("  curvature c:", c, "-> best log sigma:", np.round(best_log_std(c, 0.2), 4))
