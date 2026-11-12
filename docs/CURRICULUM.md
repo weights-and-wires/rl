@@ -81,6 +81,8 @@ chapters that cover it, and the app carries your completed work across.
 
 ## Part 6 — Continuous control and maximum entropy
 
+For how this part's methods compare with policy optimization and Q-learning, see [Where this sits](../content/lessons/040-deterministic-policy-gradients.md#where-this-sits) in the first chapter of the part.
+
 | Slug | Title | Exercise delivers |
 |---|---|---|
 | `040-deterministic-policy-gradients` | Deterministic policy gradients: DDPG and TD3 | The deterministic policy gradient on an LQR problem, TD3's smoothed target and clipped double Q, and TD3 on Pendulum |

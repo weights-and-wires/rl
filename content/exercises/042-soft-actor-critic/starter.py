@@ -14,6 +14,7 @@ A critic is called as `critic(s, a)`.
 
 import math
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 
@@ -151,6 +152,24 @@ def temperature_loss(log_alpha, log_prob, target_entropy):
     raise NotImplementedError("temperature_loss")
 
 
+def best_log_std(q_curvature, alpha):
+    """The entropy-regularised best log standard deviation of a Gaussian action.
+
+    The Q-function at one state is quadratic in the action, Q(a) = -c * (a - a*)**2 / 2,
+    with curvature c > 0. Among Gaussians N(mu, sigma**2), find the log sigma that
+    maximises E[Q] + alpha * H, where H is the Gaussian's entropy. Derive the closed
+    form: the mean term and the entropy term each depend on sigma in a simple way.
+
+    Args:
+        q_curvature: the curvature c at each state, an array of shape (N,), all positive.
+        alpha: the temperature, a positive float.
+
+    Returns:
+        A numpy array of shape (N,) with the best log sigma at each state.
+    """
+    raise NotImplementedError("best_log_std")
+
+
 if __name__ == "__main__":
     torch.manual_seed(0)
     mean, log_std, max_action = torch.tensor([[0.3]]), torch.tensor([[math.log(0.8)]]), 2.0
@@ -180,3 +199,7 @@ if __name__ == "__main__":
         opt.zero_grad()
         loss.backward()
         opt.step()
+
+    print("\nBest log-std when the Q-function is sharp at one state and flat at another")
+    c = np.array([0.5, 8.0])
+    print("  curvature c:", c, "-> best log sigma:", np.round(best_log_std(c, 0.2), 4))

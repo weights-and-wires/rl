@@ -191,6 +191,19 @@ The exercise gives you the networks, `TD3Agent`, the replay buffer, `train_td3`,
 6. `soft_update(target, source, tau)` works in place under `torch.no_grad()`.
 7. `td3_update(agent, batch, eps, step)` takes the critic step first. When `step % agent.policy_delay == 0` it also takes an actor step and three soft updates. Call `zero_grad()` before each `backward()`.
 
+## Where this sits
+
+DDPG and TD3 are a bridge. The actor is a policy that you train by gradient, as in Part 5, and the critic is a Q-function that you train from a replay buffer, as in Part 4. The table shows how the three families of this course compare. Each cell is a rule of thumb, not a guarantee.
+
+| | Policy optimization (031 to 039) | Q-learning (026 to 030) | Actor-critic hybrids (040 to 042) |
+|---|---|---|---|
+| Data | On-policy: fresh samples after each update. IMPALA (038) tolerates slightly stale data with V-trace. | Off-policy: replay buffer | Off-policy: replay buffer |
+| Stability | Steady with clipping or trust regions (035 to 036) | Fragile: the deadly triad (025) | Fragile: sensitive to the critic, so TD3 and SAC add twin critics and targets |
+| Sample efficiency | Low: needs many environment steps | Medium to high | High on continuous control |
+| Action spaces | Discrete or continuous | Discrete only: the policy takes an `argmax` | Continuous |
+
+Read it as a trade. Policy optimization pays in samples to get steady updates. Q-learning reuses every sample but needs a finite set of actions to take a max over. The hybrids keep the replay buffer and get continuous actions by training an actor to climb the critic, and they pay in tuning. When you pick a method, ask first whether your actions are discrete, and second whether environment steps are cheap.
+
 ## Where this breaks
 
 - **Exploration is bolted on.** A deterministic policy explores only through the noise you add. [Soft actor-critic](/lessons/042-soft-actor-critic) builds exploration into the objective instead.
