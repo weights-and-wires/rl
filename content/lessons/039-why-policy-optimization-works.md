@@ -211,6 +211,7 @@ The checks test the functions in this order.
 - [Kakade and Langford (2002), Approximately optimal approximate reinforcement learning](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/KakadeLangford-icml2002.pdf) introduces the performance difference lemma.
 - [Agarwal, Kakade, Lee, and Mahajan (2021), On the theory of policy gradient methods](https://arxiv.org/abs/1908.00261) proves global convergence of softmax policy gradient and the dimension-free NPG rate.
 - [Mei, Xiao, Szepesvári, and Schuurmans (2020), On the global convergence rates of softmax policy gradient methods](https://arxiv.org/abs/2005.06392) proves the $1/t$ upper and lower bounds.
+- [Natural policy gradient paper page](https://papers.ifkash.dev/npg/). Works through Kakade (2001), the step that TRPO and this lesson build on.
 
 ## The exercise
 

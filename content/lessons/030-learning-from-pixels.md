@@ -606,7 +606,7 @@ The checks test the functions in this order:
 ## Further reading
 
 - [Mnih et al., *Human-level control through deep reinforcement learning* (Nature, 2015)](https://doi.org/10.1038/nature14236). The Atari DQN and its frame preprocessing.
-- [Hessel et al., *Rainbow: Combining improvements in deep reinforcement learning* (2018)](https://arxiv.org/abs/1710.02298). The six components together, and the ablation.
+- [Hessel et al., *Rainbow: Combining improvements in deep reinforcement learning* (2018)](https://arxiv.org/abs/1710.02298). The six components together, and the ablation. [Paper page](https://papers.ifkash.dev/rainbow/).
 - [Fortunato et al., *Noisy networks for exploration* (2018)](https://arxiv.org/abs/1706.10295). The noisy layer, with independent and factorized noise.
 - [Kostrikov, Yarats, and Fergus, *Image augmentation is all you need* (2020)](https://arxiv.org/abs/2004.13649). DrQ, random shifts in Q and in the target.
 - [Laskin et al., *Reinforcement learning with augmented data* (2020)](https://arxiv.org/abs/2004.14990). RAD, a comparison of augmentations on pixel control tasks.

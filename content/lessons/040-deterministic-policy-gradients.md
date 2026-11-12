@@ -216,8 +216,8 @@ The following papers introduce and analyze the methods in this chapter:
 
 - [Silver et al. (2014), Deterministic policy gradient algorithms](https://proceedings.mlr.press/v32/silver14.html) proves the theorem and its link to the stochastic policy gradient.
 - [Lillicrap et al. (2016), Continuous control with deep reinforcement learning](https://arxiv.org/abs/1509.02971) introduces DDPG.
-- [Fujimoto, van Hoof, and Meger (2018), Addressing function approximation error in actor-critic methods](https://arxiv.org/abs/1802.09477) measures DDPG's overestimation and introduces TD3's three fixes.
-- [Henderson et al. (2018), Deep reinforcement learning that matters](https://arxiv.org/abs/1709.06560) shows how much results depend on seeds and implementation details.
+- [Fujimoto, van Hoof, and Meger (2018), Addressing function approximation error in actor-critic methods](https://arxiv.org/abs/1802.09477) measures DDPG's overestimation and introduces TD3's three fixes. [Paper page](https://papers.ifkash.dev/td3/).
+- [Henderson et al. (2018), Deep reinforcement learning that matters](https://arxiv.org/abs/1709.06560) shows how much results depend on seeds and implementation details. [Paper page](https://papers.ifkash.dev/henderson/).
 
 ## The exercise
 

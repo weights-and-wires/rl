@@ -230,7 +230,7 @@ The checks test the pieces in this order:
 
 - [van Hasselt, Guez, and Silver, *Deep reinforcement learning with double Q-learning* (2016)](https://arxiv.org/abs/1509.06461). The Double DQN target, and evidence that DQN overestimates on Atari.
 - [Wang et al., *Dueling network architectures for deep reinforcement learning* (2016)](https://arxiv.org/abs/1511.06581). The value and advantage streams, and the mean-subtracted combination.
-- [Hessel et al., *Rainbow: combining improvements in deep reinforcement learning* (2018)](https://arxiv.org/abs/1710.02298). Combines six improvements and ablates each one.
+- [Hessel et al., *Rainbow: combining improvements in deep reinforcement learning* (2018)](https://arxiv.org/abs/1710.02298). Combines six improvements and ablates each one. [Paper page](https://papers.ifkash.dev/rainbow/).
 - [Munos et al., *Safe and efficient off-policy reinforcement learning* (2016)](https://arxiv.org/abs/1606.02647). Retrace, which corrects multi-step targets for off-policy data.
 
 ## The exercise

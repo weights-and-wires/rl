@@ -284,7 +284,7 @@ REINFORCE needs no model of the world, and its cost is the $O(NH)$ steps you sam
 ## Further reading
 
 - [Williams (1992), *Simple statistical gradient-following algorithms for connectionist reinforcement learning*](https://doi.org/10.1007/BF00992696). Introduces REINFORCE and the score-function gradient for learning systems.
-- [Sutton, McAllester, Singh, and Mansour (2000), *Policy gradient methods for reinforcement learning with function approximation*](https://papers.nips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html). Proves the policy gradient theorem, the subject of the next chapter.
+- [Sutton, McAllester, Singh, and Mansour (2000), *Policy gradient methods for reinforcement learning with function approximation*](https://papers.nips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html). Proves the policy gradient theorem, the subject of the next chapter. [Paper page](https://papers.ifkash.dev/pg-theorem/).
 - [Sutton and Barto (2018), *Reinforcement Learning: An Introduction*, chapter 13](http://incompleteideas.net/book/the-book-2nd.html). Derives the theorem step by step and presents REINFORCE with the $\gamma^t$ factor.
 - [Nota and Thomas (2020), *Is the policy gradient a gradient?*](https://arxiv.org/abs/1906.07073). Shows what goes wrong when implementations drop $\gamma^t$.
 

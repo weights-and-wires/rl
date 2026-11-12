@@ -191,7 +191,7 @@ The checks test the functions in this order. The contextual bandit, its linear s
 
 ## Further reading
 
-- [Kakade (2001), A natural policy gradient](https://proceedings.neurips.cc/paper/2001/hash/4b86abe48d358ecf194c56c69108433e-Abstract.html) applies the Fisher matrix of the policy to policy gradients.
+- [Kakade (2001), A natural policy gradient](https://proceedings.neurips.cc/paper/2001/hash/4b86abe48d358ecf194c56c69108433e-Abstract.html) applies the Fisher matrix of the policy to policy gradients. [Paper page](https://papers.ifkash.dev/npg/).
 - [Schulman, Levine, Moritz, Jordan, and Abbeel (2015), Trust region policy optimization](https://arxiv.org/abs/1502.05477) introduces TRPO, its Fisher-vector products, and the backtracking line search.
 - [Shewchuk (1994), An introduction to the conjugate gradient method without the agonizing pain](https://www.cs.cmu.edu/~quake-papers/painless-conjugate-gradient.pdf) derives conjugate gradient with pictures.
 - [Martens (2014), New insights and perspectives on the natural gradient method](https://arxiv.org/abs/1412.1193) connects the Fisher matrix to second-order optimization.

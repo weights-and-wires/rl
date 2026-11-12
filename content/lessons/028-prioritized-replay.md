@@ -265,7 +265,7 @@ Prioritized replay adds $O(B \log N)$ time per update, to sample and to write pr
 ## Further reading
 
 - [Schaul et al., *Prioritized experience replay* (2016)](https://arxiv.org/abs/1511.05952). Proportional and rank-based priorities, importance weights, and the sum tree.
-- [Hessel et al., *Rainbow: combining improvements in deep reinforcement learning* (2018)](https://arxiv.org/abs/1710.02298). Combines six improvements and ablates each one.
+- [Hessel et al., *Rainbow: combining improvements in deep reinforcement learning* (2018)](https://arxiv.org/abs/1710.02298). Combines six improvements and ablates each one. [Paper page](https://papers.ifkash.dev/rainbow/).
 - [Horgan et al., *Distributed prioritized experience replay* (2018)](https://arxiv.org/abs/1803.00933). Ape-X, which computes priorities on many actors and shares one prioritized buffer.
 - [Obando-Ceron and Castro, *Revisiting Rainbow* (2021)](https://arxiv.org/abs/2011.14826). Reruns Rainbow's ablations on small environments at a fraction of the compute.
 

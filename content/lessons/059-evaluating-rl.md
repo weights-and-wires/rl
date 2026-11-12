@@ -314,7 +314,7 @@ The checks test the functions in this order.
 ## Further reading
 
 - [Agarwal, Schwarzer, Castro, Courville, and Bellemare (2021), Deep Reinforcement Learning at the Edge of the Statistical Precipice](https://arxiv.org/abs/2108.13264). The IQM, performance profiles, probability of improvement, and stratified bootstrap, with the `rliable` library.
-- [Henderson and colleagues (2018), Deep Reinforcement Learning that Matters](https://arxiv.org/abs/1709.06560). Shows how seeds, hyperparameters, and codebases change deep RL results.
+- [Henderson and colleagues (2018), Deep Reinforcement Learning that Matters](https://arxiv.org/abs/1709.06560). Shows how seeds, hyperparameters, and codebases change deep RL results. [Paper page](https://papers.ifkash.dev/henderson/).
 - [Patterson, Neumann, White, and White (2024), Empirical Design in Reinforcement Learning](https://arxiv.org/abs/2304.01315). A long practical guide to designing RL experiments.
 - [Hochlehnert and colleagues (2025), A Sober Look at Progress in Language Model Reasoning](https://arxiv.org/abs/2504.07086). The same problems, measured on reasoning benchmarks.
 

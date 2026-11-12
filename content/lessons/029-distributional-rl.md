@@ -297,6 +297,7 @@ The checks test the functions in this order:
 - [Dabney et al., *Distributional reinforcement learning with quantile regression* (2018)](https://arxiv.org/abs/1710.10044). QR-DQN, the quantile midpoints, and the quantile Huber loss.
 - [Rowland et al., *An analysis of categorical distributional reinforcement learning* (2018)](https://arxiv.org/abs/1802.08163). Proves the projected operator converges, using the Cramér distance.
 - [Lyle, Castro, and Bellemare, *A comparative analysis of expected and distributional reinforcement learning* (2019)](https://arxiv.org/abs/1901.11084). When distributional and expected RL behave identically, and when they do not.
+- [Rainbow paper page](https://papers.ifkash.dev/rainbow/). Combines C51 with five other DQN improvements and ablates each one.
 
 ## The exercise
 

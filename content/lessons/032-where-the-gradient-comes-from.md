@@ -249,7 +249,7 @@ The exact gradient needs linear solves, so it works only on small tabular proble
 
 ## Further reading
 
-- [Sutton, McAllester, Singh, and Mansour (2000), *Policy gradient methods for reinforcement learning with function approximation*](https://papers.nips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html). Proves the theorem in the form this chapter uses.
+- [Sutton, McAllester, Singh, and Mansour (2000), *Policy gradient methods for reinforcement learning with function approximation*](https://papers.nips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html). Proves the theorem in the form this chapter uses. [Paper page](https://papers.ifkash.dev/pg-theorem/).
 - [Sutton and Barto (2018), *Reinforcement Learning: An Introduction*, chapter 13](http://incompleteideas.net/book/the-book-2nd.html). Derives the theorem step by step.
 - [Nota and Thomas (2020), *Is the policy gradient a gradient?*](https://arxiv.org/abs/1906.07073). Shows what goes wrong when implementations drop the discount from the state weighting.
 - [Agarwal, Kakade, Lee, and Mahajan (2021), *On the theory of policy gradient methods*](https://arxiv.org/abs/1908.00261). Analyzes when softmax policy gradients converge and how fast.

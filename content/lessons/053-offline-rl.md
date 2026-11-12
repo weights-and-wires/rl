@@ -277,7 +277,7 @@ The authors' code detaches this average at $\pi(s)$. This exercise uses the logg
 - [Fujimoto, Meger, and Precup (2019), Off-Policy Deep Reinforcement Learning without Exploration](https://arxiv.org/abs/1812.02900). Names extrapolation error and introduces BCQ.
 - [Kumar, Zhou, Tucker, and Levine (2020), Conservative Q-Learning for Offline Reinforcement Learning](https://arxiv.org/abs/2006.04779). The CQL penalty and its lower-bound theorems.
 - [Kostrikov, Nair, and Levine (2022), Offline Reinforcement Learning with Implicit Q-Learning](https://arxiv.org/abs/2110.06169). The expectile value loss, and advantage-weighted policy extraction.
-- [Fujimoto and Gu (2021), A Minimalist Approach to Offline Reinforcement Learning](https://arxiv.org/abs/2106.06860). The TD3 actor plus a squared cloning penalty, scaled by $\alpha$ over the mean absolute Q.
+- [Fujimoto and Gu (2021), A Minimalist Approach to Offline Reinforcement Learning](https://arxiv.org/abs/2106.06860). The TD3 actor plus a squared cloning penalty, scaled by $\alpha$ over the mean absolute Q. [TD3 page](https://papers.ifkash.dev/td3/).
 - [CS285, Spring 2026, lecture 17, "Offline RL Part 1"](https://rail.eecs.berkeley.edu/deeprlcourse/). Distribution shift on a fixed log. Lecture 18 is "Offline RL Part 2".
 
 ## The exercise
