@@ -125,3 +125,91 @@ def test_coverage(sub):
         covered += low <= task_means.mean() <= high
     if covered < 166:
         fail(f"the 95% interval covered the true mean in {covered} of {trials} experiments, expected at least 166")
+
+
+# The lesson's ablation example: six seeds of the full method and of two one-component ablations.
+FULL = np.array([0.82, 0.91, 0.77, 0.88, 0.85, 0.90])
+ABLATIONS = {
+    "no target network": np.array([0.70, 0.83, 0.62, 0.79, 0.74, 0.81]),
+    "no reward scaling": np.array([0.80, 0.93, 0.74, 0.86, 0.88, 0.87]),
+}
+
+
+def _reference_ci(full, ablated, alpha=0.05, n_boot=200000, seed=12345):
+    """A large independent-groups bootstrap, used as the reference for the interval."""
+    rng = np.random.default_rng(seed)
+    f = full[rng.integers(0, full.size, size=(n_boot, full.size))].mean(axis=1)
+    a = ablated[rng.integers(0, ablated.size, size=(n_boot, ablated.size))].mean(axis=1)
+    return np.percentile(f - a, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+
+
+@check("ablation_contributions returns each component's estimate, reproducibly, with intervals that widen with noise")
+def test_ablation_point_estimate(sub):
+    ablation_contributions = has(sub, "ablation_contributions")
+    got = ablation_contributions(FULL, ABLATIONS, n_boot=200, alpha=0.05, seed=0)
+    if not isinstance(got, dict) or list(got) != list(ABLATIONS):
+        fail(f"expected a dict with the keys {list(ABLATIONS)}, got {got!r}")
+    for name, ablated in ABLATIONS.items():
+        if len(got[name]) != 3:
+            fail(f"{name}: expected (estimate, low, high), got {got[name]!r}")
+        almost(got[name][0], FULL.mean() - ablated.mean(), tol=1e-12, label=f"point estimate for '{name}'")
+    almost(got["no target network"][0], 0.10667, tol=1e-4, label="the lesson's value for 'no target network'")
+    almost(got["no reward scaling"][0], 0.00833, tol=1e-4, label="the lesson's value for 'no reward scaling'")
+    rng = np.random.default_rng(7)
+    base_f, base_a = rng.normal(size=8), rng.normal(size=8)
+    widths = []
+    for scale in (0.1, 0.3):
+        out = ablation_contributions(1.0 + scale * base_f, {"c": 0.5 + scale * base_a}, n_boot=5000, seed=1)
+        _, low, high = out["c"]
+        widths.append(high - low)
+    if not widths[1] > 2.0 * widths[0]:
+        fail(f"tripling the noise should roughly triple the width: got {widths[0]:.4f} then {widths[1]:.4f}")
+    a = ablation_contributions(FULL, ABLATIONS, n_boot=300, seed=11)
+    b = ablation_contributions(FULL, ABLATIONS, n_boot=300, seed=11)
+    if a != b:
+        fail(f"the same seed must give the same result, got {a!r} then {b!r}")
+
+
+@check("ablation_contributions intervals match a reference bootstrap, contain the estimate, and use alpha")
+def test_ablation_interval(sub):
+    ablation_contributions = has(sub, "ablation_contributions")
+    got = ablation_contributions(FULL, ABLATIONS, n_boot=20000, alpha=0.05, seed=0)
+    for name, ablated in ABLATIONS.items():
+        est, low, high = got[name]
+        finite(np.array([low, high]), label=f"interval for '{name}'")
+        ref_low, ref_high = _reference_ci(FULL, ablated)
+        width = ref_high - ref_low
+        almost(low, ref_low, tol=0.04 * width, label=f"lower bound for '{name}'")
+        almost(high, ref_high, tol=0.04 * width, label=f"upper bound for '{name}'")
+        if not low <= est <= high:
+            fail(f"'{name}': the interval [{low}, {high}] must contain the point estimate {est}")
+    # alpha = 0.2 gives a narrower, 80% interval.
+    narrow = ablation_contributions(FULL, ABLATIONS, n_boot=20000, alpha=0.2, seed=0)["no target network"]
+    ref_low, ref_high = _reference_ci(FULL, ABLATIONS["no target network"], alpha=0.2)
+    almost(narrow[1], ref_low, tol=0.04 * (ref_high - ref_low), label="lower bound at alpha=0.2")
+    almost(narrow[2], ref_high, tol=0.04 * (ref_high - ref_low), label="upper bound at alpha=0.2")
+
+
+# Wrong implementations this check catches:
+#   - Pairing: resample one index array and apply it to both groups, as if seed i of the full
+#     method and seed i of the ablation were the same run. Here full = ablation + 1 seed by seed,
+#     so pairing sees a constant difference and returns a zero-width interval.
+#   - Bootstrapping only the full method, which leaves out the ablation's noise and makes the
+#     interval about 1/sqrt(2) too narrow when both groups have the same spread.
+@check("ablation_contributions resamples the two groups independently, with both sources of noise")
+def test_ablation_independent_groups(sub):
+    ablation_contributions = has(sub, "ablation_contributions")
+    ablated = np.sort(np.random.default_rng(2).normal(0.5, 0.2, size=10))
+    full = ablated + 1.0    # the same ordered values, shifted: pairing sees zero noise
+    _, low, high = ablation_contributions(full, {"c": ablated}, n_boot=20000, seed=3)["c"]
+    ref_low, ref_high = _reference_ci(full, ablated)
+    ratio = (high - low) / (ref_high - ref_low)
+    if ratio < 0.2:
+        fail(f"interval width is {high - low:.4f} against {ref_high - ref_low:.4f} expected; "
+             "the groups are different runs, so redraw each one with its own indices, not shared ones")
+    if not 0.9 < ratio < 1.1:
+        fail(f"interval width is {high - low:.4f} against {ref_high - ref_low:.4f} expected; "
+             "resample both the full method and the ablation, each with its own indices")
+    longer = np.concatenate([ablated, ablated[:5] + 0.1])    # unequal group sizes must work
+    est, low, high = ablation_contributions(full, {"c": longer}, n_boot=500, seed=3)["c"]
+    almost(est, full.mean() - longer.mean(), tol=1e-12, label="point estimate with unequal group sizes")

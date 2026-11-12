@@ -33,6 +33,23 @@ def percentile_ci(replicates: np.ndarray, confidence: float = 0.95) -> tuple[flo
     return float(low), float(high)
 
 
+def ablation_contributions(full, ablations, n_boot: int = 2000, alpha: float = 0.05, seed: int = 0) -> dict:
+    """Each component's contribution, mean(full) - mean(ablation), with a percentile bootstrap interval.
+
+    The two groups are different runs, so each bootstrap replicate redraws them independently.
+    """
+    full = np.asarray(full, dtype=float)
+    rng = np.random.default_rng(seed)
+    out = {}
+    for name, ablated in ablations.items():
+        ablated = np.asarray(ablated, dtype=float)
+        full_means = full[rng.integers(0, full.size, size=(n_boot, full.size))].mean(axis=1)
+        abl_means = ablated[rng.integers(0, ablated.size, size=(n_boot, ablated.size))].mean(axis=1)
+        low, high = percentile_ci(full_means - abl_means, confidence=1.0 - alpha)
+        out[name] = (float(full.mean() - ablated.mean()), low, high)
+    return out
+
+
 if __name__ == "__main__":
     rng = np.random.default_rng(0)
     n_runs, n_tasks = 5, 8
