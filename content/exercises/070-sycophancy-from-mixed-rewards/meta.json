@@ -1,11 +1,14 @@
 {
   "id": "070-sycophancy-from-mixed-rewards",
   "title": "Sycophancy from mixed rewards",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "brief": "Fit a rater's agreement bias from comparisons, solve the mixed-reward optimum in closed form, find the critical weight w*, and see an aggregate score hide a collapsing slice.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": ["numpy", "scipy"],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "The Newton step for Bradley-Terry is theta + solve(X.T @ W @ X, X.T @ (a_wins - p)), where X = feats_a - feats_b, p = sigmoid(X @ theta), and W = diag(p * (1 - p)).",
+    "The optimum is p_ref * exp(r / beta), normalized within each row. Work in logits and subtract each row's maximum before you exponentiate.",
+    "On a wrong user, agreeing earns w * b and correcting earns (1 - w) + w * k. Set the gap to -beta * log(p / (1 - p)) and solve for w.",
+    "acc_wrong is the probability of the correct reply when the user is wrong, which is policy[1, 1], not policy[1, 0]."
   ]
 }
