@@ -203,7 +203,7 @@ The checks test your two functions, and then run the whole PPO loop on the toy p
 
 ## Where this breaks
 
-**Reward hacking.** A learned reward has errors, and PPO finds them: longer answers, flattery, and formatting tricks. The KL penalty slows it. Gao and colleagues (2022) found that in their setup the penalty acted mostly like early stopping.
+**Reward hacking.** A learned reward has errors, and PPO finds them: longer answers, flattery, and formatting tricks. The KL penalty slows it. Gao and colleagues (2022) found that in their setup the penalty acted mostly like early stopping. For a worked case of flattery, see [Sycophancy from mixed rewards](/lessons/070-sycophancy-from-mixed-rewards).
 
 **Mismatched log-probabilities.** Sampling with one temperature and scoring with another, dropout in training mode, a bfloat16 engine against a float32 trainer, or wrong position IDs all make $\rho \ne 1$ before any update. The first minibatch's clip fraction is the test.
 
