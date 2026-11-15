@@ -1,11 +1,18 @@
 {
   "id": "087-monitors-in-the-reward",
-  "title": "Monitors in the reward",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Penalize the monitor, and the hack hides",
+  "brief": "On a four-action coding prompt, compute the KL-optimal policy under a pass-only reward and a flag-penalized reward, find the penalty and audit thresholds in closed form, and train with the exact policy gradient.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": [
+    "numpy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "expected_rewards: honest earns p, admit earns 0, the verbalized hack earns 1 - lam * r_v - q * c, and the obfuscated hack earns 1 - eps - lam * r_o - q * c. The honest action is never flagged or audited.",
+    "kl_optimum is a softmax of log(ref) + rewards / beta. Use the given softmax so that large exponents do not overflow.",
+    "detection_rates: a hack is flagged with probability r and undetected with probability 1 - r. Weight each by the policy's probability of that action, and add the two actions.",
+    "Set p equal to the hack's reward and solve for the penalty. For a flag penalty the answer divides by the flag probability; for an audit it divides by c.",
+    "policy_gradient: the derivative of J with respect to logit a is pi_a * (rewards_a - J). A common mistake is to drop the - J, which is what makes the gradient sum to zero.",
+    "train: keep the logits theta, not the probabilities. Start at np.log(ref) and add lr * policy_gradient(theta, rewards) each step."
   ]
 }

@@ -184,7 +184,7 @@ The checks test these functions in order.
 
 **Heavy tails.** A KL penalty protects you only if the proxy's error is light-tailed, and whether real reward models are is unmeasured.
 
-**Hidden hacks.** Training against a monitor of a model's reasoning can teach it to hide the hack (Baker and colleagues, 2025).
+**Hidden hacks.** Training against a monitor of a model's reasoning can teach it to hide the hack (Baker and colleagues, 2025). [Monitors in the reward](/lessons/087-monitors-in-the-reward) works the toy case.
 
 **Budgets need estimates.** If the cost estimate is itself a learned model, you have moved the proxy problem rather than removed it.
 
