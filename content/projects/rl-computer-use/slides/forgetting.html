@@ -1,0 +1,16 @@
+<section id="forgetting">
+<div class="head">
+<p class="eyebrow">The catch</p>
+<h2>Run 1 forgot skills it never practiced</h2>
+<p class="lede" style="width: 1600px;">Later tests showed run 1 got worse at tasks the original model already did well. Getting better at some things while losing others is called <b>forgetting</b>.</p>
+</div>
+<table class="fade" style="--i:1; font-size: 32px; color: #263e33;">
+<tr><th style="width:34%;">Task</th><th style="width:22%; text-align:right;">Original</th><th style="width:22%; text-align:right;">After run 1</th><th style="width:22%; text-align:right;">After run 2</th></tr>
+<tr><td>Guess a number</td><td style="text-align:right;">100%</td><td style="text-align:right; color:#B23A2C;">18%, down 82</td><td style="text-align:right; color:#0F6B49;">100%, back</td></tr>
+<tr><td>Fill a two-step form</td><td style="text-align:right;">100%</td><td style="text-align:right; color:#B23A2C;">52%, down 48</td><td style="text-align:right; color:#0F6B49;">100%, back</td></tr>
+<tr><td>Choose from a list</td><td style="text-align:right;">98%</td><td style="text-align:right; color:#B23A2C;">62%, down 36</td><td style="text-align:right; color:#0F6B49;">98%, back</td></tr>
+<tr><td>Set a number spinner</td><td style="text-align:right;">86%</td><td style="text-align:right; color:#B23A2C;">52%, down 34</td><td style="text-align:right; color:#0F6B49;">96%, back</td></tr>
+</table>
+<p class="small">Run 1 practiced only 10 tasks, and its small check on never-practiced tasks happened to miss these. Run 2 practiced them and won them back.</p>
+<aside>These four are the worst cases. The task names in the code are guess-number, form-sequence-2, choose-list and use-spinner. The lesson: test broadly, because a narrow test can hide a model getting worse elsewhere.</aside>
+</section>

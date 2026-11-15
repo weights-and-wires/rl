@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 
-import { api, type LessonMeta, type Part, type ProgressMap } from "../lib/api";
+import ProjectCard from "../components/ProjectCard";
+import { api, type LessonMeta, type Part, type ProgressMap, type ProjectMeta } from "../lib/api";
 import { lessonNumbers, splitPart, titleOf } from "../lib/parts";
 
-type Props = { parts: Part[]; progress: ProgressMap };
+type Props = { parts: Part[]; progress: ProgressMap; projects: ProjectMeta[] };
 
 type Me = Awaited<ReturnType<typeof api.me>>;
 
@@ -12,7 +13,7 @@ type Me = Awaited<ReturnType<typeof api.me>>;
  * The course overview: a hero with the reader's next lesson, then one module
  * card per part, each with its own progress strip and a way back in.
  */
-export default function Dashboard({ parts, progress }: Props) {
+export default function Dashboard({ parts, progress, projects }: Props) {
   const [me, setMe] = useState<Me | null>(null);
 
   useEffect(() => {
@@ -119,6 +120,27 @@ export default function Dashboard({ parts, progress }: Props) {
             />
           ))}
         </div>
+
+        {projects.length > 0 && (
+          <>
+            <div className="section-heading">
+              <div>
+                <span className="kicker">Projects</span>
+                <h2 className="mt-1.5">The lessons at full size</h2>
+                <p>Real models trained on real tasks with the course's methods, written up to study later.</p>
+              </div>
+              <Link to="/projects" className="button min-h-8! shrink-0 px-3! py-1! text-[12px]!">
+                All projects
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+            <div className="module-grid">
+              {projects.slice(0, 3).map((project, index) => (
+                <ProjectCard key={project.slug} project={project} index={projects.length - 1 - index} />
+              ))}
+            </div>
+          </>
+        )}
 
         {me && me.runs.length > 0 && (
           <>

@@ -1,0 +1,133 @@
+/* The course's look: serif headings, warm paper, forest green, terracotta labels.
+   Grey, orange, and green mark the original model, run 1, and run 2 on every slide. */
+section {
+  --navy: #18392e;
+  --paper: #f7f6f0;
+  --card: #fffef9;
+  --line: #d9ddd1;
+  --ink: #263e33;
+  --soft: #5b685e;
+  --blue: #1d4939;
+  --blue-soft: #e5ece1;
+  --base: #8A919D;
+  --run1: #D9682B;
+  --run2: #138A5E;
+  --good-soft: #DDF1E7;
+  --bad: #B23A2C;
+  --bad-soft: #F8E1DD;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 32px;
+  line-height: 1.4;
+  padding: 128px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  counter-increment: page;
+}
+section.dark { background: var(--navy); color: #e8eddf; }
+section.accent { background: var(--blue); color: #f7f6f0; }
+
+h1, h2, h3 { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+h1 { font-size: 120px; }
+h2 { font-size: 72px; }
+h3 { font-size: 44px; }
+p { font-size: 32px; }
+
+.head { display: flex; flex-direction: column; gap: 20px; }
+.eyebrow { color: #97512b; font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-weight: 600; font-size: 28px; letter-spacing: 3px; text-transform: uppercase; }
+section.dark .eyebrow { color: #e3a77c; }
+section.accent .eyebrow { color: #e5ece1; }
+.lede { font-size: 36px; color: var(--soft); }
+section.dark .lede { color: #b2c7b3; }
+.small { font-size: 24px; color: var(--soft); }
+section.dark .small { color: #b2c7b3; }
+
+/* Cards in a row */
+.cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+.cards.two { grid-template-columns: 1fr 1fr; }
+.cards.three .card p { font-size: 28px; }
+.card { background: var(--card); border: 2px solid var(--line); border-radius: 24px; padding: 40px; display: flex; flex-direction: column; gap: 16px; }
+.card p { font-size: 32px; color: var(--soft); }
+.card .tag { font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-weight: 600; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; color: #97512b; }
+section.dark .card { background: #1e4134; border-color: #355645; }
+section.dark .card p { color: #d3dccd; }
+section.dark .card h3 { color: #f7f6f0; }
+
+/* Monospace example of what the model sees or writes */
+.code { font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-size: 26px; line-height: 1.5; background: var(--blue-soft); color: var(--ink); border-radius: 12px; padding: 16px 20px; }
+.code.win { background: var(--good-soft); }
+
+/* Reward rows */
+.outcomes { display: flex; flex-direction: column; gap: 20px; }
+.outcome { display: flex; align-items: center; justify-content: space-between; gap: 32px; background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 24px 32px; }
+.outcome .what { font-size: 32px; }
+.pill { font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-size: 28px; font-weight: 500; border-radius: 999px; padding: 8px 24px; white-space: nowrap; }
+.pill.yes { background: var(--good-soft); color: #0F6B49; }
+.pill.no { background: var(--bad-soft); color: var(--bad); }
+
+/* GRPO tiles */
+.tries { display: grid; grid-template-columns: repeat(8, 1fr); gap: 20px; }
+.try { border-radius: 20px; padding: 24px 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.try.win { background: var(--good-soft); }
+.try.lose { background: var(--bad-soft); }
+.try .n { font-size: 24px; color: var(--soft); }
+.try .res { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight: 700; font-size: 32px; }
+.try.win .res { color: #0F6B49; }
+.try.lose .res { color: var(--bad); }
+.try .adv { font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-size: 30px; font-weight: 500; }
+.try.win .adv { color: #0F6B49; }
+.try.lose .adv { color: var(--bad); }
+.try .tick { font-size: 40px; line-height: 1; color: #0F6B49; }
+.callout { background: var(--blue-soft); border-radius: 20px; padding: 28px 36px; font-size: 32px; }
+
+/* Bars */
+.bars { display: flex; flex-direction: column; gap: 24px; }
+.bar { display: grid; grid-template-columns: 380px 1fr 150px; gap: 28px; align-items: center; }
+.bar .lbl { font-size: 32px; }
+.track { height: 56px; background: #e6e8df; border-radius: 10px; overflow: hidden; }
+.fill { height: 56px; border-radius: 10px; background: var(--base); }
+.fill.r1 { background: var(--run1); }
+.fill.r2 { background: var(--run2); }
+.fill.warm { background: #B8BEC9; }
+.bar .val { font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-size: 32px; font-weight: 500; text-align: right; }
+
+/* Compact grouped bars on the comparison slide */
+.groups { display: flex; flex-direction: column; gap: 24px; }
+.group { display: flex; flex-direction: column; gap: 6px; }
+.group .gname { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight: 700; font-size: 32px; }
+.mini { display: grid; grid-template-columns: 1fr 140px; gap: 24px; align-items: center; }
+.mini .track { height: 28px; border-radius: 6px; }
+.mini .fill { height: 28px; border-radius: 6px; }
+.mini .val { font-family: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace; font-size: 28px; font-weight: 500; text-align: right; }
+.legend { display: flex; gap: 40px; align-items: center; }
+.key { display: flex; align-items: center; gap: 12px; font-size: 28px; }
+.swatch { width: 28px; height: 28px; border-radius: 6px; }
+
+/* Curve slide */
+.split { display: grid; grid-template-columns: 1040px 1fr; gap: 64px; align-items: start; }
+.plot { position: relative; width: 1040px; height: 600px; }
+.axislbl { position: absolute; font-size: 24px; color: var(--soft); }
+.notes { display: flex; flex-direction: column; gap: 24px; }
+.note { border-left: 6px solid var(--line); padding-left: 24px; }
+.note.good { border-left-color: var(--run2); }
+.note.waste { border-left-color: var(--bad); }
+.note h3 { font-size: 32px; }
+.note p { font-size: 28px; color: var(--soft); }
+
+/* Big statement */
+.big { font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight: 700; font-size: 200px; line-height: 1; }
+.big .from { color: #a9c4b3; }
+
+/* Footer row */
+.foot { position: absolute; left: 128px; bottom: 64px; width: 1664px; font-size: 24px; color: var(--soft); }
+section.dark .foot { color: #b2c7b3; }
+
+/* Arrival motion: plain rules are the finished look */
+.rise { animation: rise 600ms ease-out both; animation-delay: calc(var(--i, 0) * 120ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+.grow { animation: grow 900ms ease-out both; animation-delay: calc(300ms + var(--i, 0) * 150ms); transform-origin: left center; }
+@keyframes grow { from { transform: scaleX(0.02); } }
+.fade { animation: fade 700ms ease-out both; animation-delay: calc(var(--i, 0) * 150ms); }
+@keyframes fade { from { opacity: 0; } }

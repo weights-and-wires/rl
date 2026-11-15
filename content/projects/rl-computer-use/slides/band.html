@@ -1,0 +1,34 @@
+<section id="band">
+<div class="head">
+<p class="eyebrow">Picking what to practice</p>
+<h2>Only mixed results teach</h2>
+</div>
+<div class="split">
+<div class="plot fade" style="--i:0">
+<svg aria-label="Chance that a group of 8 tries has mixed results, plotted against how often the model solves the task. Near zero at 0% and 100%, close to 100% between about 20% and 80%." width="900" height="440" viewBox="0 0 900 440" style="position:absolute; left:110px; top:20px; width:900px; height:440px;">
+<rect x="45" y="0" width="720" height="440" fill="#DDF1E7"/>
+<line x1="0" y1="440" x2="900" y2="440" stroke="#a3ab9f" stroke-width="2"/>
+<line x1="0" y1="0" x2="0" y2="440" stroke="#a3ab9f" stroke-width="2"/>
+<line x1="0" y1="220" x2="900" y2="220" stroke="#d9ddd1" stroke-width="2" stroke-dasharray="6 8"/>
+<path d="M0.0 440.0 L9.0 406.0 L18.0 374.3 L27.0 344.8 L36.0 317.4 L45.0 291.9 L54.0 268.2 L63.0 246.2 L72.0 225.8 L81.0 206.9 L90.0 189.4 L99.0 173.2 L108.0 158.2 L117.0 144.4 L126.0 131.7 L135.0 119.9 L144.0 109.1 L153.0 99.1 L162.0 89.9 L171.0 81.5 L180.0 73.8 L189.0 66.8 L198.0 60.3 L207.0 54.4 L216.0 49.0 L225.0 44.1 L234.0 39.6 L243.0 35.5 L252.0 31.8 L261.0 28.4 L270.0 25.4 L279.0 22.6 L288.0 20.2 L297.0 17.9 L306.0 15.9 L315.0 14.1 L324.0 12.5 L333.0 11.1 L342.0 9.8 L351.0 8.7 L360.0 7.7 L369.0 6.8 L378.0 6.1 L387.0 5.4 L396.0 4.9 L405.0 4.4 L414.0 4.1 L423.0 3.8 L432.0 3.6 L441.0 3.5 L450.0 3.4 L459.0 3.5 L468.0 3.6 L477.0 3.8 L486.0 4.1 L495.0 4.4 L504.0 4.9 L513.0 5.4 L522.0 6.1 L531.0 6.8 L540.0 7.7 L549.0 8.7 L558.0 9.8 L567.0 11.1 L576.0 12.5 L585.0 14.1 L594.0 15.9 L603.0 17.9 L612.0 20.2 L621.0 22.6 L630.0 25.4 L639.0 28.4 L648.0 31.8 L657.0 35.5 L666.0 39.6 L675.0 44.1 L684.0 49.0 L693.0 54.4 L702.0 60.3 L711.0 66.8 L720.0 73.8 L729.0 81.5 L738.0 89.9 L747.0 99.1 L756.0 109.1 L765.0 119.9 L774.0 131.7 L783.0 144.4 L792.0 158.2 L801.0 173.2 L810.0 189.4 L819.0 206.9 L828.0 225.8 L837.0 246.2 L846.0 268.2 L855.0 291.9 L864.0 317.4 L873.0 344.8 L882.0 374.3 L891.0 406.0 L900.0 440.0" fill="none" stroke="#1d4939" stroke-width="6"/>
+<circle cx="882" cy="374.3" r="12" fill="#B23A2C"/>
+<circle cx="450" cy="3.4" r="12" fill="#138A5E"/>
+</svg>
+<p class="axislbl" style="left:0px; top:4px; width:96px; text-align:right;">100%</p>
+<p class="axislbl" style="left:0px; top:224px; width:96px; text-align:right;">50%</p>
+<p class="axislbl" style="left:0px; top:444px; width:96px; text-align:right;">0%</p>
+<p class="axislbl" style="left:90px; top:476px; width:60px;">0%</p>
+<p class="axislbl" style="left:530px; top:476px; width:80px;">50%</p>
+<p class="axislbl" style="left:960px; top:476px; width:80px;">100%</p>
+<p class="axislbl" style="left:110px; top:524px; width:900px; text-align:center;">How often the model solves the task (blue line: chance a group of 8 has mixed results)</p>
+<p class="axislbl" style="left:300px; top:300px; width:420px; text-align:center; color:#0F6B49; font-weight:600;">useful practice band, 5% to 85%</p>
+</div>
+<div class="notes">
+<div class="note good rise" style="--i:1"><h3>Solved half the time</h3><p>Almost every group of 8 is mixed. Useful practice.</p></div>
+<div class="note waste rise" style="--i:2"><h3>Solved 98% of the time</h3><p>Most groups are all successes. Wasted practice.</p></div>
+<div class="note waste rise" style="--i:3"><h3>Never solved</h3><p>Every group is all misses. Also wasted.</p></div>
+<div class="note rise" style="--i:4"><p>In run 1, about 3 of every 4 groups taught nothing.</p></div>
+</div>
+</div>
+<aside>This follows from the previous slide. A task the model always solves gives all-success groups; one it never solves gives all-miss groups. Both cost time and teach nothing. So we pick practice tasks the model solves only sometimes. The green dot is a task solved half the time; the red dot, one solved 98% of the time.</aside>
+</section>

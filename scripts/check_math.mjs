@@ -2,7 +2,7 @@
 // frontend's own KaTeX, so math that fails only at render time fails here.
 //
 //   node scripts/check_math.mjs content/lessons/01-the-learning-problem.md
-//   node scripts/check_math.mjs            # every lesson
+//   node scripts/check_math.mjs            # every lesson and project
 
 import fs from "node:fs";
 import path from "node:path";
@@ -16,6 +16,13 @@ let files = process.argv.slice(2);
 if (files.length === 0) {
   const dir = path.join(root, "content", "lessons");
   files = fs.readdirSync(dir).filter((f) => f.endsWith(".md")).map((f) => path.join(dir, f));
+  const projects = path.join(root, "content", "projects");
+  if (fs.existsSync(projects)) {
+    for (const name of fs.readdirSync(projects)) {
+      const writeUp = path.join(projects, name, "project.md");
+      if (fs.existsSync(writeUp)) files.push(writeUp);
+    }
+  }
 }
 
 let failures = 0;

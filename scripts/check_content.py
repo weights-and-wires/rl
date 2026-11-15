@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validates lessons and exercises against docs/CONTENT_CONTRACT.md.
+"""Validates lessons, exercises, and projects against docs/CONTENT_CONTRACT.md.
 
 Run it over everything, or over one lesson while you write it:
 
@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT = Path(os.environ.get("CONTENT_DIR") or ROOT / "content").resolve()
 LESSONS = CONTENT / "lessons"
 EXERCISES = CONTENT / "exercises"
+PROJECTS = CONTENT / "projects"
 HARNESS = ROOT / "backend" / "app" / "runner" / "harness.py"
 
 REQUIRED_FRONTMATTER = {
@@ -289,13 +290,91 @@ def check_lesson(path: Path, problems: list[str], seen_exercises: set[str]) -> N
     check_exercise(exercise_id, problems)
 
 
+PROJECT_FRONTMATTER = {"title", "summary", "date"}
+SLIDE_ID = re.compile(r"[A-Za-z0-9_-]{1,64}")
+
+
+def check_project(directory: Path, problems: list[str]) -> None:
+    """A project: front matter, lesson links that resolve, and a deck that matches its index."""
+    name = f"projects/{directory.name}"
+    if not CHAPTER_NAME.fullmatch(f"000-{directory.name}"):
+        problems.append(f"{name}: a project directory is named in lowercase words joined by hyphens")
+    source = directory / "project.md"
+    if not source.is_file():
+        problems.append(f"{name}: no project.md")
+        return
+    try:
+        meta, body = parse_frontmatter(source.read_text())
+    except ValueError as exc:
+        problems.append(f"{name}: {exc}")
+        return
+
+    missing = PROJECT_FRONTMATTER - set(meta)
+    if missing:
+        problems.append(f"{name}: front matter has no {sorted(missing)}")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(meta.get("date", ""))):
+        problems.append(f"{name}: date must be YYYY-MM-DD")
+    for field in ("title", "summary", "status"):
+        if field in meta and not isinstance(meta[field], str):
+            problems.append(f"{name}: {field} parsed as {type(meta[field]).__name__}, not a string")
+    if len(str(meta.get("summary", ""))) > 160:
+        problems.append(f"{name}: summary is longer than 160 characters")
+    if not body.lstrip().startswith("# "):
+        problems.append(f"{name}: the body must open with a single '# ' heading")
+
+    lessons = {path.stem for path in LESSONS.glob("*.md")}
+    for slug in meta.get("lessons") or []:
+        if slug not in lessons:
+            problems.append(f"{name}: lessons lists {slug!r}, which is not a lesson")
+    for slug in re.findall(r"\]\(/lessons/([a-z0-9-]+)", body):
+        if slug not in lessons:
+            problems.append(f"{name}: links to /lessons/{slug}, which is not a lesson")
+    for i, link in enumerate(meta.get("links") or []):
+        if not (isinstance(link, dict) and link.get("label") and str(link.get("url", "")).startswith("https://")):
+            problems.append(f"{name}: links[{i}] needs a label and an https url")
+
+    prose = re.sub(r"```.*?```", "", body, flags=re.S)
+    for pattern in BANNED:
+        found = re.search(pattern, prose, flags=re.I)
+        if found:
+            problems.append(f"{name}: avoid {found.group(0)!r}")
+    if body.count("$$") % 2 != 0:
+        problems.append(f"{name}: an unclosed $$ display-math block")
+
+    slides = directory / "slides"
+    if not slides.is_dir():
+        return
+    try:
+        order = json.loads((slides / "deck.json").read_text())["order"]
+    except (OSError, ValueError, KeyError, TypeError):
+        problems.append(f"{name}: slides/deck.json is missing or has no order list")
+        return
+    for slide in order:
+        if not isinstance(slide, str) or not SLIDE_ID.fullmatch(slide):
+            problems.append(f"{name}: slide id {slide!r} must match [A-Za-z0-9_-]{{1,64}}")
+            continue
+        path = slides / f"{slide}.html"
+        if not path.is_file():
+            problems.append(f"{name}: deck.json lists {slide!r} but slides/{slide}.html is missing")
+            continue
+        html = path.read_text().strip()
+        if not re.fullmatch(rf'<section id="{slide}"[^>]*>.*</section>', html, flags=re.S) or html.count("<section") != 1:
+            problems.append(f'{name}: slides/{slide}.html must hold exactly one <section id="{slide}">')
+        if re.search(r"<script|\son\w+=", html, flags=re.I):
+            problems.append(f"{name}: slides/{slide}.html has a script or an event handler")
+    listed = {f"{slide}.html" for slide in order if isinstance(slide, str)}
+    for path in sorted(slides.glob("*.html")):
+        if path.name not in listed:
+            problems.append(f"{name}: slides/{path.name} is not in deck.json's order")
+
+
 def main() -> int:
     wanted = sys.argv[1:]
     paths = sorted(LESSONS.glob("*.md"))
     if wanted:
         paths = [p for p in paths if p.stem in wanted or any(w in p.stem for w in wanted)]
-        if not paths:
-            print(f"No lesson matches {wanted}")
+        if not paths and not any(w in p.name for p in PROJECTS.glob("*") for w in wanted):
+            print(f"No lesson or project matches {wanted}")
             return 2
 
     problems: list[str] = []
@@ -308,9 +387,15 @@ def main() -> int:
         for orphan in sorted(orphans):
             problems.append(f"{orphan}: an exercise no lesson refers to")
 
+    projects = sorted(p for p in PROJECTS.iterdir() if p.is_dir()) if PROJECTS.is_dir() else []
+    if wanted:
+        projects = [p for p in projects if any(w in p.name for w in wanted)]
+    for directory in projects:
+        check_project(directory, problems)
+
     for problem in problems:
         print(f"FAIL  {problem}")
-    print(f"\n{len(paths)} lesson(s) checked, {len(problems)} problem(s).")
+    print(f"\n{len(paths)} lesson(s) and {len(projects)} project(s) checked, {len(problems)} problem(s).")
     return 1 if problems else 0
 
 

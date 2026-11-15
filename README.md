@@ -29,6 +29,7 @@ The repository is laid out as follows:
 |---|---|
 | `content/lessons/` | Eighty-four chapters, in Markdown with YAML front matter. |
 | `content/exercises/` | One directory per exercise: a starter file, checks, and a worked solution. |
+| `content/projects/` | One directory per hands-on project: a write-up in Markdown and an optional slide deck. |
 | `backend/` | FastAPI: auth, content, progress, drafts, and the run stream. |
 | `backend/app/runner/` | The harness, the `rlcheck` assertion library the checks use, the `rlenvs` environments every exercise shares, and the execution backends. |
 | `frontend/` | React and Vite: the reader, the editor, and the check console. |
@@ -95,6 +96,25 @@ If you started the earlier 52-lesson course, your progress carries over;
 `content/renames.json` maps the old slugs to the new chapters.
 
 [The full list, with what each exercise delivers](docs/CURRICULUM.md).
+
+## Projects
+
+The **Projects** section, at `/projects`, holds larger builds that put several
+lessons to work on a real problem. Each project has a write-up that links back
+to the lessons it uses, and can have a slide deck with speaker notes.
+
+- **Teaching a vision-language model to use a browser.** GRPO post-training of
+  Qwen3-VL-4B on MiniWoB++ web tasks, in two runs on one rented GPU, with the
+  14-slide deck *Teaching a Model to Click*.
+
+To add a project, create a directory under `content/projects/` as
+`docs/CONTENT_CONTRACT.md` describes, then validate it:
+
+```bash
+.venv/bin/python scripts/check_content.py PROJECT_SLUG
+```
+
+Replace `PROJECT_SLUG` with the project's directory name.
 
 ## Run it locally
 

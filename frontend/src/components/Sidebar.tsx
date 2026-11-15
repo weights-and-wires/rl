@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 
-import type { Part, ProgressMap } from "../lib/api";
+import type { Part, ProgressMap, ProjectMeta } from "../lib/api";
 import { splitPart } from "../lib/parts";
 import StatusMark from "./StatusMark";
 
 type Props = {
   parts: Part[];
+  /** Hands-on projects, listed after the parts. */
+  projects: ProjectMeta[];
   progress: ProgressMap;
   /** The signed-in reader, named in the progress footer. */
   username: string;
@@ -21,6 +23,8 @@ type Props = {
 };
 
 const OPEN_PARTS_KEY = "rl.sidebar.parts";
+/** The projects group folds like a part, under this key in the same set. */
+const PROJECTS_GROUP = "projects";
 
 /**
  * The lesson rail: a fixed 252px column of parts and lessons, with the
@@ -29,6 +33,7 @@ const OPEN_PARTS_KEY = "rl.sidebar.parts";
  */
 export default function Sidebar({
   parts,
+  projects,
   progress,
   username,
   open,
@@ -195,6 +200,47 @@ export default function Sidebar({
                 </section>
               );
             })}
+
+            <section className="mt-3">
+              <button
+                type="button"
+                onClick={() => toggle(PROJECTS_GROUP)}
+                aria-expanded={!shutParts.has(PROJECTS_GROUP)}
+                className="sidebar-group-title group m-0! flex w-full items-baseline gap-2 rounded-[5px] px-2 py-1.5 text-left transition-colors hover:bg-sunk hover:text-ink"
+              >
+                <span className="min-w-0 flex-1">Projects</span>
+                <span className="tabular-nums">{projects.length}</span>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  className={`shrink-0 self-center transition-transform duration-150 ${shutParts.has(PROJECTS_GROUP) ? "-rotate-90" : ""}`}
+                  aria-hidden
+                >
+                  <path d="M2.5 3.75 5 6.25l2.5-2.5" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {!shutParts.has(PROJECTS_GROUP) && (
+                <ul className="mt-0.5 space-y-px">
+                  <li>
+                    <NavLink to="/projects" end onClick={onClose} className="sidebar-lesson max-lg:py-2">
+                      <span className="sidebar-lesson-number" aria-hidden>
+                        ·
+                      </span>
+                      <span className="min-w-0 flex-1">All projects</span>
+                    </NavLink>
+                  </li>
+                  {projects.map((project, index) => (
+                    <li key={project.slug}>
+                      <NavLink to={`/projects/${project.slug}`} onClick={onClose} className="sidebar-lesson max-lg:py-2">
+                        <span className="sidebar-lesson-number tabular-nums">P{projects.length - index}</span>
+                        <span className="min-w-0 flex-1">{project.title}</span>
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
           </div>
 
           <footer className="shrink-0 border-t border-line px-4 pb-4 pt-3.5">

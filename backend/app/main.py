@@ -16,7 +16,7 @@ from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Str
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import curriculum, db
+from . import curriculum, db, projects
 from .auth import current_user
 from .config import Settings, get_settings
 from .runner import RunRequest, RunnerError, choose_backend, run_local, run_runpod
@@ -130,6 +130,27 @@ def solution(exercise_id: str, user: str = Depends(current_user)) -> dict[str, A
     if exercise is None:
         raise HTTPException(status_code=404, detail="No such exercise")
     return {"id": exercise_id, "solution": exercise["solution"]}
+
+
+@app.get("/api/projects")
+def project_index(user: str = Depends(current_user)) -> dict[str, Any]:
+    return {"projects": projects.project_list()}
+
+
+@app.get("/api/projects/{slug}")
+def project(slug: str, user: str = Depends(current_user)) -> dict[str, Any]:
+    found = projects.get_project(slug)
+    if found is None:
+        raise HTTPException(status_code=404, detail="No such project")
+    return found
+
+
+@app.get("/api/projects/{slug}/slides")
+def project_slides(slug: str, user: str = Depends(current_user)) -> dict[str, Any]:
+    deck = projects.get_slides(slug)
+    if deck is None:
+        raise HTTPException(status_code=404, detail="This project has no slides")
+    return deck
 
 
 def book_info(settings: Settings) -> dict[str, Any] | None:
