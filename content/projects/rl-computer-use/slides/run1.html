@@ -1,0 +1,16 @@
+<section id="run1">
+<div class="head">
+<p class="eyebrow">Run 1</p>
+<h2>Run 1 doubled success on its 10 practice tasks</h2>
+</div>
+<div class="bars">
+<div class="bar"><p class="lbl">Original model</p><div class="track"><div class="fill grow" style="--i:0; width:27.3%;"></div></div><p class="val">27.3%</p></div>
+<div class="bar"><p class="lbl">Warm start only</p><div class="track"><div class="fill warm grow" style="--i:1; width:32%;"></div></div><p class="val">32.0%</p></div>
+<div class="bar"><p class="lbl">After run 1</p><div class="track"><div class="fill r1 grow" style="--i:2; width:57.8%;"></div></div><p class="val">57.8%</p></div>
+</div>
+<div class="cards two">
+<div class="card fade" style="--i:4"><p class="tag">Most of the gain came from practice rounds</p><p>The warm start added about 5 points. The 158 practice rounds, over 5 hours on one rented GPU, added about 26 more.</p></div>
+<div class="card fade" style="--i:5"><p class="tag">Biggest jump: entering a date, 0% → 98%</p><p>The model worked out on its own that the date box wants the format 2012-02-04. Nobody told it.</p></div>
+</div>
+<aside>Run 1 had two parts: the warm start, then GRPO practice rounds. The warm start alone took success from 27% to 32%. The practice rounds took it to 58%. Three tasks went to nearly 100%: entering a date, entering a time, and finding a word in a paragraph.</aside>
+</section>

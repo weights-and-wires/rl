@@ -1,0 +1,27 @@
+<section id="shortcuts">
+<div class="head">
+<p class="eyebrow">Making it practical</p>
+<h2>Two shortcuts</h2>
+</div>
+<div class="cards two">
+<div class="card rise" style="--i:0">
+<p class="tag">Warm start</p>
+<h3>Study your own best attempts first</h3>
+<p>Before the main practice, the model tries each task many times. We keep only the successful attempts and train it to repeat them.</p>
+<p class="code">32 tries per task → keep the successes → train on those</p>
+<p class="small">Full name: rejection-sampling fine-tuning.</p>
+</div>
+<div class="card rise" style="--i:1">
+<p class="tag">A small add-on (LoRA)</p>
+<h3>Train a small add-on, not the whole model</h3>
+<p>The original model stays frozen. Training changes a small add-on beside it: under 2% of the model’s size, a 260 MB file.</p>
+<div style="display:grid; grid-template-columns: repeat(25, 1fr); gap:6px; width:700px;">
+<div style="height:22px; background:#1d4939; border-radius:4px;"></div>
+<div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div>
+<div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div><div style="height:22px; background:#C9CFDA; border-radius:4px;"></div>
+</div>
+<p class="small">Dark green: the add-on, about 1 of every 50 parts. Grey: the frozen model.</p>
+</div>
+</div>
+<aside>The warm start moves tasks from almost never solved toward sometimes solved, which is where the practice rounds can learn. The add-on, called LoRA (low-rank adaptation), is why all of this fits on one rented graphics card: only a small file changes, and it is cheap to copy after every round.</aside>
+</section>

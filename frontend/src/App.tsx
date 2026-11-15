@@ -7,7 +7,10 @@ import SearchDialog from "./components/SearchDialog";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import LessonPage from "./pages/LessonPage";
-import { api, type Part, type ProgressMap } from "./lib/api";
+import ProjectPage from "./pages/ProjectPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import SlidesPage from "./pages/SlidesPage";
+import { api, type Part, type ProgressMap, type ProjectMeta } from "./lib/api";
 import { useTheme, type ThemeMode } from "./lib/theme";
 
 const COLLAPSED_KEY = "rl.sidebar.collapsed";
@@ -25,6 +28,8 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const [parts, setParts] = useState<Part[]>([]);
   const [progress, setProgress] = useState<ProgressMap>({});
+  const [projects, setProjects] = useState<ProjectMeta[]>([]);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [gpu, setGpu] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   // menuOpen drives the drawer on a narrow screen; collapsed hides the lesson
@@ -57,6 +62,15 @@ export default function App() {
     refresh();
     if (username) api.health().then((body) => setGpu(body.gpu)).catch(() => undefined);
   }, [username, refresh]);
+
+  useEffect(() => {
+    if (!username) return;
+    api
+      .projects()
+      .then((body) => setProjects(body.projects))
+      .catch(() => undefined)
+      .finally(() => setProjectsLoaded(true));
+  }, [username]);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -115,7 +129,8 @@ export default function App() {
     return <div className="h-full bg-paper" aria-busy="true" />;
   }
 
-  const onLesson = location.pathname.startsWith("/lessons/");
+  const onContents = location.pathname === "/";
+  const onProjects = location.pathname === "/projects" || location.pathname.startsWith("/projects/");
 
   return (
     <div className="flex h-full flex-col bg-paper">
@@ -158,14 +173,20 @@ export default function App() {
         </Link>
 
         <nav aria-label="Course" className="ml-3 hidden items-center gap-1 md:flex">
-          {onLesson && (
-            <Link
-              to="/"
-              className="rounded-[5px] px-2 py-1 text-[13px] text-muted transition-colors hover:text-forest"
-            >
-              Contents
-            </Link>
-          )}
+          <Link
+            to="/"
+            aria-current={onContents ? "page" : undefined}
+            className={`rounded-[5px] px-2 py-1 text-[13px] transition-colors hover:text-forest ${onContents ? "text-forest" : "text-muted"}`}
+          >
+            Contents
+          </Link>
+          <Link
+            to="/projects"
+            aria-current={onProjects ? "page" : undefined}
+            className={`rounded-[5px] px-2 py-1 text-[13px] transition-colors hover:text-forest ${onProjects ? "text-forest" : "text-muted"}`}
+          >
+            Projects
+          </Link>
         </nav>
 
         <div className="flex-1" />
@@ -205,6 +226,7 @@ export default function App() {
       <div className="flex min-h-0 flex-1">
         <Sidebar
           parts={parts}
+          projects={projects}
           progress={progress}
           username={username}
           open={menuOpen}
@@ -221,7 +243,7 @@ export default function App() {
           <Routes>
             <Route
               path="/"
-              element={<Dashboard parts={parts} progress={progress} />}
+              element={<Dashboard parts={parts} progress={progress} projects={projects} />}
             />
             <Route
               path="/lessons/:slug"
@@ -229,6 +251,12 @@ export default function App() {
                 <LessonPage gpuAvailable={gpu} lessons={lessons} onProgress={refresh} />
               }
             />
+            <Route
+              path="/projects"
+              element={<ProjectsPage projects={projects} loaded={projectsLoaded} />}
+            />
+            <Route path="/projects/:slug" element={<ProjectPage lessons={lessons} />} />
+            <Route path="/projects/:slug/slides" element={<SlidesPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

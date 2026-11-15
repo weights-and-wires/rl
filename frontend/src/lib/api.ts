@@ -39,6 +39,29 @@ export type Lesson = LessonMeta & {
 
 export type Part = { part: string; lessons: LessonMeta[] };
 
+/** A hands-on project from content/projects/, listed without its body. */
+export type ProjectMeta = {
+  slug: string;
+  title: string;
+  summary: string;
+  /** ISO date, such as 2026-11-15. Projects are listed newest first. */
+  date: string;
+  status: string;
+  tags: string[];
+  /** Slugs of the lessons the project builds on. */
+  lessons: string[];
+  links: { label: string; url: string }[];
+  slides: { title: string; count: number } | null;
+  headings: Heading[];
+};
+
+export type Project = ProjectMeta & { body: string };
+
+/** One slide: a <section> on a 1920 by 1080 canvas, and its speaker notes. */
+export type Slide = { id: string; html: string; notes: string };
+
+export type Deck = { title: string; css: string; slides: Slide[] };
+
 /** The whole course as one PDF, built at deploy time. */
 export type BookFile = {
   title: string;
@@ -118,6 +141,12 @@ export const api = {
     request<{ parts: Part[]; progress: ProgressMap }>("/api/lessons"),
 
   lesson: (slug: string) => request<Lesson>(`/api/lessons/${slug}`),
+
+  projects: () => request<{ projects: ProjectMeta[] }>("/api/projects"),
+
+  project: (slug: string) => request<Project>(`/api/projects/${slug}`),
+
+  slides: (slug: string) => request<Deck>(`/api/projects/${slug}/slides`),
 
   solution: (exerciseId: string) =>
     request<{ id: string; solution: string }>(

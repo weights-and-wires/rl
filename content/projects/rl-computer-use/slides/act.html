@@ -1,0 +1,13 @@
+<section id="act">
+<div class="head">
+<p class="eyebrow">How the model acts</p>
+<h2>Each turn: look, act, see the new page</h2>
+</div>
+<div class="cards three">
+<div class="card rise" style="--i:0"><p class="tag">1 · Look</p><p>It gets the task in words, a screenshot, and a numbered list of the page’s boxes and buttons.</p><p class="code">Goal: enter 11/15/2026, press Submit<br>[7] text box<br>[12] Submit button</p></div>
+<div class="card rise" style="--i:1"><p class="tag">2 · Act</p><p>It answers with exactly one action, using those numbers.</p><p class="code">fill [7] with “11/15/2026”<br>then: click [12]</p></div>
+<div class="card rise" style="--i:2"><p class="tag">3 · New page</p><p>The browser does the action and shows the result. This repeats until the task is done.</p><p class="code win">Task complete<br>reward = 1</p></div>
+</div>
+<p class="lede">One full attempt, from the first page to the end, is an <b>episode</b>: a few turns, never more than 8.</p>
+<aside>The numbered list is what makes this learnable quickly: the model picks an element by its number instead of guessing pixel positions. The example episode takes two turns: type the date, then press Submit.</aside>
+</section>

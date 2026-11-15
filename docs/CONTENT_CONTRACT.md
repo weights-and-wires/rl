@@ -440,3 +440,68 @@ wrong, not the reader.
 
 Cutting a derivation must never change what a result says. Shortening the path
 to a formula is editing; changing the formula is breaking the lesson.
+
+## Projects
+
+A project is a larger build that puts several lessons to work on a real
+problem, written up so a reader can study it later. Projects have their own
+section in the app: an index at `/projects`, a page per project, and an
+optional slide deck. The loader is `backend/app/projects.py`, and
+`scripts/check_content.py` validates every project.
+
+A project is one directory under `content/projects/`, named by its slug in
+lowercase words joined by hyphens, with no number prefix. The index lists
+projects newest first, by `date`. The directory holds the following files:
+
+```text
+content/projects/rl-computer-use/
+  project.md          the write-up: YAML front matter, then Markdown
+  slides/             optional
+    deck.json         {"title": "...", "order": ["cover", "goal", ...]}
+    deck.css          CSS that every slide in the deck shares
+    cover.html        one file per slide id in deck.json's order
+```
+
+### `project.md`
+
+The front matter has the following fields:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `title` | Yes | The project's name, in sentence case. |
+| `summary` | Yes | One sentence, 160 characters or fewer, for the cards. |
+| `date` | Yes | `YYYY-MM-DD`. Sets the order on the index. |
+| `status` | No | A word or two, such as `Finished` or `In progress`. |
+| `tags` | No | Short topic labels shown on the card. |
+| `lessons` | No | Slugs of the lessons the project builds on. Each must exist. |
+| `links` | No | A list of `label` and `url` pairs, such as the code and the weights. URLs use `https`. |
+| `draft` | No | `true` hides the project in production, as for a lesson. |
+
+The body opens with one `#` heading. A project page covers, in this order: the
+goal, the setup, how training works, each run, the results, what the project
+taught, how to reproduce it, and further reading. The prose follows the same
+style rules as a lesson, including the banned words. Link to the lesson that
+teaches a concept where the concept first appears, with a section anchor when
+one exists, such as
+`/lessons/071-group-relative-policy-optimization#s-the-grpo-loss`. The anchor is
+`s-` followed by the section heading in lowercase, with each run of other
+characters replaced by one hyphen.
+
+Report numbers the way the project measured them: say what the score is, on
+how many test cases, and give an interval when the comparison is close. Don't
+put secrets, IP addresses, machine names, or personal paths in a project.
+
+### Slides
+
+Each slide file holds exactly one `<section id="ID">`, where `ID` is the slide's
+entry in `deck.json`'s `order`. The section is a 1920 by 1080 pixel canvas with
+`box-sizing: border-box` and no default margins on its children, so space
+elements with `gap` and `padding`. Speaker notes go in one `<aside>` as the
+section's last child; the viewer shows them under the slide as plain text.
+
+The viewer renders each slide in a sandboxed frame, so `deck.css` can use plain
+element selectors without touching the site, and no script runs. Don't add
+`<script>` elements or event-handler attributes; the checker rejects them. Style
+a deck with the site's fonts and palette: the serif stack for headings, the
+system sans-serif stack for text, the monospace stack for labels and code, warm
+paper and forest green for surfaces, and terracotta for small labels.

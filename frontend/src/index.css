@@ -1036,3 +1036,11 @@
     opacity: 0;
   }
 }
+
+/* The slide viewer's stage fills the screen in full-screen mode. */
+.slide-stage:fullscreen {
+  border: 0;
+  border-radius: 0;
+  background: #000;
+  cursor: pointer;
+}

@@ -1,0 +1,20 @@
+<section id="grpo">
+<div class="head">
+<p class="eyebrow">How it improves</p>
+<h2>Try the same task 8 times, then compare</h2>
+<p class="lede" style="width: 1600px;">Each try is scored against the group’s average. Better than average: do more of that. Worse: do less.</p>
+</div>
+<div class="tries">
+<div class="try win rise" style="--i:0"><p class="n">try 1</p><span class="tick" aria-hidden="true">✓</span><p class="res">done</p><p class="adv">+0.63</p></div>
+<div class="try lose rise" style="--i:1"><p class="n">try 2</p><p class="res">missed</p><p class="adv">−0.38</p></div>
+<div class="try lose rise" style="--i:2"><p class="n">try 3</p><p class="res">missed</p><p class="adv">−0.38</p></div>
+<div class="try win rise" style="--i:3"><p class="n">try 4</p><span class="tick" aria-hidden="true">✓</span><p class="res">done</p><p class="adv">+0.63</p></div>
+<div class="try lose rise" style="--i:4"><p class="n">try 5</p><p class="res">missed</p><p class="adv">−0.38</p></div>
+<div class="try win rise" style="--i:5"><p class="n">try 6</p><span class="tick" aria-hidden="true">✓</span><p class="res">done</p><p class="adv">+0.63</p></div>
+<div class="try lose rise" style="--i:6"><p class="n">try 7</p><p class="res">missed</p><p class="adv">−0.38</p></div>
+<div class="try lose rise" style="--i:7"><p class="n">try 8</p><p class="res">missed</p><p class="adv">−0.38</p></div>
+</div>
+<p class="small">3 of 8 worked, so the average is 0.375. Done scores 1 − 0.375 = +0.63; missed scores 0 − 0.375 = −0.38.</p>
+<p class="callout fade" style="--i:9">If all 8 succeed, or all 8 miss, every try equals the average and nothing is learned. This method is called <b>GRPO</b>: each try is judged relative to its group.</p>
+<aside>The model has a little randomness when it picks words, so 8 tries at the same page come out differently. The ones that beat the group average are made more likely; the rest less likely. GRPO stands for group relative policy optimization: the group is the 8 tries, relative means compared with the group average, and the policy is the model’s way of choosing actions.</aside>
+</section>
