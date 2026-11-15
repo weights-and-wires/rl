@@ -191,7 +191,7 @@ $$
 
 The gap that minimizes the same loss is the logit of \(p_{\text{noisy}}\), not \(\Delta\). For \(\Delta = 2\), \(\sigma(2) = 0.880797\) and \(\varepsilon = 0.1\), so \(p_{\text{noisy}} = 0.804638\) and the fitted gap is 1.416. At \(\varepsilon = 0.5\) every true gap looks like a coin flip, and the fitted gap is 0.
 
-[Direct preference optimization](/lessons/070-direct-preference-optimization) trains on these same recorded pairs, so the same shrinkage sits in that loss. This chapter does not derive it.
+[Direct preference optimization](/lessons/071-direct-preference-optimization) trains on these same recorded pairs, so the same shrinkage sits in that loss. This chapter does not derive it.
 
 > [!RECAP]
 > - Accuracy on the four prompts is \(1/3\). Agreement, which keeps the tie, is \(1/2\). The eight-prompt calibration error is 0.35.
