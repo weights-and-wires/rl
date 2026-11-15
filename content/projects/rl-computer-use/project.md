@@ -8,11 +8,11 @@ tags:
   - Computer use
   - LoRA
 lessons:
-  - 071-group-relative-policy-optimization
-  - 073-reasoning-with-verifiable-rewards
+  - 072-group-relative-policy-optimization
+  - 075-reasoning-with-verifiable-rewards
   - 065-sft-and-the-post-training-pipeline
-  - 078-agents-and-multi-turn-rl
-  - 084-capstone-post-training
+  - 081-agents-and-multi-turn-rl
+  - 088-capstone-post-training
   - 059-evaluating-rl
 links:
   - label: Code (private GitHub repository)
@@ -82,7 +82,7 @@ to give up quickly.
 
 A reward that a program checks exactly is called a *verifiable reward*. It's
 hard to fool, because it measures the thing you care about. For more about
-rewards like this, see [Verifiable rewards](/lessons/072-verifiable-rewards).
+rewards like this, see [Verifiable rewards](/lessons/073-verifiable-rewards).
 
 ## How training works
 
@@ -108,7 +108,7 @@ task page, the model makes 8 attempts, a *group*. Each attempt's *advantage* is
 its reward minus the group's average reward, divided by the group's spread.
 Attempts that beat the average become more likely, and the rest become less
 likely. The group is its own baseline, so GRPO needs no second network to
-predict rewards. [Group-relative policy optimization](/lessons/071-group-relative-policy-optimization)
+predict rewards. [Group-relative policy optimization](/lessons/072-group-relative-policy-optimization)
 derives the loss.
 
 For example, if 3 of 8 attempts succeed, the average is 0.375. Each success gets
@@ -124,7 +124,7 @@ Two more details matter for multi-turn episodes:
 
 - The loss counts only the tokens the model wrote. The screenshot and page text
   come from the browser, so the loss masks them out. For more information, see
-  [Mask what the agent did not write](/lessons/078-agents-and-multi-turn-rl#s-mask-what-the-agent-did-not-write).
+  [Mask what the agent did not write](/lessons/081-agents-and-multi-turn-rl#s-mask-what-the-agent-did-not-write).
 - Every turn in an episode shares the episode's advantage. That's crude credit
   assignment: a mistake in turn 3 also penalizes turns 1 and 2. Short episodes
   limit the damage.
@@ -136,7 +136,7 @@ adaptation) adds a small pair of matrices beside each weight matrix and trains
 only those. Here the adapter had rank 32 and was under 2% of the model's size,
 a 260 MB file. That keeps memory low enough for one GPU and makes it cheap to
 copy the new weights to the fast generation engine after every step.
-[LoRA: train a small change, not the matrix](/lessons/084-capstone-post-training#s-lora-train-a-small-change-not-the-matrix)
+[LoRA: train a small change, not the matrix](/lessons/088-capstone-post-training#s-lora-train-a-small-change-not-the-matrix)
 builds a LoRA layer by hand.
 
 One GPU did both jobs. vLLM, an inference engine, generated the attempts, and
@@ -194,8 +194,8 @@ shows that chance for $G = 8$:
 | 98% | 15% |
 
 Tasks drift out of the useful band as training works: once the model solves a
-task almost every time, its groups stop teaching. [Count the groups that teach nothing](/lessons/073-reasoning-with-verifiable-rewards#s-count-the-groups-that-teach-nothing)
-works this probability out, and [Keep the prompts that can teach](/lessons/072-verifiable-rewards#s-keep-the-prompts-that-can-teach)
+task almost every time, its groups stop teaching. [Count the groups that teach nothing](/lessons/075-reasoning-with-verifiable-rewards#s-count-the-groups-that-teach-nothing)
+works this probability out, and [Keep the prompts that can teach](/lessons/073-verifiable-rewards#s-keep-the-prompts-that-can-teach)
 shows how to filter for it.
 
 ### What run 1 broke
@@ -293,7 +293,7 @@ per hour.
   mix is the main lever for general skill.
 - **A verifiable reward made this cheap.** The pages grade themselves, so no
   reward model or human labels were needed. For the ways a reward can still go
-  wrong, see [Reward hacking, safety, and the frontier](/lessons/083-reward-hacking-and-safe-rl).
+  wrong, see [Reward hacking, safety, and the frontier](/lessons/086-reward-hacking-and-safe-rl).
 
 Possible next steps include a much wider task mix, and the harder setting where
 the model clicks by screen position instead of by element number.
