@@ -1,11 +1,16 @@
 {
   "id": "079-safety-training-against-a-spec",
-  "title": "Safety training against a spec",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Refusal frontiers: a learned reward against a spec reward",
+  "brief": "Fit a Bradley-Terry reward that latches onto a spurious cue, fit a rule-based reward from the spec, then sweep the KL coefficient to trace each one's exact over-refusal and under-refusal frontier, including on encoded prompts.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": [
+    "numpy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "fit_bt: with s = sigmoid(M @ theta), the gradient is M.T @ (p * (s - q)) and the Hessian is (M * (p * s * (1 - s))[:, None]).T @ M. Each Newton step is theta - solve(H, grad).",
+    "rule_features: refusing a prompt violates the benign rule when h = 0, so its features are (0, 1 - h). Complying violates the harm rule when h = 1, so its features are (h, 0). The reward weights come out negative, because these are penalties.",
+    "kl_optimal: z = log(ref) + R / beta, subtract the row maximum, exponentiate, and divide by the row sum. Check that beta = 1 gives 9/13 on the harmful row of the lesson's example.",
+    "error_rates: over-refusal divides by the benign mass, sum(p * (1 - h)), and under-refusal by the harmful mass, sum(p * h). Dividing by 1 instead is the usual slip."
   ]
 }

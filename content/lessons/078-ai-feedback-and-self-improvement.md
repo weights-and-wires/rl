@@ -242,7 +242,7 @@ The checks test the functions in this order. The torch functions take per-token 
 
 The following sources define the methods in this chapter:
 
-- [Bai et al., "Constitutional AI: Harmlessness from AI Feedback" (2022)](https://arxiv.org/abs/2212.08073): the critique-and-revise phase and RL from AI feedback.
+- [Bai et al., "Constitutional AI: Harmlessness from AI Feedback" (2022)](https://arxiv.org/abs/2212.08073): the critique-and-revise phase and RL from AI feedback. For a safety reward built from a written spec, see [Safety training against a spec](/lessons/079-safety-training-against-a-spec).
 - [Lee et al., "RLAIF vs. RLHF" (2023)](https://arxiv.org/abs/2309.00267): RLAIF matches RLHF on three tasks.
 - [Zelikman et al., "STaR: Bootstrapping Reasoning With Reasoning" (2022)](https://arxiv.org/abs/2203.14465): filtering rationales and rationalization with a hint.
 - [Singh et al., "Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models" (2023)](https://arxiv.org/abs/2312.06585): ReST-EM and the expectation-maximization view.
