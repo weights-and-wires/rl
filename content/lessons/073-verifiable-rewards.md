@@ -218,6 +218,8 @@ The checks call the functions in this order. The first passes once `normalize_ma
 
 **Tests in the prompt.** A prompt that includes the tests lets the model print those lines. Keep the tests out of the prompt, and give them different expected outputs.
 
+**No key to check against.** Many questions have no program that grades the answer. [Rubric rewards](/lessons/074-rubric-rewards) grades those with a weighted checklist and shows what a recall-only rubric teaches the model.
+
 **A unit that is the answer.** Dropping a missing unit is right when the question already named the unit. It is the wrong rule when `5 meters` and `5` are different answers. The pairs in the exercise follow the first rule.
 
 **A timeout that is too short.** A slow correct program fails the same way a loop does. A loop with no timeout holds the batch. The checks use a timeout of `0.4` or `0.5` seconds, and one process per test, so a looping program costs about a second of wall clock rather than the whole run.

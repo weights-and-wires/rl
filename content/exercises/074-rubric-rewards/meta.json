@@ -1,11 +1,13 @@
 {
   "id": "074-rubric-rewards",
   "title": "Rubric rewards",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "brief": "Build a recall-style rubric grader and a precision-style claims grader, find the optimal subset of claims under their mix, and train an exact policy gradient to the per-claim threshold.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": ["numpy"],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "A false claim is one where truth is 0, so the claims reward counts include * (1 - truth). Dropping the (1 - truth) factor penalizes true claims too, and the model learns to say nothing.",
+    "Expected reward is linear in the inclusion vector: the sum of include * (alpha * w - beta * c * (1 - p)). Include claim i exactly when that bracket is positive.",
+    "With q = sigmoid(theta), the exact gradient of the expected reward is g * q * (1 - q), where g is the bracket. Check it against finite differences of expected_reward(sigmoid(theta), ...)."
   ]
 }
