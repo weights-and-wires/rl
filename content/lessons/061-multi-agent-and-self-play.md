@@ -353,6 +353,8 @@ The checks test the functions in this order. `ROCK_PAPER_SCISSORS`, `BRIDGE_ROW`
 
 **Non-transitive strategy spaces.** In RPS, "better" is not a line. Self-play against only the last copy can forget how to beat old strategies, which is why leagues keep old opponents around.
 
+**Attackers and defenders.** A red team and a model's defenses also form a zero-sum game, and patching the most recent attack cycles as in this chapter. [Attack and defense as a game](/lessons/088-attack-and-defense-as-a-game) applies regret-minimizing learners to it.
+
 ## Further reading
 
 - [Hart and Mas-Colell (2000), A Simple Adaptive Procedure Leading to Correlated Equilibrium](https://doi.org/10.1111/1468-0262.00153). Introduces regret matching and proves its convergence properties.
