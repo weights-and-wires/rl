@@ -12,7 +12,7 @@ lessons:
   - 075-reasoning-with-verifiable-rewards
   - 065-sft-and-the-post-training-pipeline
   - 081-agents-and-multi-turn-rl
-  - 088-capstone-post-training
+  - 090-capstone-post-training
   - 059-evaluating-rl
 links:
   - label: Code (private GitHub repository)
@@ -136,7 +136,7 @@ adaptation) adds a small pair of matrices beside each weight matrix and trains
 only those. Here the adapter had rank 32 and was under 2% of the model's size,
 a 260 MB file. That keeps memory low enough for one GPU and makes it cheap to
 copy the new weights to the fast generation engine after every step.
-[LoRA: train a small change, not the matrix](/lessons/088-capstone-post-training#s-lora-train-a-small-change-not-the-matrix)
+[LoRA: train a small change, not the matrix](/lessons/090-capstone-post-training#s-lora-train-a-small-change-not-the-matrix)
 builds a LoRA layer by hand.
 
 One GPU did both jobs. vLLM, an inference engine, generated the attempts, and

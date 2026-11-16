@@ -1,6 +1,6 @@
 ---
 title: "Capstone: end-to-end post-training"
-slug: 088-capstone-post-training
+slug: 090-capstone-post-training
 part: "Part 10 — Beyond text, and what can go wrong"
 summary: Run supervised fine-tuning, then DPO, with a hand-written LoRA adapter, and judge the result with a written evaluation, not a loss curve.
 minutes: 45
@@ -17,7 +17,7 @@ prereqs:
   - 071-direct-preference-optimization
   - 075-reasoning-with-verifiable-rewards
   - 086-reward-hacking-and-safe-rl
-exercise: 088-capstone-post-training
+exercise: 090-capstone-post-training
 ---
 
 # Capstone: end-to-end post-training

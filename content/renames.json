@@ -1570,7 +1570,7 @@
   "086-reward-hacking-and-safe-rl"
  ],
  "084-capstone-post-training": [
-  "088-capstone-post-training"
+  "090-capstone-post-training"
  ],
  "077-on-policy-distillation": [
   "080-on-policy-distillation"
@@ -1597,7 +1597,7 @@
   "087-monitors-in-the-reward"
  ],
  "085-capstone-post-training": [
-  "088-capstone-post-training"
+  "090-capstone-post-training"
  ],
  "073-reasoning-with-verifiable-rewards": [
   "075-reasoning-with-verifiable-rewards"
@@ -1639,7 +1639,7 @@
   "087-monitors-in-the-reward"
  ],
  "086-capstone-post-training": [
-  "088-capstone-post-training"
+  "090-capstone-post-training"
  ],
  "070-direct-preference-optimization": [
   "071-direct-preference-optimization"
@@ -1693,6 +1693,15 @@
   "087-monitors-in-the-reward"
  ],
  "087-capstone-post-training": [
-  "088-capstone-post-training"
+  "090-capstone-post-training"
+ ],
+ "088-capstone-post-training": [
+  "090-capstone-post-training"
+ ],
+ "088-watched-and-unwatched": [
+  "089-watched-and-unwatched"
+ ],
+ "089-capstone-post-training": [
+  "090-capstone-post-training"
  ]
 }
