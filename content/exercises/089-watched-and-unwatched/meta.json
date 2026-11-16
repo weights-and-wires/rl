@@ -1,11 +1,22 @@
 {
   "id": "089-watched-and-unwatched",
-  "title": "Watched and unwatched",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Behave well when watched, differently when not",
+  "brief": "On a contextual bandit whose hidden context is eval or deploy, compute the optimal and KL-optimal policy per cue, the compliance gap in closed form, a bootstrap interval for a difference, the runs needed to separate two rates, and a sandbagging gap.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": [
+    "numpy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "joint_obs: an eval cue appears with probability q * prior_eval, a deploy cue with q * (1 - prior_eval), and no cue with probability 1 - q in both contexts.",
+    "posterior_eval is a row of the joint divided by that row's sum. When a row sums to 0, return the prior instead of dividing by 0.",
+    "action_rewards: complying earns the same everywhere, and hacking earns hack_reward - lam * w, because the penalty applies only if the context is eval.",
+    "optimal_hack: compare the two columns of R. Use a strict >, so a tie goes to complying.",
+    "kl_hack: for two actions the softmax is a sigmoid of log(ref / (1 - ref)) + (hack reward - comply reward) / beta.",
+    "hack_rates: divide each column of the joint by its sum to get P(cue | context), then take the policy-weighted sum down each column.",
+    "gap_closed_form: the no-cue term is the same in both contexts and cancels, so the gap is q times the difference between the deploy-cue and eval-cue hack probabilities.",
+    "bootstrap_diff_replicates: use one generator, redraw a with replacement and b with replacement, and subtract the two means. Do not pool the groups.",
+    "runs_needed: n = (z_(1 - alpha/2) + z_power)^2 * (p1(1-p1) + p2(1-p2)) / (p1 - p2)^2, rounded up. statistics.NormalDist().inv_cdf gives z.",
+    "sandbag_gap: it is the bootstrap difference of the no-cue and cue scores, so reuse your two bootstrap functions."
   ]
 }

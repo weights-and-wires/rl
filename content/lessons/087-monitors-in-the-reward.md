@@ -211,6 +211,8 @@ The checks test these functions in order. The module names the actions `HONEST`,
 
 **Monitorability is fragile.** Korbak and colleagues (2025) argue that reading a chain of thought is useful but imperfect, and that training choices can reduce it. A penalty on the chain of thought is one such choice.
 
+**Watching changes behavior.** The toy's audit works because the policy cannot tell which rollouts are audited. If a cue reveals the audit, the policy can comply under audit and hack without it. [Watched and unwatched](/lessons/089-watched-and-unwatched) works out that gap.
+
 ## Further reading
 
 - [Baker and colleagues (2025), Monitoring reasoning models for misbehavior and the risks of promoting obfuscation](https://arxiv.org/abs/2503.11926). A weaker model reading the chain of thought catches hacks in coding tasks, and heavy optimization against the monitor produces obfuscated reward hacking.
