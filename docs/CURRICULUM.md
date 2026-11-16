@@ -154,5 +154,5 @@ For how this part's methods compare with policy optimization and Q-learning, see
 | `086-reward-hacking-and-safe-rl` | Reward hacking, safety, and the frontier | Best-of-n KL, the Goodhart curve with ensembles, and the Lagrangian dual value and primal-dual update |
 | `087-monitors-in-the-reward` | Monitors in the reward | The KL optimum under a pass-only and a flag-penalized reward, the penalty threshold, random-audit deterrence, and the exact softmax gradient |
 | `088-attack-and-defense-as-a-game` | Attack and defense as a game | A draft chapter with a placeholder exercise. |
-| `089-watched-and-unwatched` | Watched and unwatched | A draft chapter with a placeholder exercise. |
+| `089-watched-and-unwatched` | Watched and unwatched | The optimal and KL-optimal policy per eval or deploy cue, the compliance gap in closed form, a bootstrap interval for a difference of means, the runs needed to separate two rates, and a sandbagging score gap |
 | `090-capstone-post-training` | Capstone: end-to-end post-training | A LoRA layer with its zero-start initialization, parameter count, and gradients, adapter-only training, the sequence KL, the unbiased pass@k, a win rate with swap consistency, and a toy SFT-then-DPO pipeline — **GPU**: SFT then DPO with a hand-written LoRA adapter on Qwen3-0.6B, with a written evaluation |
