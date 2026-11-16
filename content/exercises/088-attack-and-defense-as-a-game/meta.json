@@ -1,11 +1,21 @@
 {
   "id": "088-attack-and-defense-as-a-game",
-  "title": "Attack and defense as a game",
-  "brief": "A placeholder exercise for a draft chapter. Return the number of steps you are given.",
+  "title": "Patch-the-last-attack cycles, EXP3 against Hedge, and the over-refusal frontier",
+  "brief": "Build the attacker-versus-defender loss table, watch best-response dynamics cycle, then run EXP3 against Hedge so the average strategies approach the game's value, and trace the defender's attack-success against over-refusal frontier.",
   "needs_gpu": false,
   "timeout": 30,
-  "packages": [],
+  "packages": [
+    "numpy",
+    "scipy"
+  ],
   "hints": [
-    "draft_answer returns the integer it receives."
+    "loss_matrix is success + lam * over_refusal[None, :]. The over-refusal term depends on the defense, so it adds the same amount down each column.",
+    "exploitability is np.max(L @ y) - np.min(x @ L). L @ y is what each attack earns against the defender's mix, and x @ L is what each defense costs against the attacker's mix.",
+    "best_response_dynamics: a = argmax of L[:, d], then d = argmin of L[a]. np.argmax and np.argmin break ties at the lowest index, which is what the checks expect.",
+    "exp3_update: p = exp3_strategy(log_w, gamma), then add gamma * reward / p[arm] / K to log_w[arm] only. Return a copy so the caller's array is not changed.",
+    "hedge_update returns log_w - eta * losses. The sign matters: a larger loss must lower a defense's weight.",
+    "In train_no_regret, add x and y to the running sums before you draw actions from them, so you average the strategies held and not the actions drawn. Draw the attack first, then the defense, from one np.random.default_rng(seed).",
+    "solve_game: loop over itertools.combinations for rows and columns of equal size k. Solve [[sub, -1], [1, 0]] against [0, ..., 0, 1] for the column mix and v, and the same with sub.T for the row mix. Then check that no mix entry is negative and no row outside the supports pays more than v or column outside pays less.",
+    "frontier: for each lam, take y from solve_game(loss_matrix(success, over_refusal, lam)). Over-refusal is over_refusal @ y and attack success is np.max(success @ y)."
   ]
 }
