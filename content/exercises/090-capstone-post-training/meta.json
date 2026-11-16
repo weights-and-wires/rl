@@ -1,5 +1,5 @@
 {
-  "id": "088-capstone-post-training",
+  "id": "090-capstone-post-training",
   "title": "LoRA, a two-stage post-training pipeline, and a written evaluation",
   "brief": "Write a LoRA layer and its initialization, count its parameters, check its gradients, and train only the adapter. Then run SFT followed by DPO on a toy language model, and compute the evaluation numbers: KL, pass@k, and a win rate with swap consistency. On the GPU worker, the same functions post-train Qwen3-0.6B.",
   "needs_gpu": true,
