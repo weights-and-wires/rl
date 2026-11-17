@@ -11,19 +11,43 @@
 rl.ifkash.dev {
 	encode zstd gzip
 
-	# Authelia is authoritative for every request to this private course.
-	forward_auth authelia:9091 {
-		uri /api/authz/forward-auth
-		copy_headers Remote-User
+	# The MCP server for AI agents. An agent can't complete the Authelia sign-in
+	# in a browser, so this path skips forward_auth and the app requires a bearer
+	# token instead. Caddy doesn't inject X-SSO-Proxy here, and it strips any
+	# Remote-User or X-SSO-Proxy a client sends, so these headers can never
+	# carry an identity on this path. The app ignores them on /mcp regardless.
+	#
+	# `handle` blocks are mutually exclusive and run in order of path
+	# specificity, so this block wins over the catch-all below. A bare
+	# forward_auth would otherwise sort before reverse_proxy and gate /mcp too.
+	@mcp path /mcp /mcp/*
+	handle @mcp {
+		reverse_proxy rl:8000 {
+			header_up -Remote-User
+			header_up -X-SSO-Proxy
+			flush_interval -1
+			transport http {
+				response_header_timeout 30m
+				read_timeout 30m
+			}
+		}
 	}
 
-	# The app accepts Remote-User only when Caddy supplies the shared secret.
-	reverse_proxy rl:8000 {
-		header_up X-SSO-Proxy {$RL_SSO_PROXY_SECRET}
-		flush_interval -1
-		transport http {
-			response_header_timeout 30m
-			read_timeout 30m
+	handle {
+		# Authelia is authoritative for every other request to this private course.
+		forward_auth authelia:9091 {
+			uri /api/authz/forward-auth
+			copy_headers Remote-User
+		}
+
+		# The app accepts Remote-User only when Caddy supplies the shared secret.
+		reverse_proxy rl:8000 {
+			header_up X-SSO-Proxy {$RL_SSO_PROXY_SECRET}
+			flush_interval -1
+			transport http {
+				response_header_timeout 30m
+				read_timeout 30m
+			}
 		}
 	}
 }

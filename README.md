@@ -202,6 +202,104 @@ portal names to existing progress identities with `SSO_USERS`, for example
 `ifkash:enderboi,ananya:michu`; unmapped usernames use their portal name.
 Sign out using the shared Authelia portal.
 
+## MCP server for AI agents
+
+The app serves a [Model Context Protocol](https://modelcontextprotocol.io)
+server at `https://rl.ifkash.dev/mcp`, over the Streamable HTTP transport. An
+agent such as Claude Code can use it to read the course and work through it as
+you.
+
+The server exposes the following tools:
+
+- `course_overview`, `list_lessons`, `get_lesson`, and `search` for the
+  syllabus, chapter text, and full-text search over lessons and projects.
+- `get_exercise` and `get_solution` for an exercise's brief, hints, starter
+  code, checks, and worked solution.
+- `list_projects`, `get_project`, and `get_project_slides` for the projects.
+- `get_document` for `docs/CURRICULUM.md` and `docs/CONTENT_CONTRACT.md`.
+- `get_progress`, `get_draft`, `save_draft`, and `set_progress` for your
+  progress and drafts.
+- `run_exercise`, which runs or checks code the same way the editor's **Run**
+  and **Check** buttons do.
+
+Lessons and projects are also resources, at `rl://lessons/SLUG` and
+`rl://projects/SLUG`. Reading a lesson through the server doesn't mark it
+started.
+
+An agent can't complete the Authelia sign-in, so Caddy routes `/mcp` without
+`forward_auth`, and the server requires a bearer token instead. A token acts
+as the reader who owns it. The server ignores the `Remote-User` and `X-SSO-Proxy`
+headers.
+
+**Caution:** A token can run code in the container, the same as a signed-in
+reader. Treat it like a password, and revoke it when you no longer use it.
+
+### Get a token
+
+To create a token, do one of the following:
+
+- On the site, open **Agent access** in the sidebar, at
+  `https://rl.ifkash.dev/agents`. Enter a name and click **Create token**. The
+  page shows the token once, with ready-to-copy client configurations.
+- On the VM, run the command line in the container:
+
+  ```bash
+  docker exec rl python -m backend.app.mcp_tokens create USERNAME --name NAME
+  ```
+
+  Replace the following:
+
+  - `USERNAME`: the reader the token acts as, after `SSO_USERS` mapping, for
+    example `enderboi`.
+  - `NAME`: a label that tells you where the token is used, for example
+    `laptop`.
+
+To see or revoke tokens on the VM, run
+`docker exec rl python -m backend.app.mcp_tokens list` or
+`docker exec rl python -m backend.app.mcp_tokens revoke ID`. The server stores
+only a SHA-256 hash of each token, so a lost token can't be recovered; revoke
+it and create another.
+
+### Connect a client
+
+To connect Claude Code, complete the following steps:
+
+1. Put the token in an environment variable:
+
+   ```bash
+   export TOKEN=TOKEN_VALUE
+   ```
+
+   Replace `TOKEN_VALUE` with the token, which starts with `rlmcp_`.
+
+2. Add the server:
+
+   ```bash
+   claude mcp add --transport http rl https://rl.ifkash.dev/mcp \
+     --header "Authorization: Bearer $TOKEN"
+   ```
+
+For a client that reads an `mcpServers` configuration file, add the following
+entry:
+
+```json
+{
+  "mcpServers": {
+    "rl": {
+      "type": "http",
+      "url": "https://rl.ifkash.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer TOKEN_VALUE"
+      }
+    }
+  }
+}
+```
+
+The server is stateless and answers with plain JSON, so it needs no session
+and works through a proxy that buffers responses. A `run_exercise` call returns
+when the run finishes, which can take up to the exercise's timeout.
+
 ## The GPU backend
 
 Four lessons—`069-rlhf-with-ppo`, `071-group-relative-policy-optimization`,
@@ -260,8 +358,8 @@ A deploy has three steps:
 The VM never builds from source and holds no copy of the tree. `.env` on the VM
 holds the `SSO_PROXY_SECRET` matching `RL_SSO_PROXY_SECRET` in Caddy and any
 RunPod key, and a deploy never touches it. `Caddyfile.example` documents the
-vhost's Authelia forward-auth, trusted identity header, and run-stream
-buffering and timeout settings. `docker-compose.yml` is an example of the
+vhost's Authelia forward-auth, trusted identity header, run-stream buffering
+and timeout settings, and the `/mcp` route that skips forward-auth. `docker-compose.yml` is an example of the
 service definition.
 
 The image also prints the PDF book, in a build stage that holds Chromium and

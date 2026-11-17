@@ -10,6 +10,7 @@ import { useBook } from "./components/DownloadBook";
 import Mark from "./components/Mark";
 import SearchDialog from "./components/SearchDialog";
 import StatusMark from "./components/StatusMark";
+import AgentsPage from "./pages/AgentsPage";
 import Dashboard from "./pages/Dashboard";
 import LessonPage from "./pages/LessonPage";
 import ProjectPage from "./pages/ProjectPage";
@@ -130,6 +131,7 @@ export default function App() {
 
   const currentSlug = location.pathname.startsWith("/lessons/") ? location.pathname.slice("/lessons/".length) : null;
   const onSlides = /^\/projects\/[^/]+\/slides\/?$/.test(location.pathname);
+  const onAgents = location.pathname === "/agents";
   const onProjects = !onSlides && (location.pathname === "/projects" || location.pathname.startsWith("/projects/"));
 
   const sections = useMemo<SidebarSection[]>(() => {
@@ -170,6 +172,7 @@ export default function App() {
           },
         ]
       : []),
+    { to: "/agents", label: "Agent access", icon: "key", active: onAgents },
   ];
 
   const utilities = useMemo<SidebarUtility[]>(
@@ -239,6 +242,7 @@ export default function App() {
           <Route path="/projects" element={<ProjectsPage projects={projects} loaded={projectsLoaded} />} />
           <Route path="/projects/:slug" element={<ProjectPage lessons={lessons} />} />
           <Route path="/projects/:slug/slides" element={<SlidesPage />} />
+          <Route path="/agents" element={<AgentsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
