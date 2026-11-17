@@ -20,7 +20,11 @@ rl.ifkash.dev {
 	# `handle` blocks are mutually exclusive and run in order of path
 	# specificity, so this block wins over the catch-all below. A bare
 	# forward_auth would otherwise sort before reverse_proxy and gate /mcp too.
-	@mcp path /mcp /mcp/*
+	#
+	# /.well-known/oauth-* skips Authelia too. An MCP client probes it after a
+	# 401, and the app answers 404 there; a 302 to the portal would read as a
+	# broken OAuth server.
+	@mcp path /mcp /mcp/* /.well-known/oauth-*
 	handle @mcp {
 		reverse_proxy rl:8000 {
 			header_up -Remote-User

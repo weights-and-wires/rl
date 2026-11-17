@@ -339,7 +339,9 @@ def _mount_frontend() -> None:
 
     @app.get("/{path:path}", include_in_schema=False)
     def spa(path: str) -> Any:
-        if path.startswith(("api/", "mcp/")):
+        # .well-known/ too: an MCP client probes it for OAuth metadata, and an
+        # HTML page with 200 there reads as a broken OAuth server.
+        if path.startswith(("api/", "mcp/", ".well-known/")):
             return JSONResponse({"detail": "Not found"}, status_code=404)
         candidate = dist / path
         if path and candidate.is_file() and dist in candidate.resolve().parents:
