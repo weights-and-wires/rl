@@ -39,6 +39,28 @@ rl.ifkash.dev {
 		}
 	}
 
+	# Public: the projects, their slides, and what the page needs to load. Authelia
+	# still identifies a signed-in reader here, but a visitor without a session
+	# gets the page instead of a redirect: the anonymous handle_response drops
+	# every identity header, including the X-SSO-Proxy set above it, so the app
+	# sees a signed-out visitor and serves only these public endpoints.
+	# request_header runs before forward_auth, which is what lets the anonymous
+	# branch remove the secret again.
+	@public path /projects /projects/* /api/projects /api/projects/* /api/session /assets/* /fonts/*
+	handle @public {
+		request_header X-SSO-Proxy {$RL_SSO_PROXY_SECRET}
+		forward_auth authelia:9091 {
+			uri /api/authz/forward-auth
+			copy_headers Remote-User
+			@anonymous status 3xx 4xx
+			handle_response @anonymous {
+				request_header -Remote-User
+				request_header -X-SSO-Proxy
+			}
+		}
+		reverse_proxy rl:8000
+	}
+
 	handle {
 		# Authelia is authoritative for every other request to this private course.
 		forward_auth authelia:9091 {

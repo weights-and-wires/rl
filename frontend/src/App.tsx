@@ -75,14 +75,15 @@ export default function App() {
     if (username) api.health().then((body) => setGpu(body.gpu)).catch(() => undefined);
   }, [username, refresh]);
 
+  // Projects are public, so they load signed out too.
   useEffect(() => {
-    if (!username) return;
+    if (!ready) return;
     api
       .projects()
       .then((body) => setProjects(body.projects))
       .catch(() => undefined)
       .finally(() => setProjectsLoaded(true));
-  }, [username]);
+  }, [ready, username]);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -196,6 +197,32 @@ export default function App() {
     return <div className="h-full bg-paper" aria-busy="true" />;
   }
 
+  // Projects and their slides are public. A visitor without a session reads
+  // them in a plain layout; everything else sends them to the sign-in portal.
+  if (!username && onPublicPath(location.pathname)) {
+    const signIn = `https://auth.ifkash.dev/?rd=${encodeURIComponent(window.location.href)}`;
+    return (
+      <div className="min-h-full bg-paper">
+        <header className="flex items-center justify-between gap-4 border-b border-line px-4 py-3 sm:px-6">
+          <a href="/projects" className="flex items-center gap-2.5 no-underline">
+            <Mark size={26} />
+            <span className="font-medium text-ink">Reinforcement learning</span>
+          </a>
+          <a href={signIn} className="button">
+            Sign in
+          </a>
+        </header>
+        <main id="main">
+          <Routes>
+            <Route path="/projects" element={<ProjectsPage projects={projects} loaded={projectsLoaded} />} />
+            <Route path="/projects/:slug" element={<ProjectPage lessons={[]} />} />
+            <Route path="/projects/:slug/slides" element={<SlidesPage />} />
+          </Routes>
+        </main>
+      </div>
+    );
+  }
+
   if (!username) {
     const returnTo = window.location.href;
     window.location.assign(`https://auth.ifkash.dev/?rd=${encodeURIComponent(returnTo)}`);
@@ -250,4 +277,9 @@ export default function App() {
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} entries={entries} noun="lesson" />
     </div>
   );
+}
+
+/** Paths a visitor can read without signing in: the projects and their slides. */
+function onPublicPath(pathname: string): boolean {
+  return pathname === "/projects" || pathname.startsWith("/projects/");
 }

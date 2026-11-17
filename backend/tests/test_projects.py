@@ -119,6 +119,24 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(cover["html"], '<section id="cover"><h1>Hello</h1>\n</section>')
         self.assertEqual(deck["slides"][1]["notes"], "")
 
+    def test_project_api_is_public(self) -> None:
+        from fastapi.testclient import TestClient
+
+        from backend.app.main import app
+
+        # No proxy identity: projects and slides are readable signed out.
+        with TestClient(app) as client:
+            listing = client.get("/api/projects")
+            self.assertEqual(listing.status_code, 200, listing.text)
+            slugs = [project["slug"] for project in listing.json()["projects"]]
+            self.assertIn("newer", slugs)
+            self.assertIn("older", slugs)
+            self.assertEqual(client.get("/api/projects/newer").status_code, 200)
+            self.assertEqual(client.get("/api/projects/newer/slides").status_code, 200)
+            self.assertEqual(client.get("/api/projects/missing").status_code, 404)
+            # The rest of the course stays behind sign-in.
+            self.assertEqual(client.get("/api/lessons").status_code, 401)
+
     def test_unknown_projects_and_projects_without_slides_return_none(self) -> None:
         self.assertIsNone(self.projects.get_project("../content"))
         self.assertIsNone(self.projects.get_slides("missing"))

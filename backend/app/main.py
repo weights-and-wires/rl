@@ -1,7 +1,8 @@
 """The HTTP surface: public health/session status, and SSO-protected course data.
 
-Everything under `/api` needs a vetted proxy identity except `/api/health` and
-`/api/session`, and so does the PDF book under `/book`. The MCP server at `/mcp`
+Everything under `/api` needs a vetted proxy identity except `/api/health`,
+`/api/session`, and the public projects under `/api/projects`, and so does the
+PDF book under `/book`. The MCP server at `/mcp`
 is the exception: it ignores the proxy identity and takes a bearer token.
 """
 
@@ -141,13 +142,15 @@ def solution(exercise_id: str, user: str = Depends(current_user)) -> dict[str, A
     return {"id": exercise_id, "solution": exercise["solution"]}
 
 
+# Projects are public: anyone can read the write-ups and slides without signing
+# in. Caddy lets these paths through when Authelia has no session.
 @app.get("/api/projects")
-def project_index(user: str = Depends(current_user)) -> dict[str, Any]:
+def project_index() -> dict[str, Any]:
     return {"projects": projects.project_list()}
 
 
 @app.get("/api/projects/{slug}")
-def project(slug: str, user: str = Depends(current_user)) -> dict[str, Any]:
+def project(slug: str) -> dict[str, Any]:
     found = projects.get_project(slug)
     if found is None:
         raise HTTPException(status_code=404, detail="No such project")
@@ -155,7 +158,7 @@ def project(slug: str, user: str = Depends(current_user)) -> dict[str, Any]:
 
 
 @app.get("/api/projects/{slug}/slides")
-def project_slides(slug: str, user: str = Depends(current_user)) -> dict[str, Any]:
+def project_slides(slug: str) -> dict[str, Any]:
     deck = projects.get_slides(slug)
     if deck is None:
         raise HTTPException(status_code=404, detail="This project has no slides")

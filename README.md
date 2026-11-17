@@ -103,6 +103,9 @@ The **Projects** section, at `/projects`, holds larger builds that put several
 lessons to work on a real problem. Each project has a write-up that links back
 to the lessons it uses, and can have a slide deck with speaker notes.
 
+The projects are public: anyone can read the write-ups and slides without
+signing in. The rest of the course still requires sign-in.
+
 - **Teaching a vision-language model to use a browser.** GRPO post-training of
   Qwen3-VL-4B on MiniWoB++ web tasks, in two runs on one rented GPU, with the
   14-slide deck *Teaching a Model to Click*.
@@ -201,6 +204,12 @@ rejects protected API and book requests without this vetted identity. Map
 portal names to existing progress identities with `SSO_USERS`, for example
 `ifkash:enderboi,ananya:michu`; unmapped usernames use their portal name.
 Sign out using the shared Authelia portal.
+
+The projects are the exception. On `/projects`, `/api/projects`, and the
+static files the page loads, Caddy still asks Authelia who the reader is, but
+it passes a visitor without a session through with every identity header
+removed. The backend serves those endpoints without an identity, and the
+frontend shows them in a plain layout with a **Sign in** link.
 
 ## MCP server for AI agents
 
