@@ -259,11 +259,18 @@ def _snippet(text: str, at: int, length: int) -> str:
 
 
 def _section(body: str, at: int) -> str | None:
-    """The heading of the section that position `at` falls in."""
+    """The heading of the section that position `at` falls in.
+
+    A `#` line inside a fenced code block is a comment, not a heading, so those
+    are skipped.
+    """
+    fences = [m.span() for m in curriculum._FENCE.finditer(body)]
     heading = None
     for match in _HEADING_LINE.finditer(body):
         if match.start() > at:
             break
+        if any(start <= match.start() < end for start, end in fences):
+            continue
         heading = match.group(1).strip()
     return heading
 
